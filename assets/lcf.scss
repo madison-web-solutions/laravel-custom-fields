@@ -1,0 +1,9 @@
+.lcf-repeater-field {
+    display: table;
+    .lcf-repeater-item {
+        display: table-row;
+        > * {
+            display: table-cell;
+        }
+    }
+}
