@@ -70,28 +70,18 @@ class LCF
         return $field ? $field->toDatabase($value) : null;
     }
 
-    public function validateField(array $data, string $key, Field $field, array $extra_rules = [])
+    protected function mergeGroupFields(FieldGroup $group, array &$fields)
     {
-        $fields = [$key => $field];
-        return $this->validateFields($data, $fields, $extra_rules);
-    }
-
-    public function validateFieldGroup(array $data, FieldGroup $group, array $extra_rules = [])
-    {
-        $fields = []
         foreach ($group as $key => $field) {
             $fields[$key] = $field;
         }
-        return $this->validateFields($data, $fields, $extra_rules);
     }
 
-    public function validateFieldGroups(array $data, array $groups, array $extra_rules = [])
+    public function validate(array $data, array $groups, array $extra_rules = [])
     {
         $fields = [];
         foreach ($groups as $group) {
-            foreach ($group as $key => $field) {
-                $fields[$key] = $field;
-            }
+            $this->mergeGroupFields($group, $fields);
         }
         return $this->validateFields($data, $fields, $extra_rules);
     }
@@ -106,5 +96,10 @@ class LCF
         if (! $messages->isEmpty()) {
             throw new ValidationException($validator);
         }
+    }
+
+    protected function validateField(array $data, string $key, Field $field, MessageBag $messages)
+    {
+        $field->validate($data, $key, $messages);
     }
 }

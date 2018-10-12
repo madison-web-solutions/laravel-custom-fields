@@ -7,12 +7,6 @@ class CompoundField extends Field
 {
     protected $store_in_json = true;
 
-    public function __construct(array $options)
-    {
-        parent::__construct($options);
-        $this->sub_fields = $options['sub_fields'];
-    }
-
     public function optionDefaults() : array
     {
         return parent::optionDefaults();

@@ -7,12 +7,6 @@ class RepeaterField extends Field
 {
     protected $store_in_json = true;
 
-    public function __construct(array $options)
-    {
-        parent::__construct($options);
-        $this->sub_field = $options['sub_field'];
-    }
-
     public function optionDefaults() : array
     {
         return parent::optionDefaults();

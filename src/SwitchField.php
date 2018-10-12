@@ -9,12 +9,6 @@ class SwitchField extends Field
 {
     protected $store_in_json = true;
 
-    public function __construct(array $options)
-    {
-        parent::__construct($options);
-        $this->switch_fields = $options['switch_fields'];
-    }
-
     public function optionDefaults() : array
     {
         return parent::optionDefaults();

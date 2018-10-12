@@ -47,6 +47,13 @@ abstract class Field implements JsonSerializable
         Validator::make($this->options, $this->optionRules())->validate();
     }
 
+    public function __get($name)
+    {
+        if (array_key_exists($name, $this->options)) {
+            return $this->options[$name];
+        }
+    }
+
     public function optionDefaults() : array
     {
         return [
@@ -180,7 +187,7 @@ abstract class Field implements JsonSerializable
      */
     protected function databaseDeserializeNotNull($db_value)
     {
-        if ($this->$store_in_json) {
+        if ($this->store_in_json) {
             if (! Coerce::toString($db_value, $db_str_value)) {
                 $this->log("Deserialize failure - db value could not be coerced to string", $db_value);
             }
@@ -203,7 +210,7 @@ abstract class Field implements JsonSerializable
      */
     protected function databaseSerializeNotNull($primitive_value)
     {
-        if ($this->$store_in_json) {
+        if ($this->store_in_json) {
             return json_encode($primitive_value);
         } else {
             return $primitive_value;

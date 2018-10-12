@@ -29,25 +29,18 @@ class FieldGroup implements JsonSerializable, Iterator
         $this->fields[$key] = $field;
     }
 
-    public function addValidationRules(array &$rules)
-    {
-        foreach ($this->fields as $key => $field) {
-            $field->addValidationRules($rules, $key);
-        }
-    }
-
-    public function fromPrimitives(array $primitive_values)
-    {
-        $values = [];
-        foreach ($this->fields as $key => $field) {
-            $values[$key] = $field->fromPrimitive($primitive_values[$key] ?? null);
-        }
-        return $values;
-    }
-
     public function appliesTo(object $obj)
     {
         return $this->test->appliesTo($obj);
+    }
+
+    public function coerce(array $data, int $on_fail = Field::COERCE_FAIL_THROW)
+    {
+        $values = [];
+        foreach ($this->fields as $key => $field) {
+            $values[$key] = $field->coerce($data[$key] ?? null, $on_fail);
+        }
+        return $values;
     }
 
     public function current()
