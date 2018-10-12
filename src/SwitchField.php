@@ -7,6 +7,8 @@ use Validator;
 
 class SwitchField extends Field
 {
+    protected $store_in_json = true;
+
     public function __construct(array $options)
     {
         parent::__construct($options);
@@ -21,7 +23,7 @@ class SwitchField extends Field
     public function optionRules() : array
     {
         $rules = parent::optionRules();
-        $rules['switch_fields'] = 'required|array';
+        $rules['switch_fields'] = ['required', 'array', Field::simpleStringKeysRule('switch'), 'min:1'];
         $rules['switch_fields.*'] = [Field::isFieldRule()];
         $rules['switch_labels'] = 'nullable|array';
         $rules['switch_labels.*'] = 'required|string';
@@ -69,26 +71,6 @@ class SwitchField extends Field
         $ok = $switch_field->doCoerce($switch_value_input, $switch_value_output, $on_fail);
         $output = new SwitchValue($switch_name, $switch_value_output);
         return $ok;
-    }
-
-    protected function databaseDeserializeNotNull($db_value)
-    {
-        if (! Coerce::toString($db_value, $db_str_value)) {
-            $this->log("Deserialize failure - db value could not be coerced to string", $db_value);
-        }
-        $primitive_value = json_decode($db_str_value, true);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            return $primitive_value;
-        } else {
-            $msg = json_last_error_msg();
-            $this->log("Deserialize failure - invalid json - {$msg}", $db_str_value);
-            return null;
-        }
-    }
-
-    protected function databaseSerializeNotNull($primitive_value)
-    {
-        return json_encode($primitive_value);
     }
 
     protected function toPrimitiveNotNull($cast_value)

@@ -12,11 +12,29 @@ abstract class Field implements JsonSerializable
     const COERCE_FAIL_LOG = 1;
     const COERCE_FAIL_THROW = 2;
 
+    protected $store_in_json = false;
+
     public static function isFieldRule()
     {
         return function ($attribute, $value, $fail) {
             if (! ($value instanceof Field)) {
                 $fail("{$attribute} must be a field");
+            }
+        };
+    }
+
+    public static function simpleStringKeysRule(...$reserved)
+    {
+        return function ($attribute, $value, $fail) use ($reserved) {
+            if (is_array($value)) {
+                foreach ($value as $key => $dummy) {
+                    if (! preg_match('/^[_a-z][_a-z0-9]+$/', $key)) {
+                        $fail("Invalid key '{$key}' in {$attribute} - keys must be simple snake_case strings");
+                    }
+                    if (in_array($key, $reserved)) {
+                        $fail("Reserved word '{$key}' not allowed as key in {$attribute} - keys must be simple snake_case strings");
+                    }
+                }
             }
         };
     }
@@ -162,7 +180,21 @@ abstract class Field implements JsonSerializable
      */
     protected function databaseDeserializeNotNull($db_value)
     {
-        return $db_value;
+        if ($this->$store_in_json) {
+            if (! Coerce::toString($db_value, $db_str_value)) {
+                $this->log("Deserialize failure - db value could not be coerced to string", $db_value);
+            }
+            $primitive_value = json_decode($db_str_value, true);
+            if (json_last_error() == JSON_ERROR_NONE) {
+                return $primitive_value;
+            } else {
+                $msg = json_last_error_msg();
+                $this->log("Deserialize failure - invalid json - {$msg}", $db_str_value);
+                return null;
+            }
+        } else {
+            return $db_value;
+        }
     }
 
     /**
@@ -171,7 +203,11 @@ abstract class Field implements JsonSerializable
      */
     protected function databaseSerializeNotNull($primitive_value)
     {
-        return $primitive_value;
+        if ($this->$store_in_json) {
+            return json_encode($primitive_value);
+        } else {
+            return $primitive_value;
+        }
     }
 
     /**

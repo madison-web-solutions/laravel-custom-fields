@@ -8,6 +8,18 @@ use TypeError;
 
 class TestCase extends LaravelTestCase
 {
+    protected function assertExceptionThrown(string $expected_exception_class, callable $callback)
+    {
+        $actual_exception = null;
+        try {
+            $callback();
+        } catch (\Exception $e) {
+            $actual_exception = $e;
+        }
+        $this->assertInstanceOf($expected_exception_class, $actual_exception);
+        return $actual_exception;
+    }
+
     protected function assertCoerceOk(Field $field, $input, $expected_output)
     {
         $this->assertSame($expected_output, $field->toPrimitive($input));
