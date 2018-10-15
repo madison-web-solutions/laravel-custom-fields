@@ -118,15 +118,14 @@ abstract class Field implements JsonSerializable
      */
     protected function doCoerce($input, &$output, int $on_fail) : bool
     {
+        $output = null;
         if (is_null($input)) {
-            $output = null;
             return true;
         }
         if ($this->coerceNotNull($input, $output, $on_fail)) {
             return true;
         }
         $msg = "Failed to coerce value ".json_encode($input)." to ".get_class($this);
-        $output = null;
         if ($on_fail & self::COERCE_FAIL_LOG) {
             $this->log($msg, $input);
         }
