@@ -58,6 +58,8 @@ abstract class Field implements JsonSerializable
     {
         return [
             'required' => false,
+            'help' => null,
+            'default' => null,
         ];
     }
 
@@ -65,6 +67,8 @@ abstract class Field implements JsonSerializable
     {
         return [
             'required' => 'required|boolean',
+            'help' => 'nullable|string',
+            'default' => 'nullable',
         ];
     }
 
@@ -215,6 +219,11 @@ abstract class Field implements JsonSerializable
         } else {
             return $primitive_value;
         }
+    }
+
+    public function defaultValue()
+    {
+        return $this->coerce($this->options['default'] ?? null, self::COERCE_FAIL_LOG);
     }
 
     /**

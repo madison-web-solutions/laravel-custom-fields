@@ -8,13 +8,13 @@ export default {
             return this.path[this.path.length - 1];
         },
         label: function() {
-            return _.get(this.field, 'settings.label', _.startCase(this.myKey));
+            return _.get(this.field, 'options.label', _.startCase(this.myKey));
         },
         required: function() {
-            return _.get(this.field, 'settings.required', false);
+            return _.get(this.field, 'options.required', false);
         },
         help: function() {
-            return _.get(this.field, 'settings.help', null);
+            return _.get(this.field, 'options.help', null);
         },
         fieldPath: function() {
             return this.path.join('.');

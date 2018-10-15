@@ -9,8 +9,9 @@ export default {
     props: ['path', 'field', 'initialValue', 'errors'],
     mixins: [lcfFieldMixin],
     data: function() {
+        var value = _.defaultTo(this.initialValue, _.get(this.field, 'options.default', null));
         return {
-            value: (this.initialValue == null) ? "" : String(this.initialValue)
+            value: value ? String(value) : ''
         };
     },
     methods: {
