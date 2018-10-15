@@ -24,8 +24,8 @@ export default {
     },
     computed: {
         name: function() {
-            var name = this.path[0];
-            for (var i = 1; i < this.path.length; i++) {
+            var name = this.path[1];
+            for (var i = 2; i < this.path.length; i++) {
                 name += '[' + this.path[i] + ']';
             }
             return name;

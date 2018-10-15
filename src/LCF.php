@@ -9,25 +9,45 @@ use SplObjectStorage;
 
 class LCF
 {
+    public static function shiftPath(&$path)
+    {
+        if (is_string($path)) {
+            $path = empty($path) ? [] : explode('.', $path);
+        }
+        return array_shift($path);
+    }
+
     protected $obj_fields_cache;
     protected $field_groups;
 
     public function __construct()
     {
         $this->obj_fields_cache = new SplObjectStorage();
-        $this->field_groups = new SplObjectStorage();
+        $this->field_groups = [];
     }
 
-    public function registerFieldGroup(FieldGroup $group)
+    public function registerFieldGroup(string $key, FieldGroup $group)
     {
-        $this->field_groups->attach($group);
+        $this->field_groups[$key] = $group;
+    }
+
+    public function getFieldGroup(string $key)
+    {
+        return $this->field_groups[$key] ?? null;
+    }
+
+    public function getField($path)
+    {
+        $group_key = LCF::shiftPath($path);
+        $group = $this->getFieldGroup($group_key);
+        return $group ? $group->getField($path) : null;
     }
 
     /**
      * Return the field object defined for the given object with the given name
      * Returns false if no field is defined on the object with that name
      */
-    public function getField(object $obj, string $field_name) : ?Field
+    public function getFieldFor(object $obj, string $field_name) : ?Field
     {
         $fields = $this->getFieldsFor($obj);
         return $fields[$field_name] ?? null;
@@ -36,9 +56,9 @@ class LCF
     public function getFieldGroupsFor(object $obj)
     {
         $groups = [];
-        foreach ($this->field_groups as $group) {
+        foreach ($this->field_groups as $key => $group) {
             if ($group->appliesTo($obj)) {
-                $groups[] = $group;
+                $groups[$key] = $group;
             }
         }
         return $groups;
@@ -60,13 +80,13 @@ class LCF
 
     public function fromDatabase(object $obj, string $field_name, string $db_value)
     {
-        $field = $this->getField($obj, $field_name);
+        $field = $this->getFieldFor($obj, $field_name);
         return $field ? $field->fromDatabase($db_value) : null;
     }
 
     public function toDatabase(object $obj, string $field_name, $value) : string
     {
-        $field = $this->getField($obj, $field_name);
+        $field = $this->getFieldFor($obj, $field_name);
         return $field ? $field->toDatabase($value) : null;
     }
 

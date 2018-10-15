@@ -83,4 +83,9 @@ class CompoundField extends Field
             }
         }
     }
+
+    public function getSubField(string $key)
+    {
+        return $this->sub_fields[$key] ?? null;
+    }
 }

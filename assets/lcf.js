@@ -6,6 +6,7 @@ Vue.component('lcf-text-input', require('./lcf-text-input.vue'));
 Vue.component('lcf-compound-input', require('./lcf-compound-input.vue'));
 Vue.component('lcf-repeater-input', require('./lcf-repeater-input.vue'));
 Vue.component('lcf-switch-input', require('./lcf-switch-input.vue'));
+Vue.component('lcf-search-input', require('./lcf-search-input.vue'));
 
 var initLcf = function() {
     _.forEach(document.querySelectorAll('lcf-field'), function(el) {

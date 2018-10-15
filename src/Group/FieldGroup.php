@@ -1,6 +1,7 @@
 <?php
 namespace MadisonSolutions\LCF\Group;
 
+use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCF\Field;
 use JsonSerializable;
 use Iterator;
@@ -27,6 +28,16 @@ class FieldGroup implements JsonSerializable, Iterator
     public function addField(string $key, Field $field)
     {
         $this->fields[$key] = $field;
+    }
+
+    public function getField($path)
+    {
+        $field_key = LCF::shiftPath($path);
+        $field = $this->fields[$field_key] ?? null;
+        while ($sub_key = LCF::shiftPath($path) && $field) {
+            $field = $field->getSubField($sub_key);
+        }
+        return $field;
     }
 
     public function appliesTo(object $obj)

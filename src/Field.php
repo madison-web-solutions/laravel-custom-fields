@@ -284,4 +284,9 @@ abstract class Field implements JsonSerializable
         }
         return $rules;
     }
+
+    public function getSubField(string $key)
+    {
+        return null;
+    }
 }

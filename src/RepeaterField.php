@@ -83,4 +83,9 @@ class RepeaterField extends Field
             }
         }
     }
+
+    public function getSubField(string $key)
+    {
+        return $this->sub_field;
+    }
 }

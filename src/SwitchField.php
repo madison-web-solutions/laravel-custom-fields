@@ -101,4 +101,9 @@ class SwitchField extends Field
             }
         }
     }
+
+    public function getSubField(string $key)
+    {
+        return $this->switch_fields[$key] ?? null;
+    }
 }

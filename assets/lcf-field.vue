@@ -15,7 +15,7 @@ export default {
             return _.get(this.field, 'type', null);
         },
         myErrors: function() {
-            return this.errors[this.path.join('.')] || [];
+            return this.errors[this.path.slice(1).join('.')] || [];
         },
         help: function() {
             return _.get(this.field, 'settings.help', null);

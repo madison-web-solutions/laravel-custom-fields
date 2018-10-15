@@ -16,4 +16,9 @@ class LCFServiceProvider extends ServiceProvider
             return $lcf;
         });
     }
+
+    public function boot()
+    {
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+    }
 }
