@@ -19,6 +19,7 @@ class LCFServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+        $this->loadRoutesFrom(dirname(__DIR__) . '/routes.php');
+        $this->loadMigrationsFrom(dirname(__DIR__) . '/migrations');
     }
 }

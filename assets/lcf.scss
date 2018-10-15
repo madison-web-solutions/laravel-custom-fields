@@ -7,3 +7,95 @@
         }
     }
 }
+
+.lcf-media-library {
+
+    &.has-drag-obj {
+        background-color: blue;
+    }
+
+    .lcf-ml-tabs {
+        button {
+            border: 1px solid grey;
+            margin: 5px 2px 0 0;
+            padding: 4px;
+            position: relative;
+            top: 1px;
+            background-color: #ddd;
+            &.active {
+                background-color: white;
+                border-bottom-color: white;
+            }
+            cursor: pointer;
+        }
+    }
+
+    .file-input {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .lcf-ml-panel {
+        background-color: white;
+        border: 1px solid grey;
+        height: 70vh;
+        overflow: auto;
+        padding: 10px;
+    }
+
+    .lcf-ml-index {
+        .lcf-ml-preview {
+            width: calc((100% / 4) - (30px / 4));
+            margin: 0 0 10px 10px;
+            &:nth-child(4n + 1) {
+                margin-left: 0;
+            }
+            cursor: pointer;
+            float: left;
+        }
+    }
+
+    .lcf-ml-upload-form {
+        padding: 20px;
+        text-align: center;
+        label {
+            display: inline-block;
+            border: 1px solid grey;
+            background-color: #ddd;
+            &:hover {
+                background-color: #ccc;
+            }
+            padding: 10px;
+            margin-bottom: 20px
+        }
+    }
+
+}
+
+.lcf-ml-preview {
+    position: relative;
+    width: 140px;
+    padding: 5px;
+    border: 1px solid grey;
+    &:hover {
+        background-color: #ddd;
+    }
+    .lcf-ml-thumb {
+        width: 100%;
+        padding-top: 60%;
+        background-size: contain;
+        background-position: center center;
+        background-repeat: no-repeat;
+    }
+    [data-name=remove] {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: transparent;
+        color: red;
+    }
+}
