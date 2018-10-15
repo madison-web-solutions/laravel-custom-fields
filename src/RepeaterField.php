@@ -21,7 +21,7 @@ class RepeaterField extends Field
 
     public function inputComponent() : string
     {
-        return 'lcf-repeater-input';
+        return 'repeater-input';
     }
 
     protected function testTypeNotNull($input) : bool

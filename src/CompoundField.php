@@ -22,7 +22,7 @@ class CompoundField extends Field
 
     public function inputComponent() : string
     {
-        return 'lcf-compound-input';
+        return 'compound-input';
     }
 
 

@@ -1,7 +1,7 @@
 <template>
     <div>
-        <input ref="input" :name="name" type="hidden" :value="value" />
-        <input type="text" disabled :value="displayName" />
+        <input :name="nameAttr" type="hidden" :value="value" />
+        <input type="text" :class="{'lcf-input-has-error': hasError}" disabled :value="displayName" />
         <input ref="input" type="search" value="" placeholder="search" @input="search" />
         <button v-for="suggestion in suggestions" type="button" @click="change(suggestion)">{{ suggestion.label }}</button>
     </div>
@@ -10,8 +10,10 @@
 <script>
 import _ from 'lodash';
 import axios from 'axios';
+import lcfFieldMixin from '../field-mixin.js';
 export default {
     props: ['path', 'field', 'initialValue', 'errors'],
+    mixins: [lcfFieldMixin],
     data: function() {
         return {
             value: this.initialValue,
@@ -19,24 +21,12 @@ export default {
             suggestions: []
         }
     },
-    computed: {
-        name: function() {
-            var name = this.path[1];
-            for (var i = 2; i < this.path.length; i++) {
-                name += '[' + this.path[i] + ']';
-            }
-            return name;
-        },
-        hasError: function() {
-            return !!(this.errors[this.path.join('.')] || []).length;
-        }
-    },
     methods: {
         search: _.debounce(function() {
             console.log(this.$refs.input.value);
             if (this.$refs.input.value.length >= 2) {
                 axios.get('/lcf/suggestions', {params: {
-                    path: this.path.join('.'),
+                    path: this.fieldPath,
                     search: this.$refs.input.value,
                 }}).then(response => {
                     console.log(response);
@@ -57,7 +47,7 @@ export default {
     created: function() {
         if (this.initialValue) {
             axios.get('/lcf/display-name', {params: {
-                path: this.path.join('.'),
+                path: this.fieldPath,
                 id: this.initialValue,
             }}).then(response => {
                 console.log(response);

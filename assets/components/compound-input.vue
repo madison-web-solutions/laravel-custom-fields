@@ -4,16 +4,17 @@
             <div class="lcf-compound-key">
                 <label>{{ key }}</label>
             </div>
-            <lcf-field :path="path.concat(key)" :field="child.field" :initialValue="child.initialValue" :errors="errors" />
+            <field :path="path.concat(key)" :field="child.field" :initialValue="child.initialValue" :errors="errors" />
         </div>
     </div>
 </template>
 
 <script>
 import _ from 'lodash';
-var counter = 0;
+import lcfFieldMixin from '../field-mixin.js';
 export default {
     props: ['path', 'field', 'initialValue', 'errors'],
+    mixins: [lcfFieldMixin],
     data: function() {
         var children = {};
         for (var key in this.field.options.sub_fields) {

@@ -26,7 +26,7 @@ class SwitchField extends Field
 
     public function inputComponent() : string
     {
-        return 'lcf-switch-input';
+        return 'switch-input';
     }
 
 

@@ -22,7 +22,7 @@ class ModelField extends Field
 
     public function inputComponent() : string
     {
-        return 'lcf-search-input';
+        return 'search-input';
     }
 
     protected function newInstance() : Model

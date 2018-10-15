@@ -8,7 +8,7 @@
                 <button type="button" :disabled="index == 0" @click="moveUp(index)" class="lcf-btn-icon" data-name="move-up">up</button>
                 <button type="button" :disabled="index == lastIndex" @click="moveDown(index)" class="lcf-btn-icon" data-name="move-down">down</button>
             </div>
-            <lcf-field :path="path.concat(index)" :field="field.options.sub_field" :initialValue="child.initialValue" :errors="errors" />
+            <field :path="path.concat(index)" :field="field.options.sub_field" :initialValue="child.initialValue" :errors="errors" />
         </div>
         <button type="button" @click="append" class="btn btn-icon-charcoal" data-name="append">add</button>
     </div>
@@ -16,9 +16,11 @@
 
 <script>
 import _ from 'lodash';
+import lcfFieldMixin from '../field-mixin.js';
 var counter = 0;
 export default {
     props: ['path', 'field', 'initialValue', 'errors'],
+    mixins: [lcfFieldMixin],
     data: function() {
         var children = [];
         if (_.isArray(this.initialValue)) {

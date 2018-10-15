@@ -1,17 +1,18 @@
 <template>
     <div class="lcf-switch-field">
-        <select ref="switchSelect" :name="name + '[switch]'" @change="changeSwitch">
+        <select ref="switchSelect" :name="nameAttr + '[switch]'" @change="changeSwitch">
             <option v-for="option in switchOptions" :value="option" :selected="option == value.switch">{{ option }}</option>
         </select>
-        <lcf-field v-if="switchField" :path="path.concat(value['switch'])" :field="switchField" :initialValue="value[value['switch']]" :errors="errors" />
+        <field v-if="switchField" :path="path.concat(value['switch'])" :field="switchField" :initialValue="value[value['switch']]" :errors="errors" />
     </div>
 </template>
 
 <script>
 import _ from 'lodash';
-var counter = 0;
+import lcfFieldMixin from '../field-mixin.js';
 export default {
     props: ['path', 'field', 'initialValue', 'errors'],
+    mixins: [lcfFieldMixin],
     data: function() {
         var value = {"switch": null};
         var switchVal = this.initialValue ? this.initialValue["switch"] : null;
@@ -23,13 +24,6 @@ export default {
         return {value: value};
     },
     computed: {
-        name: function() {
-            var name = this.path[1];
-            for (var i = 2; i < this.path.length; i++) {
-                name += '[' + this.path[i] + ']';
-            }
-            return name;
-        },
         switchOptions: function() {
             return _.keys(this.field.options.switch_fields);
         },

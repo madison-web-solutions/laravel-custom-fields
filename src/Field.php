@@ -83,7 +83,7 @@ abstract class Field implements JsonSerializable
 
     public function inputComponent() : string
     {
-        return 'lcf-text-input';
+        return 'text-input';
     }
 
     public function jsonSerialize()
