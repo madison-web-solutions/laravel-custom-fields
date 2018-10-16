@@ -22,18 +22,6 @@ export default {
         }
     },
     methods: {
-        search: _.debounce(function() {
-            console.log(this.$refs.input.value);
-            if (this.$refs.input.value.length >= 2) {
-                axios.get('/lcf/suggestions', {params: {
-                    path: this.fieldPath,
-                    search: this.$refs.input.value,
-                }}).then(response => {
-                    console.log(response);
-                    this.suggestions = response.data;
-                });
-            }
-        }, 300),
         clearSearch: function() {
             this.suggestions = [];
             this.$refs.input.value = '';
@@ -57,6 +45,16 @@ export default {
                 }
             });
         }
+        this.search = _.debounce(() => {
+            if (this.$refs.input.value.length >= 2) {
+                axios.get('/lcf/suggestions', {params: {
+                    path: this.fieldPath,
+                    search: this.$refs.input.value,
+                }}).then(response => {
+                    this.suggestions = response.data;
+                });
+            }
+        }, 300);
     }
 };
 </script>

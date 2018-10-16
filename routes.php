@@ -87,3 +87,11 @@ Route::post('lcf/media-library/delete', function (Request $request) {
         'ok' => true,
     ];
 });
+
+Route::post('lcf/markdown', function (Request $request, Markdown $md) {
+    // @todo authorization
+    $request->validate([
+        'input' => 'required|string',
+    ]);
+    return $md->text($request->input);
+});

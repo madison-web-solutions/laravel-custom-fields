@@ -15,6 +15,10 @@ class LCFServiceProvider extends ServiceProvider
             }
             return $lcf;
         });
+
+        $this->app->singleton(Markdown::class, function ($app) {
+            return new Markdown();
+        });
     }
 
     public function boot()
