@@ -9,8 +9,10 @@ var componentNames = [
     'media-input',
     'media-library',
     'media-preview',
+    'radio-input',
     'repeater-input',
     'search-input',
+    'select-input',
     'switch-input',
     'text-input'
 ];

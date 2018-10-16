@@ -2,7 +2,7 @@
     <div class="lcf-compound-field">
         <div class="lcf-compound-item" v-for="child, key in children" :key="key" >
             <div class="lcf-compound-key">
-                <label>{{ key }}</label>
+                <label>{{ child.label }}</label>
             </div>
             <field :path="path.concat(key)" :field="child.field" :initialValue="child.initialValue" :errors="errors" />
         </div>
@@ -21,7 +21,8 @@ export default {
             var subField = this.field.options.sub_fields[key];
             children[key] = {
                 field: subField,
-                initialValue: _.get(this.initialValue, key, null)
+                initialValue: _.get(this.initialValue, key, null),
+                label: _.get(this.field, 'options.labels.'+key, key),
             };
         }
         return {

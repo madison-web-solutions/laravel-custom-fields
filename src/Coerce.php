@@ -64,4 +64,14 @@ class Coerce
         }
         return false;
     }
+
+    public static function toArrayKey($input, &$output) : bool
+    {
+        if (! is_scalar($input)) {
+            return false;
+        }
+        $dummy = [$input => true];
+        $output = key($dummy);
+        return true;
+    }
 }

@@ -114,7 +114,6 @@ abstract class Field implements JsonSerializable
     /**
      * Take a value and try to convert it into the right type for this field
      * May be the right type already, or may be a 'primitive' representation
-     * Throws a TypeError if the conversion failed
      */
     protected function doCoerce($input, &$output, int $on_fail) : bool
     {
@@ -138,7 +137,6 @@ abstract class Field implements JsonSerializable
     /**
      * Take a value of any type, but guaranteed not to be null, and try to convert it to the right type for this field
      * Return true, and store the coerced value in $output if the coersion succeeds, return false otherwise
-     * Throw a TypeError if the conversion failed
      */
     abstract protected function coerceNotNull($input, &$output, int $on_fail) : bool;
 

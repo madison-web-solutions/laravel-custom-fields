@@ -17,6 +17,8 @@ class CompoundField extends Field
         $rules = parent::optionRules();
         $rules['sub_fields'] = ['required', 'array', Field::simpleStringKeysRule(), 'min:1'];
         $rules['sub_fields.*'] = [Field::isFieldRule()];
+        $rules['labels'] = ['nullable', 'array', Field::simpleStringKeysRule()];
+        $rules['labels.*'] = 'required|string';
         return $rules;
     }
 
