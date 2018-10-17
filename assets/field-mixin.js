@@ -10,11 +10,11 @@ export default {
         node: function() {
             return this.$store.state.nodes[this.id];
         },
-        length: function() {
-            return _.isArray(this.children) ? this.children.length : 0;
-        },
-        children: function() {
+        childNodeIds: function() {
             return this.node ? this.node.children : [];
+        },
+        length: function() {
+            return _.isArray(this.childNodeIds) ? this.childNodeIds.length : 0;
         },
         value: function() {
             return this.node ? this.node.value : null;

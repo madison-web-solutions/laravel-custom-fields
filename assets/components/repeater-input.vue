@@ -1,6 +1,6 @@
 <template>
     <div ref="container" class="lcf-repeater-field">
-        <div class="lcf-repeater-item" v-for="childId, index in children" :key="childId" :draggable="draggingIndex !== false" @dragstart="dragStart">
+        <div class="lcf-repeater-item" v-for="childId, index in childNodeIds" :key="childId" :draggable="draggingIndex !== false" @dragstart="dragStart">
             <button type="button" @click="insert(index)" class="lcf-btn-icon" data-name="insert">insert</button>
             <button type="button" @click="remove(index)" class="lcf-btn-icon" data-name="remove">remove</button>
             <div class="lcf-repeater-index">

@@ -32,11 +32,31 @@ export default {
     },
     computed: {
         conditions: function() {
-            var conditions = {};
-            for (var key in this.field.options.sub_fields) {
-                conditions[key] = true;
+            if (this.field.options.conditions) {
+                return _.mapValues(this.field.options.conditions, this.testCondition);
+            } else {
+                return {};
             }
-            return conditions;
+        }
+    },
+    methods: {
+        testCondition: function(conditionDefn) {
+            if (! conditionDefn) {
+                return true;
+            }
+            switch (conditionDefn[0]) {
+                case 'eq':
+                    return this.testEqCondition(conditionDefn[1], conditionDefn[2]);
+            }
+            return true;
+        },
+        testEqCondition(otherFieldKey, conditionValue) {
+            var otherFieldId = this.childNodeIds[otherFieldKey];
+            var otherFieldNode = this.$store.state.nodes[otherFieldId];
+            if (!otherFieldNode) {
+                return true;
+            }
+            return (otherFieldNode.value == conditionValue);
         }
     }
 };

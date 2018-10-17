@@ -83,9 +83,24 @@ class CompoundField extends Field
         $my_data = data_get($data, $path);
         if (is_array($my_data)) {
             foreach ($this->sub_fields as $key => $field) {
-                $field->validate($data, "{$path}.{$key}", $messages);
+                if ($this->testCondition($key, $my_data) !== false) {
+                    $field->validate($data, "{$path}.{$key}", $messages);
+                }
             }
         }
+    }
+
+    protected function testCondition(string $key, array $my_data)
+    {
+        $conditionDefn = $this->conditions ? ($this->conditions[$key] ?? null) : null;
+        if (! $conditionDefn) {
+            return true;
+        }
+        switch ($conditionDefn[0]) {
+            case 'eq':
+                return $my_data[$conditionDefn[1]] == $conditionDefn[2];
+        }
+        return true;
     }
 
     public function getSubField(string $key)
