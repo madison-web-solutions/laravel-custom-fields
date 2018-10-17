@@ -17,14 +17,26 @@
 import _ from 'lodash';
 import lcfFieldMixin from '../field-mixin.js';
 export default {
-    props: ['path', 'field', 'initialValue', 'errors'],
+    props: ['path', 'field', 'errors'],
     mixins: [lcfFieldMixin],
     data: function() {
         return {
-            value: this.initialValue,
             item: null,
             libraryOpen: false
         };
+    },
+    created: function() {
+        if (this.value == null && this.defaultValue != null) {
+            this.$store.commit('updateValue', {path: this.pathStr, value: this.defaultValue});
+        }
+        if (this.value) {
+            var origValue = this.value;
+            axios.get('/lcf/media-library/' + origValue).then(response => {
+                if (this.value == origValue) {
+                    this.item = response.data.item;
+                }
+            });
+        }
     },
     computed: {
         selectLabel: function() {
@@ -41,21 +53,12 @@ export default {
         remove: function() {
             this.libraryOpen = false;
             this.item = null;
-            this.value = null;
+            this.$store.commit('updateValue', {path: this.pathStr, value: null});
         },
         select: function(e) {
             this.libraryOpen = false;
             this.item = e.item;
-            this.value = e.item.id;
-        }
-    },
-    created: function() {
-        if (this.initialValue) {
-            axios.get('/lcf/media-library/' + this.initialValue).then(response => {
-                if (this.value == this.initialValue) {
-                    this.item = response.data.item;
-                }
-            });
+            this.$store.commit('updateValue', {path: this.pathStr, value: e.item.id});
         }
     }
 };

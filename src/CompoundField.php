@@ -9,7 +9,9 @@ class CompoundField extends Field
 
     public function optionDefaults() : array
     {
-        return parent::optionDefaults();
+        $defaults = parent::optionDefaults();
+        unset($defaults['default']);
+        return $defaults;
     }
 
     public function optionRules() : array

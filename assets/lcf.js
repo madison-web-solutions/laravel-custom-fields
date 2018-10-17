@@ -1,5 +1,10 @@
-var Vue = require('vue');
-var _ = require('lodash');
+import _ from 'lodash';
+import Vue from 'vue';
+import Vuex from 'vuex';
+import storeDefn from './store.js';
+
+Vue.use(Vuex);
+var store = new Vuex.Store(storeDefn);
 
 var componentNames = [
     'compound-input',
@@ -25,6 +30,7 @@ var initLcf = function() {
         var props = JSON.parse(el.getAttribute('data-props'));
         new Vue({
             el: el,
+            store: store,
             render: function(h) {
                 return h('field-wrapper', {props: props});
             }

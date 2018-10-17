@@ -12,14 +12,40 @@ import _ from 'lodash';
 import axios from 'axios';
 import lcfFieldMixin from '../field-mixin.js';
 export default {
-    props: ['path', 'field', 'initialValue', 'errors'],
+    props: ['path', 'field', 'errors'],
     mixins: [lcfFieldMixin],
     data: function() {
         return {
-            value: this.initialValue,
             displayName: '',
             suggestions: []
         }
+    },
+    created: function() {
+        if (this.value == null && this.defaultValue != null) {
+            this.$store.commit('updateValue', {path: this.pathStr, value: this.defaultValue});
+        }
+        if (this.value) {
+            var origValue = this.value;
+            axios.get('/lcf/display-name', {params: {
+                path: this.pathStr,
+                id: origValue,
+            }}).then(response => {
+                // make sure value still matches
+                if (this.value == origValue) {
+                    this.displayName = response.data;
+                }
+            });
+        }
+        this.search = _.debounce(() => {
+            if (this.$refs.input.value.length >= 2) {
+                axios.get('/lcf/suggestions', {params: {
+                    path: this.pathStr,
+                    search: this.$refs.input.value,
+                }}).then(response => {
+                    this.suggestions = response.data;
+                });
+            }
+        }, 300);
     },
     methods: {
         clearSearch: function() {
@@ -28,33 +54,9 @@ export default {
         },
         change: function(suggestion) {
             this.clearSearch();
-            this.value = suggestion.id;
             this.displayName = suggestion.label;
+            this.$store.commit('updateValue', {path: this.pathStr, value: suggestion.id});
         }
-    },
-    created: function() {
-        if (this.initialValue) {
-            axios.get('/lcf/display-name', {params: {
-                path: this.fieldPath,
-                id: this.initialValue,
-            }}).then(response => {
-                console.log(response);
-                // make sure value still matches
-                if (this.value == this.initialValue) {
-                    this.displayName = response.data;
-                }
-            });
-        }
-        this.search = _.debounce(() => {
-            if (this.$refs.input.value.length >= 2) {
-                axios.get('/lcf/suggestions', {params: {
-                    path: this.fieldPath,
-                    search: this.$refs.input.value,
-                }}).then(response => {
-                    this.suggestions = response.data;
-                });
-            }
-        }, 300);
     }
 };
 </script>

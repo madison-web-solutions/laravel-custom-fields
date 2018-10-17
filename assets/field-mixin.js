@@ -4,8 +4,23 @@ export default {
         type: function() {
             return _.get(this.field, 'type', null);
         },
-        myKey: function() {
-            return this.path[this.path.length - 1];
+        id: function() {
+            return this.$store.getters.getIdAtPath(this.path);
+        },
+        node: function() {
+            return this.$store.state.nodes[this.id];
+        },
+        length: function() {
+            return _.isArray(this.children) ? this.children.length : 0;
+        },
+        children: function() {
+            return this.node ? this.node.children : [];
+        },
+        value: function() {
+            return this.node ? this.node.value : null;
+        },
+        defaultValue: function() {
+            return _.get(this.field, 'options.default', null);
         },
         label: function() {
             return _.get(this.field, 'options.label', _.startCase(this.myKey));
@@ -16,10 +31,13 @@ export default {
         help: function() {
             return _.get(this.field, 'options.help', null);
         },
-        fieldPath: function() {
+        myKey: function() {
+            return this.path[this.path.length - 1];
+        },
+        pathStr: function() {
             return this.path.join('.');
         },
-        fieldPathWithoutGroup: function() {
+        pathStrWithoutGroup: function() {
             return this.path.slice(1).join('.');
         },
         nameAttr: function() {
@@ -30,7 +48,7 @@ export default {
             return name;
         },
         myErrors: function() {
-            return this.errors[this.fieldPathWithoutGroup] || [];
+            return this.errors[this.pathStrWithoutGroup] || [];
         },
         hasError: function() {
             return !!this.myErrors.length;

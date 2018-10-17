@@ -10,6 +10,7 @@ class RepeaterField extends Field
     public function optionDefaults() : array
     {
         $defaults = parent::optionDefaults();
+        unset($defaults['default']);
         $defaults['max'] = null;
         $defaults['min'] = null;
         return $defaults;
