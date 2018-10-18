@@ -3,6 +3,11 @@ namespace MadisonSolutions\LCF;
 
 class IntegerField extends Field
 {
+    public function inputComponent() : string
+    {
+        return 'number-input';
+    }
+    
     public function optionDefaults() : array
     {
         $defaults = parent::optionDefaults();

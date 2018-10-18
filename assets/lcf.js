@@ -14,6 +14,7 @@ var componentNames = [
     'media-input',
     'media-library',
     'media-preview',
+    'number-input',
     'radio-input',
     'repeater-input',
     'search-input',
