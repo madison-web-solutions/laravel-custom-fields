@@ -19,7 +19,7 @@ export default {
     },
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.$store.commit('updateValue', {path: this.pathStr, value: String(this.defaultValue)});
+            this.updateMyValue(String(this.defaultValue));
         }
         this.updatePreview = _.debounce(() => {
             axios.post('/lcf/markdown', {
@@ -32,7 +32,7 @@ export default {
     },
     methods: {
         change: function() {
-            this.$store.commit('updateValue', {path: this.pathStr, value: this.$refs.input.value});
+            this.updateMyValue(this.$refs.input.value);
         }
     },
 };

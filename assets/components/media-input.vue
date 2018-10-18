@@ -27,7 +27,7 @@ export default {
     },
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.$store.commit('updateValue', {path: this.pathStr, value: this.defaultValue});
+            this.updateMyValue(this.defaultValue);
         }
         if (this.value) {
             var origValue = this.value;
@@ -53,12 +53,12 @@ export default {
         remove: function() {
             this.libraryOpen = false;
             this.item = null;
-            this.$store.commit('updateValue', {path: this.pathStr, value: null});
+            this.updateMyValue(null);
         },
         select: function(e) {
             this.libraryOpen = false;
             this.item = e.item;
-            this.$store.commit('updateValue', {path: this.pathStr, value: e.item.id});
+            this.updateMyValue(e.item.id);
         }
     }
 };

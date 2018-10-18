@@ -74,7 +74,6 @@ export default {
             return midpoints.length;
         },
         showInsertPosition: function(newIndex) {
-            console.log('showInsertPosition '+newIndex);
             var marker = this.$refs.insertMarker;
             if (newIndex === false) {
                 marker.classList.remove('active');

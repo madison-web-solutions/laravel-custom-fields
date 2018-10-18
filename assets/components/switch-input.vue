@@ -13,6 +13,9 @@ import lcfFieldMixin from '../field-mixin.js';
 export default {
     props: ['path', 'field', 'errors'],
     mixins: [lcfFieldMixin],
+    created: function() {
+        this.$store.commit('objectInitKeys', {path: this.pathStr, keys: _.keys(this.field.options.switch_fields).concat('switch')});
+    },
     computed: {
         switchFields: function() {
             return this.field.options.switch_fields;
@@ -21,9 +24,7 @@ export default {
             return _.keys(this.switchFields);
         },
         switchKey: function() {
-            var switchNodeId = this.$store.getters.getIdAtPath(this.path.concat('switch'));
-            var switchNode = this.$store.state.nodes[switchNodeId];
-            var value = switchNode ? switchNode.value : null;
+            var value = this.getValueAtPath(this.path.concat('switch'));
             return this.getValidSwitchKey(value);
         },
         switchField: function() {

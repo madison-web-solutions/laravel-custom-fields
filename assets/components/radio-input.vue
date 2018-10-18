@@ -15,7 +15,7 @@ export default {
     mixins: [lcfFieldMixin],
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.$store.commit('updateValue', {path: this.pathStr, value: defaultValue});
+            this.updateMyValue(defaultValue);
         }
     },
     computed: {
@@ -25,14 +25,14 @@ export default {
     },
     methods: {
         change: function() {
-            var payload = {path: this.pathStr, value: null};
             var radios = this.$refs.input.querySelectorAll('input[type=radio]');
             for (var i = 0; i < radios.length; i++) {
                 if (radios[i].checked) {
-                    payload.value = radios[i].value;
+                    this.updateMyValue(radios[i].value);
+                    return;
                 }
             }
-            this.$store.commit('updateValue', payload);
+            this.updateMyValue(null);
         }
     }
 };

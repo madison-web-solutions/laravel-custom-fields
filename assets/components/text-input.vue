@@ -10,12 +10,12 @@ export default {
     mixins: [lcfFieldMixin],
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.$store.commit('updateValue', {path: this.pathStr, value: String(this.defaultValue)});
+            this.updateMyValue(String(this.defaultValue));
         }
     },
     methods: {
         change: function() {
-            this.$store.commit('updateValue', {path: this.pathStr, value: this.$refs.input.value});
+            this.updateMyValue(this.$refs.input.value);
         }
     }
 };

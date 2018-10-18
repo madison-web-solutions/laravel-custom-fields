@@ -13,7 +13,7 @@ export default {
     mixins: [lcfFieldMixin],
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.$store.commit('updateValue', {path: this.pathStr, value: defaultValue});
+            this.updateMyValue(defaultValue);
         }
     },
     computed: {
@@ -23,14 +23,12 @@ export default {
     },
     methods: {
         change: function() {
-            var payload = {path: this.pathStr};
             var selectedOption = this.$refs.input.options[this.$refs.input.selectedIndex];
             if (selectedOption === this.$refs.placeholder) {
-                payload.value = null;
+                this.updateMyValue(null);
             } else {
-                payload.value = selectedOption.value;
+                this.updateMyValue(selectedOption.value);
             }
-            this.$store.commit('updateValue', payload);
         }
     }
 };

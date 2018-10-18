@@ -22,7 +22,7 @@ export default {
     },
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.$store.commit('updateValue', {path: this.pathStr, value: this.defaultValue});
+            this.updateMyValue(this.defaultValue);
         }
         if (this.value) {
             var origValue = this.value;
@@ -55,7 +55,7 @@ export default {
         change: function(suggestion) {
             this.clearSearch();
             this.displayName = suggestion.label;
-            this.$store.commit('updateValue', {path: this.pathStr, value: suggestion.id});
+            this.updateMyValue(suggestion.id);
         }
     }
 };

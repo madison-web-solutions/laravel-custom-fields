@@ -1,11 +1,34 @@
 import _ from 'lodash';
 export default {
+    methods: {
+        getIdAtPath: function(path) {
+            return this.$store.getters.getIdAtPath(path);
+        },
+        getNodeAtPath: function(path) {
+            return this.$store.state.nodes[this.getIdAtPath(path)];
+        },
+        getValueAtPath: function(path) {
+            var node = this.getNodeAtPath(path);
+            return node ? node.value : null;
+        },
+        updateMyValue: function(value) {
+            this.$store.commit('updateValue', {path: this.pathStr, value: value});
+        },
+        resolveRelativePath: function(relativePathStr) {
+            var path = this.path.slice();
+            while (relativePathStr[0] == '^') {
+                path.pop();
+                relativePathStr = relativePathStr.substr(1);
+            }
+            return path.concat(relativePathStr.split('.'));
+        }
+    },
     computed: {
         type: function() {
             return _.get(this.field, 'type', null);
         },
         id: function() {
-            return this.$store.getters.getIdAtPath(this.path);
+            return this.getIdAtPath(this.path);
         },
         node: function() {
             return this.$store.state.nodes[this.id];

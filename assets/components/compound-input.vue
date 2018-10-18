@@ -17,20 +17,21 @@ import lcfFieldMixin from '../field-mixin.js';
 export default {
     props: ['path', 'field', 'errors'],
     mixins: [lcfFieldMixin],
-    data: function() {
-        var children = {};
-        for (var key in this.field.options.sub_fields) {
-            var subField = this.field.options.sub_fields[key];
-            children[key] = {
-                field: subField,
-                label: _.get(this.field, 'options.labels.'+key, key),
-            };
-        }
-        return {
-            children: children
-        };
+    created: function() {
+        this.$store.commit('objectInitKeys', {path: this.pathStr, keys: _.keys(this.field.options.sub_fields)});
     },
     computed: {
+        subFields: function() {
+            return this.field.options.sub_fields;
+        },
+        children: function() {
+            return _.mapValues(this.subFields, (field, key) => {
+                return {
+                    field: field,
+                    label: _.get(this.field, 'options.labels.'+key, key)
+                };
+            })
+        },
         conditions: function() {
             if (this.field.options.conditions) {
                 return _.mapValues(this.field.options.conditions, this.testCondition);

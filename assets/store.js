@@ -67,6 +67,9 @@ var getNode = function(state, path) {
 
 var getOrCreateArrayNode = function(state, path) {
     var node = getNode(state, path);
+    if (! node) {
+        throw new Error("no node exists at path " + path);
+    }
     if (node.children == null) {
         Vue.set(node, 'children', []);
     }
@@ -78,6 +81,9 @@ var getOrCreateArrayNode = function(state, path) {
 
 var getOrCreateObjectNode = function(state, path) {
     var node = getNode(state, path);
+    if (! node) {
+        throw new Error("no node exists at path " + path);
+    }
     if (node.children == null) {
         Vue.set(node, 'children', {});
     }
@@ -188,6 +194,19 @@ export default {
                 throw new Error("payload.to must be an integer");
             }
             arrayMove(state, path, payload.from, payload.to);
+        },
+        objectInitKeys: function(state, payload) {
+            var path = parsePath(payload);
+            if (! _.isArray(payload.keys)) {
+                throw new Error("payload.keys must be an array");
+            }
+            var node = getOrCreateObjectNode(state, path);
+            _.forEach(payload.keys, (key) => {
+                if (! node.children[key]) {
+                    var childId = addNode(state, null, null);
+                    Vue.set(node.children, key, childId);
+                }
+            });
         }
     }
 };
