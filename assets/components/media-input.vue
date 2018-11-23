@@ -15,6 +15,7 @@
 
 <script>
 import _ from 'lodash';
+import axios from 'axios';
 import lcfFieldMixin from '../field-mixin.js';
 export default {
     props: ['path', 'field', 'errors'],

@@ -27,6 +27,9 @@ class MediaItem extends Model
 
     protected function fileName(?ImageSize $size = null)
     {
+        if (empty($this->slug)) {
+            throw new \Exception("Must set MediaItem slug before accessing filename");
+        }
         if ($size) {
             if (! $this->type->sizable) {
                 throw new \Exception("Media of type {$this->type->label} cannot be resized");
