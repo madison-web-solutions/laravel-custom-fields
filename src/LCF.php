@@ -66,7 +66,11 @@ class LCF
 
     public function getFieldsFor(object $obj)
     {
-        if (! $this->obj_fields_cache->contains($obj)) {
+        // @todo there's a problem with this caching business...
+        // Setting a property of an object may cause it to have different fields associated with it
+        // But if the fields are cached, they won't change...  tricky one...
+        // Might actually do away with the concept of field groups...
+        //if (! $this->obj_fields_cache->contains($obj)) {
             $fields = [];
             foreach ($this->getFieldGroupsFor($obj) as $group) {
                 foreach ($group as $key => $field) {
@@ -74,7 +78,7 @@ class LCF
                 }
             }
             $this->obj_fields_cache[$obj] = $fields;
-        }
+        //}
         return $this->obj_fields_cache[$obj];
     }
 

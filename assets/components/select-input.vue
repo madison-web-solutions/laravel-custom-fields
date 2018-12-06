@@ -13,7 +13,7 @@ export default {
     mixins: [lcfFieldMixin],
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.updateMyValue(defaultValue);
+            this.updateMyValue(this.defaultValue);
         }
     },
     computed: {

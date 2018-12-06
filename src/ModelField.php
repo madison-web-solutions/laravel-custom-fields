@@ -78,12 +78,13 @@ class ModelField extends Field
             $query->where($this->criteria);
         }
         $query->where(function ($q) use ($search) {
+            // @todo scout?
             $search_esc = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $search) . '%';
             foreach (array_values($this->search_fields) as $i => $search_field) {
                 if ($i == 0) {
-                    $q->where($search_field, 'like', $search_esc);
+                    $q->where($search_field, 'ilike', $search_esc); // @todo ilike is postgres extension - so this makes LCF postgres only!
                 } else {
-                    $q->orWhere($search_field, 'like', $search_esc);
+                    $q->orWhere($search_field, 'ilike', $search_esc);
                 }
             }
         });

@@ -28,7 +28,7 @@ export default {
             return _.mapValues(this.subFields, (field, key) => {
                 return {
                     field: field,
-                    label: _.get(this.field, 'options.labels.'+key, key)
+                    label: _.get(field, 'options.label', _.startCase(key)),
                 };
             })
         },
@@ -48,17 +48,25 @@ export default {
             switch (conditionDefn[0]) {
                 case 'eq':
                     return this.testEqCondition(conditionDefn[1], conditionDefn[2]);
+                case 'in':
+                    return this.testInCondition(conditionDefn[1], conditionDefn[2]);
             }
             return true;
         },
-        testEqCondition(otherFieldKey, conditionValue) {
-            var otherFieldId = this.childNodeIds[otherFieldKey];
-            var otherFieldNode = this.$store.state.nodes[otherFieldId];
+        testEqCondition(otherFieldPath, conditionValue) {
+            var otherFieldNode = this.getNodeAtPath(this.resolveRelativePath(otherFieldPath));
             if (!otherFieldNode) {
                 return true;
             }
             return (otherFieldNode.value == conditionValue);
-        }
+        },
+        testInCondition(otherFieldPath, conditionValues) {
+            var otherFieldNode = this.getNodeAtPath(this.resolveRelativePath(otherFieldPath));
+            if (!otherFieldNode) {
+                return true;
+            }
+            return _.includes(conditionValues, otherFieldNode.value);
+        },
     }
 };
 </script>

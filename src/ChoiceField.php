@@ -29,7 +29,8 @@ class ChoiceField extends Field
     public function getValidationRules()
     {
         $rules = parent::getValidationRules();
-        $rules[] = ['string', Rule::in(array_keys($this->choices))];
+        $rules[] = 'string';
+        $rules[] = Rule::in(array_keys($this->choices));
         return $rules;
     }
 

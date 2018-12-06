@@ -1,9 +1,12 @@
 <template>
     <div class="lcf-switch-field">
-        <select ref="switchSelect" :name="nameAttr + '[switch]'" @change="changeSwitch">
-            <option v-for="key in switchKeys" :value="key" :selected="key == switchKey">{{ key }}</option>
-        </select>
-        <field :path="path.concat(switchKey)" :field="switchField" :errors="errors" />
+        <div class="lcf-switch-select">
+            <label v-if="switchSelectLabel">{{ switchSelectLabel }}</label>
+            <select ref="switchSelect" :name="nameAttr + '[switch]'" @change="changeSwitch">
+                <option v-for="key in switchKeys" :value="key" :selected="key == switchKey">{{ switchLabel(key) }}</option>
+            </select>
+        </div>
+        <field :key="switchKey" :path="path.concat(switchKey)" :field="switchField" :errors="errors" />
     </div>
 </template>
 
@@ -29,9 +32,15 @@ export default {
         },
         switchField: function() {
             return this.switchFields[this.switchKey];
-        }
+        },
+        switchSelectLabel: function() {
+            return _.get(this.field, 'options.switch_select_label', null);
+        },
     },
     methods: {
+        switchLabel: function(key) {
+            return _.get(this.field, 'options.switch_labels.' + key, key);
+        },
         getValidSwitchKey: function(input) {
             if (input && this.switchFields[input]) {
                 return input;

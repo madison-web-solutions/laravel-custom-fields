@@ -3,10 +3,11 @@ namespace MadisonSolutions\LCF\Group;
 
 use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCF\Field;
+use ArrayIterator;
+use IteratorAggregate;
 use JsonSerializable;
-use Iterator;
 
-class FieldGroup implements JsonSerializable, Iterator
+class FieldGroup implements JsonSerializable, IteratorAggregate
 {
     protected $test;
     protected $fields;
@@ -54,28 +55,8 @@ class FieldGroup implements JsonSerializable, Iterator
         return $values;
     }
 
-    public function current()
+    public function getIterator()
     {
-        return current($this->fields);
-    }
-
-    public function key()
-    {
-        return key($this->fields);
-    }
-
-    public function next()
-    {
-        next($this->fields);
-    }
-
-    public function rewind()
-    {
-        reset($this->fields);
-    }
-
-    public function valid()
-    {
-        return ! is_null(key($this->fields));
+        return new ArrayIterator($this->fields);
     }
 }

@@ -19,8 +19,6 @@ class CompoundField extends Field
         $rules = parent::optionRules();
         $rules['sub_fields'] = ['required', 'array', Field::simpleStringKeysRule(), 'min:1'];
         $rules['sub_fields.*'] = [Field::isFieldRule()];
-        $rules['labels'] = ['nullable', 'array', Field::simpleStringKeysRule()];
-        $rules['labels.*'] = 'required|string';
         return $rules;
     }
 
@@ -83,22 +81,43 @@ class CompoundField extends Field
         $my_data = data_get($data, $path);
         if (is_array($my_data)) {
             foreach ($this->sub_fields as $key => $field) {
-                if ($this->testCondition($key, $my_data) !== false) {
+                if ($this->testCondition($key, $data, $path) !== false) {
                     $field->validate($data, "{$path}.{$key}", $messages);
                 }
             }
         }
     }
 
-    protected function testCondition(string $key, array $my_data)
+    // Given a relative path in 'dot notation', which is relative to the supplied absolute base path,
+    // Calculate the resulting absolute path.
+    // Caret characters (^) at the start of the relative path mean 'go up one level'
+    protected function resolveRelativePath(string $basePath, string $relativePath)
+    {
+        $basePath = explode('.', $basePath);
+        while ($relativePath[0] === '^') {
+            array_pop($basePath);
+            $relativePath = substr($relativePath, 1);
+        }
+        return implode($basePath, '.') . '.' . $relativePath;
+    }
+
+    protected function testCondition(string $key, array $data, string $path)
     {
         $conditionDefn = $this->conditions ? ($this->conditions[$key] ?? null) : null;
         if (! $conditionDefn) {
             return true;
         }
-        switch ($conditionDefn[0]) {
+
+        $conditionType = $conditionDefn[0];
+        $otherFieldPath = $this->resolveRelativePath($path, $conditionDefn[1]);
+        $otherFieldValue = data_get($data, $otherFieldPath);
+        $conditionValue = $conditionDefn[2];
+
+        switch ($conditionType) {
             case 'eq':
-                return $my_data[$conditionDefn[1]] == $conditionDefn[2];
+                return $otherFieldValue === $conditionValue;
+            case 'in':
+                return in_array($otherFieldValue, $conditionValue);
         }
         return true;
     }

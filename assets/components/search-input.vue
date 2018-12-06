@@ -2,8 +2,12 @@
     <div>
         <input :name="nameAttr" type="hidden" :value="value" />
         <input type="text" :class="{'lcf-input-has-error': hasError}" disabled :value="displayName" />
-        <input ref="input" type="search" value="" placeholder="search" @input="search" />
-        <button v-for="suggestion in suggestions" type="button" @click="change(suggestion)">{{ suggestion.label }}</button>
+        <input ref="input" type="search" value="" placeholder="Search" @input="search" />
+        <ul v-if="suggestions">
+            <li v-for="suggestion in suggestions">
+                <button type="button" @click="change(suggestion)">{{ suggestion.label }}</button>
+            </li>
+        </ul>
     </div>
 </template>
 

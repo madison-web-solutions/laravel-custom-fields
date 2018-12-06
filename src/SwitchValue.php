@@ -24,4 +24,15 @@ class SwitchValue
             return $this->value;
         }
     }
+
+    public function __isset($key)
+    {
+        switch ($key) {
+            case 'switch':
+            case 'value':
+                return true;
+            default:
+                return ($key === $this->switch);
+        }
+    }
 }

@@ -2,7 +2,7 @@
     <div ref="input" class="lcf-radio-group" :class="{'lcf-input-has-error': hasError}" @change="change">
         <label v-for="optionLabel, optionValue in choices">
             <input :name="nameAttr" type="radio" :value="optionValue" :checked="value == optionValue" />
-            {{ optionLabel }}
+            <span>{{ optionLabel }}</span>
         </label>
     </div>
 </template>
@@ -15,7 +15,7 @@ export default {
     mixins: [lcfFieldMixin],
     created: function() {
         if (this.value == null && this.defaultValue != null) {
-            this.updateMyValue(defaultValue);
+            this.updateMyValue(this.defaultValue);
         }
     },
     computed: {

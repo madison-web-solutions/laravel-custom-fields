@@ -15,12 +15,15 @@ var componentNames = [
     'media-library',
     'media-preview',
     'number-input',
+    'options-input',
     'radio-input',
     'repeater-input',
     'search-input',
     'select-input',
     'switch-input',
-    'text-input'
+    'text-input',
+    'timestamp-input',
+    'toggle-input'
 ];
 _.forEach(componentNames, function(componentName) {
     Vue.component(componentName, require('./components/' + componentName + '.vue'));
@@ -38,6 +41,11 @@ var initLcf = function() {
         });
     });
 };
+
+// set CSRF token for axios requests
+import axios from 'axios';
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+axios.defaults.headers.common['X-CSRF-TOKEN'] = document.head.querySelector('meta[name="csrf-token"]').content;
 
 if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
     initLcf();

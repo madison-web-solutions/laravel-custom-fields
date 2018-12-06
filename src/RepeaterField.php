@@ -22,6 +22,7 @@ class RepeaterField extends Field
         $rules['sub_field'] = [Field::isFieldRule()];
         $rules['max'] = 'nullable|integer';
         $rules['min'] = 'nullable|integer';
+        $rules['append_label'] = 'nullable|string';
         return $rules;
     }
 

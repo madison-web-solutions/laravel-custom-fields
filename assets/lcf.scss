@@ -1,17 +1,71 @@
+// Labels
+.lcf-help {
+    margin-bottom: 0.5rem;
+    font-size: 1.4rem;
+}
+
+// Only make the field labels bold not labels used in choices
+.lcf-sub-field > label, .lcf-compound-key label, .lcf-switch-select label {
+    font-weight: 700;
+
+    &.required:after {
+        content: '*';
+        display: inline-block;
+        vertical-align: top;
+    }
+}
+
+.lcf-compound-key label {
+    margin-bottom: 0.3rem;
+}
+// End labels
+
+// Fields
+[data-lcf-field-type] {
+    margin-bottom: 2.6rem;
+}
+
+// Repeater
 .lcf-repeater-field {
+    width: 100%;
     position: relative;
     display: table;
+    border: 1px solid grey;
+    padding: 0.5rem;
+
+    &[data-lcf-field-type="repeater"] {
+        margin-top: 2rem;
+    }
+
     .lcf-repeater-item {
         display: table-row;
         > * {
             display: table-cell;
+            vertical-align: top;
+            border-bottom: 1px solid grey;
+            padding-top: 2rem;
+        }
+    }
+    .lcf-field-controls {
+        width: 7rem;
+        text-align: center;
+        padding-right: 2rem;
+
+        .lcf-repeater-move-handle, label {
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+
+        button {
+            display: inline-block;
+            margin: 0 0.3rem 0.5rem;
         }
     }
     .lcf-repeater-move-handle {
-        display: inline-block;
         border: 1px solid black;
         cursor: move;
-        padding: 2px;
+        padding: 6px;
+        font-size: 20px;
     }
     .lcf-repeater-insert-marker {
         position: absolute;
@@ -24,7 +78,14 @@
             display: block;
         }
     }
+
+    .lcf-switch-field {
+        select {
+            margin-bottom: 2rem;
+        }
+    }
 }
+// End repeater
 
 .lcf-media-library {
 
@@ -99,6 +160,7 @@
     width: 140px;
     padding: 5px;
     border: 1px solid grey;
+    transition: background-color 0.2s ease-in-out;
     &:hover {
         background-color: #ddd;
     }
@@ -111,9 +173,45 @@
     }
     [data-name=remove] {
         position: absolute;
-        top: 0;
-        right: 0;
-        background-color: transparent;
+        top: 2px;
+        right: 2px;
         color: red;
+        padding: 0.3rem 0.5rem;
+        border-radius: 2rem;
+        color: #fff;
+        font-size: 0.8em;
+        background-color: red;
+        border: 1px solid red;
+        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+
+        &:hover, &:focus {
+            background-color: #fff;
+            color: red;
+        }
     }
 }
+
+// Choices
+.lcf-field[data-lcf-field-type="choice"], [data-lcf-field-type="options"] {
+    label:not(:last-child) {
+        margin-right: 5rem;
+    }
+}
+// End choices
+
+// Model
+.lcf-field[data-lcf-field-type="model"] {
+    [disabled="disabled"] {
+        border-bottom: none;
+    }
+
+    ul {
+        margin-top: 1rem;
+    }
+
+    li {
+        margin: 0.5rem 1rem;
+    }
+}
+// End model
+// End fields

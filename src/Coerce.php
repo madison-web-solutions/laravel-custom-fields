@@ -74,4 +74,44 @@ class Coerce
         $output = key($dummy);
         return true;
     }
+
+    public static function toBool($input, &$output) : bool
+    {
+        if (is_bool($input)) {
+            $output = $input;
+            return true;
+        }
+        if (is_int($input) || is_float($input)) {
+            if ($input == 0) {
+                $output = false;
+                return true;
+            } elseif ($input == 1) {
+                $output = true;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if (is_string($input)) {
+            switch (strtolower($input)) {
+                case 'true':
+                case 't':
+                case 'yes':
+                case 'y':
+                case 'on':
+                    $output = true;
+                    return true;
+                case 'false':
+                case 'f':
+                case 'no':
+                case 'n':
+                case 'off':
+                    $output = false;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        return false;
+    }
 }

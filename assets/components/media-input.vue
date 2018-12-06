@@ -6,8 +6,8 @@
             <div v-if="value && !item" class="lcf-ml-preview lcf-ml-active">
                 <p>Loading</p>
             </div>
-            <button type="button" @click="openLibrary">{{ value ? 'Change' : 'Select' }}</button>
-            <button type="button" v-if="value" @click="remove">Remove</button>
+            <button type="button" @click="openLibrary" data-action="select-image">{{ value ? 'Change' : 'Select' }}</button>
+            <button type="button" v-if="value" @click="remove" data-action="remove-image">Remove</button>
         </template>
         <media-library v-if="libraryOpen" @select="select" @close="closeLibrary" />
     </div>

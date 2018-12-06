@@ -44,7 +44,11 @@ abstract class Field implements JsonSerializable
     public function __construct(array $options)
     {
         $this->options = $options + $this->optionDefaults();
-        Validator::make($this->options, $this->optionRules())->validate();
+        try {
+            Validator::make($this->options, $this->optionRules())->validate();
+        } catch (\Exception $e) {
+            error_log(json_encode($e->errors()));
+        }
     }
 
     public function __get($name)
@@ -103,7 +107,7 @@ abstract class Field implements JsonSerializable
      * Take a value and try to convert it into the right type for this field
      * May be the right type already, or may be a 'primitive' representation
      * Returns the converted value on success
-     * Behaviour on failure determined by 3rd param $on_fail which is an options bitmask
+     * Behaviour on failure determined by 2nd param $on_fail which is an options bitmask
      */
     public function coerce($input, int $on_fail = self::COERCE_FAIL_THROW)
     {
@@ -237,11 +241,11 @@ abstract class Field implements JsonSerializable
     /**
      * Take a value and coerce it to the right type for this field, then obtain the 'primitive' representation of it
      * This could then be used on the front-end via json
-     * Throws TypeError if the conversion fails
+     * Behaviour if the coersion fails determined by 2nd param $on_fail which is an options bitmask
      */
-    public function toPrimitive($value)
+    public function toPrimitive($value, int $on_fail = self::COERCE_FAIL_THROW)
     {
-        $cast_value = $this->coerce($value);
+        $cast_value = $this->coerce($value, $on_fail);
         if (is_null($cast_value)) {
             return null;
         }
