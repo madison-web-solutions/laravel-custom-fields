@@ -126,4 +126,14 @@ class CompoundField extends Field
     {
         return $this->sub_fields[$key] ?? null;
     }
+
+    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    {
+        $callback($this, $cast_value, $path, ...$params);
+        foreach ($this->sub_fields as $key => $field) {
+            array_push($path, $key);
+            $field->doWalk($callback, $cast_value[$key] ?? null, $path, ...$params);
+            array_pop($path);
+        }
+    }
 }

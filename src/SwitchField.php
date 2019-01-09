@@ -29,8 +29,6 @@ class SwitchField extends Field
         return 'switch-input';
     }
 
-
-
     protected function testTypeNotNull($input) : bool
     {
         if (! ($input instanceof SwitchValue)) {
@@ -105,5 +103,14 @@ class SwitchField extends Field
     public function getSubField(string $key)
     {
         return $this->switch_fields[$key] ?? null;
+    }
+
+    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    {
+        $callback($this, $cast_value, $path, ...$params);
+        $switch_name = $cast_value->switch;
+        $switch_field = $this->switch_fields[$switch_name];
+        array_push($path, $switch_name);
+        $switch_field->doWalk($callback, $cast_value->value, $path, ...$params);
     }
 }

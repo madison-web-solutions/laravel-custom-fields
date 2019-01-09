@@ -31,7 +31,8 @@ export default {
         if (this.value) {
             var origValue = this.value;
             axios.get('/lcf/display-name', {params: {
-                path: this.pathStr,
+                type: this.field.type,
+                options: this.field.options,
                 id: origValue,
             }}).then(response => {
                 // make sure value still matches
@@ -43,7 +44,8 @@ export default {
         this.search = _.debounce(() => {
             if (this.$refs.input.value.length >= 2) {
                 axios.get('/lcf/suggestions', {params: {
-                    path: this.pathStr,
+                    type: this.field.type,
+                    options: this.field.options,
                     search: this.$refs.input.value,
                 }}).then(response => {
                     this.suggestions = response.data;

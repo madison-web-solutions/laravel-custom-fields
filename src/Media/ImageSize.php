@@ -5,6 +5,17 @@ use Intervention\Image\Image;
 
 class ImageSize
 {
+    public static function coerce($value)
+    {
+        if ($value instanceof ImageSize) {
+            return $value;
+        }
+        if (is_array($value)) {
+            return new ImageSize($value);
+        }
+        throw new InvalidArgumentException();
+    }
+
     protected $method;
     protected $width;
     protected $height;

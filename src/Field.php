@@ -2,7 +2,6 @@
 
 namespace MadisonSolutions\LCF;
 
-use MadisonSolutions\Generics\TypeHelper;
 use Illuminate\Support\MessageBag;
 use Validator;
 use JsonSerializable;
@@ -298,5 +297,16 @@ abstract class Field implements JsonSerializable
     public function getSubField(string $key)
     {
         return null;
+    }
+
+    public function walk(callable $callback, $value, ...$params)
+    {
+        $cast_value = $this->coerce($value);
+        return $this->doWalk($callback, $cast_value, [], ...$params);
+    }
+
+    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    {
+        $callback($this, $cast_value, $path, ...$params);
     }
 }

@@ -11,25 +11,29 @@ use Route;
 Route::get('lcf/suggestions', function (Request $request, LCF $lcf) {
     // @todo authorization
     $request->validate([
+        'type' => 'required|in:model',
+        'options' => 'required|json',
         'search' => 'required|string|min:2',
     ]);
-    $field = $lcf->getField($request->path);
-    if (!$field || !method_exists($field, 'getSuggestions')) {
-        throw ValidationException::withMessages(['path' => ["Field not found"]]);
+    if ($request->type == 'model') {
+        $field = new ModelField(json_decode($request->options, true));
+        return response()->json($field->getSuggestions($request->search));
     }
-    return response()->json($field->getSuggestions($request->search));
+    throw new \Exception("Unexpected type {$request->type}");
 });
 
 Route::get('lcf/display-name', function (Request $request, LCF $lcf) {
     // @todo authorization
     $request->validate([
+        'type' => 'required|in:model',
+        'options' => 'required|json',
         'id' => 'required',
     ]);
-    $field = $lcf->getField($request->path);
-    if (!$field || !method_exists($field, 'getDisplayName')) {
-        throw ValidationException::withMessages(['path' => ["Field not found"]]);
+    if ($request->type == 'model') {
+        $field = new ModelField(json_decode($request->options, true));
+        return response()->json($field->getDisplayName($request->id));
     }
-    return response()->json($field->getDisplayName($request->id));
+    throw new \Exception("Unexpected type {$request->type}");
 });
 
 Route::get('lcf/media-library', function (Request $request) {

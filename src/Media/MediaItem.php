@@ -25,8 +25,9 @@ class MediaItem extends Model
         return Storage::disk('public');
     }
 
-    protected function fileName(?ImageSize $size = null)
+    protected function fileName($size = null)
     {
+        $size = (is_null($size) ? null : ImageSize::coerce($size));
         if (empty($this->slug)) {
             throw new \Exception("Must set MediaItem slug before accessing filename");
         }
@@ -40,17 +41,17 @@ class MediaItem extends Model
         }
     }
 
-    public function location(?ImageSize $size = null)
+    public function location($size = null)
     {
         return 'lcf-media/' . $this->fileName($size);
     }
 
-    public function url(?ImageSize $size = null)
+    public function url($size = null)
     {
         return $this->disk()->url($this->location($size));
     }
 
-    public function urlOrCreate(?ImageSize $size = null)
+    public function urlOrCreate($size = null)
     {
         if (! $this->fileExists($size)) {
             try {
@@ -63,8 +64,9 @@ class MediaItem extends Model
     }
 
     // throws Intervention\Image\Exception\NotReadableException
-    public function createImageSize(ImageSize $size)
+    public function createImageSize($size)
     {
+        $size = ImageSize::coerce($size);
         $this->deleteFile($size);
         $location = $this->location($size);
         $imageManager = new ImageManager(['driver' => 'imagick']);
@@ -72,7 +74,7 @@ class MediaItem extends Model
         $this->disk()->put($this->location($size), $size->resize($image));
     }
 
-    public function fileSize(?ImageSize $size = null)
+    public function fileSize($size = null)
     {
         return $this->disk()->size($this->location($size));
     }
@@ -113,8 +115,9 @@ class MediaItem extends Model
         $this->disk()->put($this->location(), $contents, 'public');
     }
 
-    public function deleteFile(?ImageSize $size = null)
+    public function deleteFile($size = null)
     {
+        $size = (is_null($size) ? null : ImageSize::coerce($size));
         // Array of locations which we will delete
         $locations = [];
         if ($size) {
@@ -138,17 +141,17 @@ class MediaItem extends Model
         }
     }
 
-    public function fileExists(?ImageSize $size = null)
+    public function fileExists($size = null)
     {
         return $this->disk()->exists($this->location($size));
     }
 
-    public function getStream(?ImageSize $size = null)
+    public function getStream($size = null)
     {
         return $this->disk()->readStream($this->location($size));
     }
 
-    public function fileContents(?ImageSize $size = null)
+    public function fileContents($size = null)
     {
         return $this->disk()->get($this->location($size));
     }

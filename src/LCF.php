@@ -1,11 +1,9 @@
 <?php
 namespace MadisonSolutions\LCF;
 
-use MadisonSolutions\LCF\Group\FieldGroup;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\MessageBag;
 use Validator;
-use SplObjectStorage;
 
 class LCF
 {
@@ -15,99 +13,6 @@ class LCF
             $path = empty($path) ? [] : explode('.', $path);
         }
         return array_shift($path);
-    }
-
-    protected $obj_fields_cache;
-    protected $field_groups;
-
-    public function __construct()
-    {
-        $this->obj_fields_cache = new SplObjectStorage();
-        $this->field_groups = [];
-    }
-
-    public function registerFieldGroup(string $key, FieldGroup $group)
-    {
-        $this->field_groups[$key] = $group;
-    }
-
-    public function getFieldGroup(string $key)
-    {
-        return $this->field_groups[$key] ?? null;
-    }
-
-    public function getField($path)
-    {
-        $group_key = LCF::shiftPath($path);
-        $group = $this->getFieldGroup($group_key);
-        return $group ? $group->getField($path) : null;
-    }
-
-    /**
-     * Return the field object defined for the given object with the given name
-     * Returns false if no field is defined on the object with that name
-     */
-    public function getFieldFor(object $obj, string $field_name) : ?Field
-    {
-        $fields = $this->getFieldsFor($obj);
-        return $fields[$field_name] ?? null;
-    }
-
-    public function getFieldGroupsFor(object $obj)
-    {
-        $groups = [];
-        foreach ($this->field_groups as $key => $group) {
-            if ($group->appliesTo($obj)) {
-                $groups[$key] = $group;
-            }
-        }
-        return $groups;
-    }
-
-    public function getFieldsFor(object $obj)
-    {
-        // @todo there's a problem with this caching business...
-        // Setting a property of an object may cause it to have different fields associated with it
-        // But if the fields are cached, they won't change...  tricky one...
-        // Might actually do away with the concept of field groups...
-        //if (! $this->obj_fields_cache->contains($obj)) {
-            $fields = [];
-            foreach ($this->getFieldGroupsFor($obj) as $group) {
-                foreach ($group as $key => $field) {
-                    $fields[$key] = $field;
-                }
-            }
-            $this->obj_fields_cache[$obj] = $fields;
-        //}
-        return $this->obj_fields_cache[$obj];
-    }
-
-    public function fromDatabase(object $obj, string $field_name, string $db_value)
-    {
-        $field = $this->getFieldFor($obj, $field_name);
-        return $field ? $field->fromDatabase($db_value) : null;
-    }
-
-    public function toDatabase(object $obj, string $field_name, $value) : string
-    {
-        $field = $this->getFieldFor($obj, $field_name);
-        return $field ? $field->toDatabase($value) : null;
-    }
-
-    protected function mergeGroupFields(FieldGroup $group, array &$fields)
-    {
-        foreach ($group as $key => $field) {
-            $fields[$key] = $field;
-        }
-    }
-
-    public function validate(array $data, array $groups, array $extra_rules = [])
-    {
-        $fields = [];
-        foreach ($groups as $group) {
-            $this->mergeGroupFields($group, $fields);
-        }
-        return $this->validateFields($data, $fields, $extra_rules);
     }
 
     public function validateFields(array $data, array $fields, array $extra_rules = [])

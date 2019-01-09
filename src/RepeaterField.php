@@ -101,4 +101,14 @@ class RepeaterField extends Field
     {
         return $this->sub_field;
     }
+
+    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    {
+        $callback($this, $cast_value, $path, ...$params);
+        foreach ($cast_value as $i => $sub_value) {
+            array_push($path, $i);
+            $this->sub_field->doWalk($callback, $sub_value, $path, ...$params);
+            array_pop($path);
+        }
+    }
 }

@@ -9,6 +9,7 @@ class TextField extends Field
         $defaults['max'] = null;
         $defaults['min'] = null;
         $defaults['regex'] = null;
+        $defaults['content'] = null;
         return $defaults;
     }
 
@@ -18,6 +19,7 @@ class TextField extends Field
         $rules['max'] = 'nullable|integer';
         $rules['min'] = 'nullable|integer';
         $rules['regex'] = 'nullable|string';
+        $rules['content'] = 'nullable|in:email,ip,ipv4,ipv6,url,uuid';
         return $rules;
     }
 
@@ -36,6 +38,10 @@ class TextField extends Field
         $regex = $this->options['regex'];
         if ($regex) {
             $rules[] = "regex:{$regex}";
+        }
+        $content_rule = $this->options['content'];
+        if ($content_rule) {
+            $rules[] = $content_rule;
         }
         return $rules;
     }

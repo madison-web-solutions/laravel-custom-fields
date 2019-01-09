@@ -17,13 +17,21 @@ class ChoiceField extends Field
         $rules = parent::optionRules();
         $rules['choices'] = ['required', 'array', 'min:1'];
         $rules['choices.*'] = 'required|string';
-        $rules['input'] = 'required|in:select,radio';
+        $rules['input'] = 'required|in:select,radio,search';
         return $rules;
     }
 
     public function inputComponent() : string
     {
-        return ($this->input == 'radio') ? 'radio-input' : 'select-input';
+        switch ($this->input) {
+            case 'radio':
+                return 'radio-input';
+            case 'search':
+                return 'search-input';
+            case 'select':
+            default:
+                return 'select-input';
+        }
     }
 
     public function getValidationRules()
@@ -49,5 +57,30 @@ class ChoiceField extends Field
             return false;
         }
         return true;
+    }
+
+    public function getSuggestions(string $search)
+    {
+        $search = strtolower($search);
+        $suggestions = [];
+        $count = 0;
+        foreach ($this->choices as $key => $label) {
+            if (str_contains(strtolower($key), $search) || str_contains(strtolower($label), $search)) {
+                $suggestions[] = [
+                    'id' => $key,
+                    'label' => $label,
+                ];
+                $count++;
+                if ($count >= 10) {
+                    break;
+                }
+            }
+        }
+        return $suggestions;
+    }
+
+    public function getDisplayName($key)
+    {
+        return $this->choices[$key] ?? '';
     }
 }

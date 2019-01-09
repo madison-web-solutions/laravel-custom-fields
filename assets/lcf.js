@@ -22,6 +22,7 @@ var componentNames = [
     'select-input',
     'switch-input',
     'text-input',
+    'text-area-input',
     'timestamp-input',
     'toggle-input'
 ];

@@ -8,12 +8,7 @@ class LCFServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(LCF::class, function ($app) {
-            $lcf = new LCF();
-            $field_groups_file = app_path() . '/lcf-field-groups.php';
-            if (file_exists($field_groups_file)) {
-                include($field_groups_file);
-            }
-            return $lcf;
+            return new LCF();
         });
 
         $this->app->singleton(Markdown::class, function ($app) {
