@@ -31,4 +31,39 @@ class LCF
     {
         $field->validate($data, $key, $messages);
     }
+
+    protected static $classmap = [
+        'ChoiceField' => ChoiceField::class,
+        'CompoundField' => CompoundField::class,
+        'IntegerField' => IntegerField::class,
+        'MarkdownField' => MarkdownField::class,
+        'MediaField' => MediaField::class,
+        'ModelField' => ModelField::class,
+        'OptionsField' => OptionsField::class,
+        'QuantityWithUnitField' => QuantityWithUnitField::class,
+        'RepeaterField' => RepeaterField::class,
+        'SwitchField' => SwitchField::class,
+        'TextAreaField' => TextAreaField::class,
+        'TextField' => TextField::class,
+        'TimestampField' => TimestampField::class,
+        'ToggleField' => ToggleField::class,
+    ];
+
+    public static function make(string $classname, array $options)
+    {
+        if (! is_a($classname, Field::class, true)) {
+            throw new \Exception("No LCF Field '{$classname}'");
+        }
+        return new $classname($options);
+    }
+
+    public static function __callStatic($method, $args)
+    {
+        foreach (self::$classmap as $alias => $classname) {
+            if ($method === "new{$alias}") {
+                return self::make($classname, $args[0]);
+            }
+        }
+        throw new \Exception("Unrecognised static method '{$name}'");
+    }
 }
