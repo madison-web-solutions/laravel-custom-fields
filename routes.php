@@ -92,10 +92,10 @@ Route::post('lcf/media-library/delete', function (Request $request) {
     ];
 });
 
-Route::post('lcf/markdown', function (Request $request, Markdown $md) {
+Route::post('lcf/markdown', function (Request $request, LCF $lcf) {
     // @todo authorization
     $request->validate([
         'input' => 'nullable|string',
     ]);
-    return $md->text($request->input ?? '');
+    return $lcf->getMarkdown()->text($request->input ?? '');
 });

@@ -7,6 +7,8 @@ use Validator;
 
 class LCF
 {
+    protected $markdown_instance;
+
     public static function shiftPath(&$path)
     {
         if (is_string($path)) {
@@ -30,6 +32,15 @@ class LCF
     protected function validateField(array $data, string $key, Field $field, MessageBag $messages)
     {
         $field->validate($data, $key, $messages);
+    }
+
+    public function getMarkdown()
+    {
+        if (is_null($this->markdown_instance)) {
+            $markdown_class = config('lcf.markdown_class', Markdown::class);
+            $this->markdown_instance = new $markdown_class();
+        }
+        return $this->markdown_instance;
     }
 
     protected static $classmap = [
