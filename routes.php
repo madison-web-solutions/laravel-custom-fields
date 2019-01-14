@@ -11,7 +11,7 @@ use Route;
 Route::get('lcf/suggestions', function (Request $request, LCF $lcf) {
     // @todo authorization
     $request->validate([
-        'type' => 'required|in:model',
+        'type' => 'required|in:model,link',
         'options' => 'required|json',
         'search' => 'required|string|min:2',
     ]);
@@ -19,13 +19,17 @@ Route::get('lcf/suggestions', function (Request $request, LCF $lcf) {
         $field = new ModelField(json_decode($request->options, true));
         return response()->json($field->getSuggestions($request->search));
     }
+    if ($request->type === 'link') {
+        $lf = $lcf->getLinkFinder();
+        return response()->json($lf->getSuggestions($request->search));
+    }
     throw new \Exception("Unexpected type {$request->type}");
 });
 
 Route::get('lcf/display-name', function (Request $request, LCF $lcf) {
     // @todo authorization
     $request->validate([
-        'type' => 'required|in:model',
+        'type' => 'required|in:model,link',
         'options' => 'required|json',
         'id' => 'required',
     ]);
@@ -33,7 +37,20 @@ Route::get('lcf/display-name', function (Request $request, LCF $lcf) {
         $field = new ModelField(json_decode($request->options, true));
         return response()->json($field->getDisplayName($request->id));
     }
+    if ($request->type === 'link') {
+        $lf = $lcf->getLinkFinder();
+        return response()->json($lf->getDisplayName($request->id));
+    }
     throw new \Exception("Unexpected type {$request->type}");
+});
+
+Route::get('lcf/link-lookup', function (Request $request, LCF $lcf) {
+    // @todo authorization
+    $request->validate([
+        'spec' => 'required|string',
+    ]);
+    $lf = $lcf->getLinkFinder();
+    return response()->json($lf->lookup($request->spec));
 });
 
 Route::get('lcf/media-library', function (Request $request) {

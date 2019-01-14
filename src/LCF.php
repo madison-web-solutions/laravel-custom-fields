@@ -8,6 +8,7 @@ use Validator;
 class LCF
 {
     protected $markdown_instance;
+    protected $link_finder_instance;
 
     public static function shiftPath(&$path)
     {
@@ -43,10 +44,23 @@ class LCF
         return $this->markdown_instance;
     }
 
+    public function getLinkFinder()
+    {
+        if (is_null($this->link_finder_instance)) {
+            $link_finder_class = config('lcf.link_finder_class');
+            if (! is_a($link_finder_class, LinkFinder::class, true)) {
+                throw new \Exception('config lcf.link_finder_class does not define a class extending from ' . LinkFinder::class);
+            }
+            $this->link_finder_instance = new $link_finder_class();
+        }
+        return $this->link_finder_instance;
+    }
+
     protected static $classmap = [
         'ChoiceField' => ChoiceField::class,
         'CompoundField' => CompoundField::class,
         'IntegerField' => IntegerField::class,
+        'LinkField' => LinkField::class,
         'MarkdownField' => MarkdownField::class,
         'MediaField' => MediaField::class,
         'ModelField' => ModelField::class,

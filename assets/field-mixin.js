@@ -48,6 +48,9 @@ export default {
         label: function() {
             return _.get(this.field, 'options.label', _.startCase(this.myKey));
         },
+        placeholder: function() {
+            return _.get(this.field, 'options.placeholder', '');
+        },
         required: function() {
             return _.get(this.field, 'options.required', false);
         },

@@ -1,5 +1,5 @@
 <template>
-    <input ref="input" :name="nameAttr" type="text" :class="{'lcf-input-has-error': hasError}" :value="value" :placeholder="field.placeholder" @change="change" />
+    <input ref="input" :name="nameAttr" type="text" :class="{'lcf-input-has-error': hasError}" :value="value" :placeholder="placeholder" @change="change" />
 </template>
 
 <script>

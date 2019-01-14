@@ -199,8 +199,8 @@
 }
 // End choices
 
-// Model
-.lcf-field[data-lcf-field-type="model"] {
+// Model / Link searching
+.lcf-field[data-lcf-field-type="model"], .lcf-field[data-lcf-field-type="link"] {
     [disabled="disabled"] {
         border-bottom: none;
     }

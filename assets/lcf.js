@@ -10,6 +10,7 @@ var componentNames = [
     'compound-input',
     'field-wrapper',
     'field',
+    'link-input',
     'markdown-input',
     'media-input',
     'media-library',
