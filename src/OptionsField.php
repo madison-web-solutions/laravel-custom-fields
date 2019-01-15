@@ -3,6 +3,7 @@ namespace MadisonSolutions\LCF;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\MessageBag;
+use MadisonSolutions\Coerce\Coerce;
 use Validator;
 
 class OptionsField extends Field

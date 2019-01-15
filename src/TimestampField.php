@@ -1,6 +1,7 @@
 <?php
 namespace MadisonSolutions\LCF;
 
+use MadisonSolutions\Coerce\Coerce;
 use DateTime;
 
 class TimestampField extends Field

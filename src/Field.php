@@ -3,6 +3,7 @@
 namespace MadisonSolutions\LCF;
 
 use Illuminate\Support\MessageBag;
+use MadisonSolutions\Coerce\Coerce;
 use Validator;
 use JsonSerializable;
 

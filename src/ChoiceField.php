@@ -2,6 +2,7 @@
 namespace MadisonSolutions\LCF;
 
 use Illuminate\Validation\Rule;
+use MadisonSolutions\Coerce\Coerce;
 
 class ChoiceField extends Field
 {

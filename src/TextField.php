@@ -1,6 +1,8 @@
 <?php
 namespace MadisonSolutions\LCF;
 
+use MadisonSolutions\Coerce\Coerce;
+
 class TextField extends Field
 {
     public function optionDefaults() : array

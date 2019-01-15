@@ -1,6 +1,8 @@
 <?php
 namespace MadisonSolutions\LCF;
 
+use MadisonSolutions\Coerce\Coerce;
+
 class MarkdownField extends Field
 {
     public function getValidationRules()

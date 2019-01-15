@@ -1,6 +1,8 @@
 <?php
 namespace MadisonSolutions\LCF;
 
+use MadisonSolutions\Coerce\Coerce;
+
 class ToggleField extends Field
 {
     public function inputComponent() : string

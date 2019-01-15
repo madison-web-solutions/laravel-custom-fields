@@ -1,13 +1,15 @@
 <?php
 namespace MadisonSolutions\LCF;
 
+use MadisonSolutions\Coerce\Coerce;
+
 class IntegerField extends Field
 {
     public function inputComponent() : string
     {
         return 'number-input';
     }
-    
+
     public function optionDefaults() : array
     {
         $defaults = parent::optionDefaults();
