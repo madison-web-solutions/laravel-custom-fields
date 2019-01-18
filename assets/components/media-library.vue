@@ -5,7 +5,8 @@
             <button type="button" :class="{active: mode == 'upload'}" @click.prevent="uploadMode">Upload</button>
             <button type="button" @click="cancel">Cancel</button>
         </div>
-        <div class="lcf-ml-panel" v-if="showLibrary">
+        <div class="lcf-ml-panel" v-if="showLibrary" @scroll="handleScroll">
+            <p><input type="search" placeholder="search" ref="searchInput" @input="handleSearch" /></p>
             <p>Click to select:</p>
             <div class="lcf-ml-index">
                 <template v-for="upload in uploads">
@@ -31,6 +32,37 @@
 
 <script>
 import axios from 'axios';
+
+// Helper object for fetching media info from the server
+var getter = {
+    _counter: 1,
+    _getting: false,
+};
+getter.get = function(search, page, callback) {
+    // Save a unique id for each call to get()
+    // The idea of this is that if get() is called while a previous get() is still running,
+    // then the second call can overrule the first one, and we'll only run the second callback
+    var id = getter._counter++;
+    console.log('get '+id, search, page);
+    getter._getting = id;
+    axios.get('/lcf/media-library', {params: {
+        search: search,
+        page: page
+    }}).then(response => {
+        if (getter._getting == id) {
+            callback(response.data.data);
+            getter._getting = false;
+        }
+    });
+};
+// Debounced version of the get function
+getter.getDebounce = _.debounce(getter.get, 300);
+// Function for finding out whether any items are currently being fetched
+getter.isGetting = function() {
+    return (getter._getting !== false);
+};
+window.getter = getter;
+
 export default {
     data: function() {
         return {
@@ -39,7 +71,10 @@ export default {
             hasDragObj: false,
             uploads: [],
             uploading: false,
-            library: [],
+            searchString: null,
+            page: 0,
+            hasMore: true,
+            library: {},
         }
     },
     computed: {
@@ -61,6 +96,36 @@ export default {
         },
         uploadMode: function() {
             this.mode = 'upload';
+        },
+        libraryClear: function() {
+            this.library = {};
+        },
+        libraryAppend: function(items) {
+            _.forEach(items, item => {
+                this.$set(this.library, item.id, item);
+            });
+        },
+        handleSearch: function() {
+            var searchString = this.$refs.searchInput.value;
+            getter.getDebounce(this.$refs.searchInput.value, 0, (items) => {
+                this.searchString = searchString;
+                this.page = 0;
+                this.hasMore = (items.length == 50);
+                this.libraryClear();
+                this.libraryAppend(items);
+            });
+        },
+        handleScroll: function(e) {
+            var ele = e.target;
+            var scrollProportion = ((ele.scrollTop + ele.offsetHeight) / ele.scrollHeight);
+            if (this.hasMore && !getter.isGetting() && scrollProportion > 0.9) {
+                var page = this.page + 1;
+                getter.get(this.searchString, page, (items) => {
+                    this.page = page;
+                    this.hasMore = (items.length == 50);
+                    this.libraryAppend(items);
+                });
+            }
         },
         dragIn: function() {
             this.hasDragObj = true;
@@ -161,8 +226,9 @@ export default {
         }
     },
     created: function() {
-        axios.get('/lcf/media-library').then(response => {
-            this.library = response.data.data;
+        getter.get('', 0, (items) => {
+            this.libraryAppend(items);
+            this.hasMore = (items.length == 50);
         });
     }
 };

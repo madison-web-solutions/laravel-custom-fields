@@ -55,7 +55,19 @@ Route::get('lcf/link-lookup', function (Request $request, LCF $lcf) {
 
 Route::get('lcf/media-library', function (Request $request) {
     // @todo authorization, pagination, searching
-    return MediaItemResource::collection(MediaItem::all());
+    $query = MediaItem::query();
+    $search = $request->input('search');
+    if ($search) {
+        $words = preg_split('/\s+/', $search);
+        foreach ($words as $word) {
+            $query->where(function ($q) use ($word) {
+                $wordLike = '%' . str_replace('%', '\\%', $word) . '%';
+                $q->where('title', 'ILIKE', $wordLike)->orWhere('alt', 'ILIKE', $wordLike);
+            });
+        }
+    }
+    $items = $query->paginate(50);
+    return MediaItemResource::collection($items);
 });
 
 Route::get('lcf/media-library/{id}', function (Request $request, $id) {

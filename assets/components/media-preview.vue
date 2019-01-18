@@ -1,7 +1,7 @@
 <template>
     <div class="lcf-ml-preview" @click="click">
         <div class="lcf-ml-thumb" :style="style" />
-        <span>Id: {{ item.id }}</span>
+        <span>{{ item.title }}</span>
         <button v-if="deletable" type="button" data-name="remove" @click.stop="deleteItem">Delete</button>
     </div>
 </template>
