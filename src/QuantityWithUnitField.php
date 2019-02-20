@@ -3,6 +3,57 @@ namespace MadisonSolutions\LCF;
 
 class QuantityWithUnitField extends Field
 {
+    protected $units = [
+        'm' => [
+            'name' => 'Metre',
+            'plural' => 'Metres',
+            'dimension' => 'L',
+            'factor' => 1,
+            'family' => 'metric',
+            'symbol' => 'm',
+        ],
+        'cm' => [
+            'name' => 'Centimetre',
+            'plural' => 'Centimetres',
+            'dimension' => 'L',
+            'factor' => 0.01,
+            'family' => 'metric',
+            'symbol' => 'cm',
+        ],
+        'mm' => [
+            'name' => 'Millimetre',
+            'plural' => 'Millimetres',
+            'dimension' => 'L',
+            'factor' => 0.001,
+            'family' => 'metric',
+            'symbol' => 'mm',
+        ],
+        'km' => [
+            'name' => 'Kilometre',
+            'plural' => 'Kilometres',
+            'dimension' => 'L',
+            'factor' => 1000,
+            'family' => 'metric',
+            'symbol' => 'km',
+        ],
+        'inch' => [
+            'name' => 'Inch',
+            'plural' => 'Inches',
+            'dimension' => 'L',
+            'factor' => 0.0254,
+            'family' => 'imperial',
+            'symbol' => '"',
+        ],
+        'm2' => [
+            'name' => 'Metre Squared',
+            'plural' => 'Metres Squared',
+            'dimension' => 'LL',
+            'factor' => 1,
+            'family' => 'metric',
+            'symbol' => 'm²',
+        ],
+    ];
+
     public function inputComponent() : string
     {
         return 'text-input';

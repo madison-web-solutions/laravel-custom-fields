@@ -20,11 +20,17 @@ class LinkValue
 
     public static function fromManual(string $url, ?string $label)
     {
+        if (empty($url)) {
+            return null;
+        }
         return new LinkValue(true, null, $url, $url, $label);
     }
 
     public static function fromObjSpec(string $obj, ?string $label)
     {
+        if (empty($obj)) {
+            return null;
+        }
         $info = app(LCF::class)->getLinkFinder()->lookup($obj);
         if ($info) {
             return new LinkValue(false, $obj, $info['url'], $info['label'], $label);

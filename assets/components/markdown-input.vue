@@ -1,7 +1,8 @@
 <template>
-    <div>
+    <div :class="isFullScreen ? 'fullscreen' : ''">
         <textarea ref="input" :name="nameAttr" :class="{'lcf-input-has-error': hasError}" @change="change" @input="updatePreview">{{ value }}</textarea>
-        <div v-html="html"></div>
+        <div class="preview" v-html="html"></div>
+        <button type="button" name="fullscreen" @click="toggleFullScreen" aria-label="Enter fullscreen mode"><i class="fas fa-expand"></i></button>
     </div>
 </template>
 
@@ -15,6 +16,7 @@ export default {
     data: function() {
         return {
             html: '',
+            isFullScreen: false,
         };
     },
     created: function() {
@@ -33,6 +35,9 @@ export default {
     methods: {
         change: function() {
             this.updateMyValue(this.$refs.input.value);
+        },
+        toggleFullScreen: function() {
+            return this.isFullScreen = ! this.isFullScreen;
         }
     },
 };

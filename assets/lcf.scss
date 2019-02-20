@@ -1,7 +1,14 @@
 // Labels
+.lcf-help, .lcf-field-errors {
+    font-size: 1.4rem;
+}
+
 .lcf-help {
     margin-bottom: 0.5rem;
-    font-size: 1.4rem;
+}
+
+.lcf-field-errors {
+    color: #e60300;
 }
 
 // Only make the field labels bold not labels used in choices
@@ -21,7 +28,7 @@
 // End labels
 
 // Fields
-.lcf-sub-field {
+.lcf-sub-field, .lcf-compound-item {
     margin-bottom: 2.6rem;
 }
 
@@ -30,26 +37,45 @@
     width: 100%;
     position: relative;
     display: table;
-    border: 1px solid grey;
-    padding: 0.5rem;
+    padding-bottom: 6rem;
 
     &[data-lcf-field-type="repeater"] {
         margin-top: 2rem;
     }
 
+
+        button[data-name="append"] {
+            width: 19rem;
+            position: absolute;
+        }
+
     .lcf-repeater-item {
         display: table-row;
+
+        &:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        &:nth-child(even) {
+            background-color: #e4e4e4;
+
+            .lcf-field-controls {
+                background-color: #c7c7c7;
+            }
+        }
+
         > * {
             display: table-cell;
             vertical-align: top;
-            border-bottom: 1px solid grey;
-            padding-top: 2rem;
+            border: 1px solid grey;
+            padding: 2rem 1rem 1rem;
         }
     }
     .lcf-field-controls {
         width: 7rem;
         text-align: center;
-        padding-right: 2rem;
+        border-right: none;
+        background-color: #dcdcdc;
 
         .lcf-repeater-move-handle, label {
             display: block;
@@ -60,9 +86,15 @@
             display: inline-block;
             margin: 0 0.3rem 0.5rem;
         }
+
+        @media all and (max-width: 1001px) {
+            .lcf-repeater-move-handle {
+                display: none;
+            }
+        }
     }
     .lcf-repeater-move-handle {
-        border: 1px solid black;
+        border: 1px solid #383838;
         cursor: move;
         padding: 6px;
         font-size: 20px;
@@ -87,6 +119,7 @@
 }
 // End repeater
 
+// Media library
 .lcf-media-library {
 
     &.has-drag-obj {
@@ -175,21 +208,22 @@
         position: absolute;
         top: 2px;
         right: 2px;
-        color: red;
+        color: #e60300;
         padding: 0.3rem 0.5rem;
         border-radius: 2rem;
         color: #fff;
         font-size: 0.8em;
-        background-color: red;
-        border: 1px solid red;
+        background-color: #e60300;
+        border: 1px solid #e60300;
         transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 
         &:hover, &:focus {
             background-color: #fff;
-            color: red;
+            color: #e60300;
         }
     }
 }
+// End media library
 
 // Choices
 .lcf-field[data-lcf-field-type="choice"], [data-lcf-field-type="options"] {
@@ -214,4 +248,79 @@
     }
 }
 // End model
+
+// Markdown
+.lcf-field[data-lcf-field-type="markdown"] {
+    > div {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    textarea, .preview {
+        width: calc(50% - 10px);
+        position: relative;
+        top: 0;
+        left: 0;
+        transition: all 0.3s ease-in-out;
+    }
+
+    textarea {
+        min-height: 20rem;
+    }
+
+    .preview {
+        padding: 1rem 1.2rem;
+        border: 2px solid #aaaaaa;
+    }
+
+    button {
+        position: absolute;
+        top: 3px;
+        left: calc(50% - 31px);
+        transition: transform 0.2s ease-in-out;
+        transform: scale(1);
+        z-index: 9100;
+
+        &:hover, &:focus {
+            transform: scale(1.2);
+        }
+    }
+
+    .fullscreen {
+        textarea, .preview {
+            width: 50vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            margin: 0;
+            z-index: 9100;
+        }
+
+        textarea {
+            left: 0;
+        }
+
+        .preview {
+            left: 50vw;
+            background-color: #fff;
+        }
+
+        button {
+            position: fixed;
+            top: 5px;
+            transform: scale(1.2);
+
+            &:hover, &:focus {
+                transform: scale(1);
+            }
+        }
+    }
+}
+// End markdown
 // End fields
+
+// Compound field
+.lcf-compound-field, .lcf-compound-key {
+    margin-bottom: 1rem;
+}

@@ -105,6 +105,9 @@ class RepeaterField extends Field
     protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
     {
         $callback($this, $cast_value, $path, ...$params);
+        if (is_null($cast_value)) {
+            return;
+        }
         foreach ($cast_value as $i => $sub_value) {
             array_push($path, $i);
             $this->sub_field->doWalk($callback, $sub_value, $path, ...$params);

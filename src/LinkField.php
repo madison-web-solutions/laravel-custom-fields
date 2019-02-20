@@ -89,9 +89,9 @@ class LinkField extends Field
         ];
         $manual = data_get($data, "{$path}.manual");
         if ($manual === 'true') {
-            $rules["{$path}.url"] = 'required|string';
+            $rules["{$path}.url"] = [$this->options['required'] ? 'required' : 'nullable', 'string'];
         } else {
-            $rules["{$path}.obj"] = 'required|string';
+            $rules["{$path}.obj"] = [$this->options['required'] ? 'required' : 'nullable', 'string'];
         }
         $validator = Validator::make($data, $rules);
         $messages->merge($validator->messages());

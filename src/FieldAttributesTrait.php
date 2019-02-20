@@ -5,7 +5,7 @@ trait FieldAttributesTrait
 {
     protected static $fields_cache;
 
-    public function getField($key, $use_cache = true)
+    public function getField(string $key, bool $use_cache = true)
     {
         $class = get_class($this);
         if ($use_cache) {
@@ -30,6 +30,15 @@ trait FieldAttributesTrait
             self::$fields_cache[$class][$key] = $field;
         }
         return $field;
+    }
+
+    public function getFields(array $keys, bool $use_cache = true)
+    {
+        $fields = [];
+        foreach ($keys as $key) {
+            $fields[$key] = $this->getField($key, $use_cache);
+        }
+        return $fields;
     }
 
     public function hasLcfField($key)
@@ -76,34 +85,4 @@ trait FieldAttributesTrait
             return $this->setLcfFieldValue($key, $value);
         }
     }
-
-
-    /* old
-    public function setAttribute($key, $value)
-    {
-        $field = $this->getField($key);
-        if ($field) {
-            $this->attributes[$key] = $field->toDatabase($value);
-            return $this;
-        }
-
-        return parent::setAttribute($key, $value);
-    }
-
-    public function getAttribute($key)
-    {
-        $field = $this->getField($key);
-        if ($field) {
-            $db_value = $this->getAttributeFromArray($key);
-            return $field->fromDatabase($db_value) ?? $field->defaultValue();
-        }
-
-        return parent::getAttribute($key);
-    }
-
-    public function getField($key)
-    {
-        return resolve(LCF::class)->getFieldFor($this, $key);
-    }
-    */
 }

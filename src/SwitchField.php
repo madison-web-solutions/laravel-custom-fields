@@ -108,6 +108,9 @@ class SwitchField extends Field
     protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
     {
         $callback($this, $cast_value, $path, ...$params);
+        if (is_null($cast_value)) {
+            return;
+        }
         $switch_name = $cast_value->switch;
         $switch_field = $this->switch_fields[$switch_name];
         array_push($path, $switch_name);

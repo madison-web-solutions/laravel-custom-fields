@@ -5,10 +5,24 @@ use Intervention\Image\Image;
 
 class ImageSize
 {
+    protected static $named_sizes;
+
+    public static function register(string $name, ImageSize $size)
+    {
+        ImageSize::$named_sizes[$name] = $size;
+    }
+
     public static function coerce($value)
     {
         if ($value instanceof ImageSize) {
             return $value;
+        }
+        if (is_string($value)) {
+            $size = ImageSize::$named_sizes[$value] ?? null;
+            if (! $size) {
+                throw new InvalidArgumentException("No registered ImageSize called '{$value}'");
+            }
+            return $size;
         }
         if (is_array($value)) {
             return new ImageSize($value);
