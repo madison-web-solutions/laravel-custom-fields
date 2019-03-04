@@ -28,7 +28,7 @@
 // End labels
 
 // Fields
-.lcf-sub-field, .lcf-compound-item {
+.lcf-sub-field, .lcf-compound-item, [data-lcf-field-type="stylistic"] {
     margin-bottom: 2.6rem;
 }
 
@@ -270,8 +270,10 @@
     }
 
     .preview {
+        max-height: 500px;
         padding: 1rem 1.2rem;
         border: 2px solid #aaaaaa;
+        overflow: auto;
     }
 
     button {
@@ -304,6 +306,7 @@
         .preview {
             left: 50vw;
             background-color: #fff;
+            max-height: none;
         }
 
         button {

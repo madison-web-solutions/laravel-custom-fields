@@ -3,7 +3,7 @@
         <div class="lcf-compound-item" v-for="child, key in children" :key="key">
             <template v-if="conditions[key] !== false">
                 <div class="lcf-compound-key">
-                    <label>{{ child.label }}</label>
+                    <label :class="{required: child.required}">{{ child.label }}</label>
                 </div>
                 <field :path="path.concat(key)" :field="child.field" :errors="errors" />
             </template>
@@ -29,6 +29,7 @@ export default {
                 return {
                     field: field,
                     label: _.get(field, 'options.label', _.startCase(key)),
+                    required: _.get(field, 'options.required', false)
                 };
             })
         },
