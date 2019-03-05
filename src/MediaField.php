@@ -2,12 +2,21 @@
 namespace MadisonSolutions\LCF;
 
 use MadisonSolutions\LCF\Media\MediaItem;
+use MadisonSolutions\LCF\Media\MediaType;
 
 class MediaField extends Field
 {
+    public function optionDefaults() : array
+    {
+        $defaults = parent::optionDefaults();
+        $defaults['category'] = null;
+        return $defaults;
+    }
+
     public function optionRules() : array
     {
         $rules = parent::optionRules();
+        $rules['category'] = 'nullable|in:image,document,spreadsheet,presentation';
         return $rules;
     }
 
@@ -18,10 +27,14 @@ class MediaField extends Field
 
     public function getValidationRules()
     {
+        $category = $this->options['category'];
         $rules = parent::getValidationRules();
         $rules[] = 'integer';
-        $rules[] = function ($attribute, $value, $fail) {
+        $rules[] = function ($attribute, $value, $fail) use ($category) {
             $query = MediaItem::where('id', $value);
+            if ($category) {
+                $query->whereIn('extension', MediaType::allExtensionsForCategory($category));
+            }
             if (! $query->exists()) {
                 $fail("Invalid reference for {$attribute}");
             }

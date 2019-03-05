@@ -54,7 +54,7 @@ Route::get('lcf/link-lookup', function (Request $request, LCF $lcf) {
 });
 
 Route::get('lcf/media-library', function (Request $request) {
-    // @todo authorization, pagination, searching
+    // @todo authorization
     $query = MediaItem::query();
     $search = $request->input('search');
     if ($search) {
@@ -65,6 +65,10 @@ Route::get('lcf/media-library', function (Request $request) {
                 $q->where('title', 'ILIKE', $wordLike)->orWhere('alt', 'ILIKE', $wordLike);
             });
         }
+    }
+    $category = $request->input('category');
+    if ($category) {
+        $query->whereIn('extension', MediaType::allExtensionsForCategory($category));
     }
     $items = $query->paginate(50);
     return MediaItemResource::collection($items);
@@ -92,6 +96,10 @@ Route::post('lcf/media-library', function (Request $request) {
     $mediaType = new MediaType($extension);
     if ($mediaType->category == 'Unknown') {
         return ['ok' => false, 'error' => 'Unrecognised format'];
+    }
+    $category = $request->input('category');
+    if ($category && strtolower($mediaType->category) !== $category) {
+        return ['ok' => false, 'error' => "Must upload a file of type: {$category}, received type {$mediaType->category}"];
     }
     $suffixLen = strlen($extension) + 1;
     $basename = substr($file->getClientOriginalName(), 0, -$suffixLen);

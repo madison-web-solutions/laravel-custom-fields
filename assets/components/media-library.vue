@@ -6,7 +6,7 @@
             <button type="button" @click="cancel">Cancel</button>
         </div>
         <div class="lcf-ml-panel" v-if="showLibrary" @scroll="handleScroll">
-            <p><input type="search" placeholder="search" ref="searchInput" @input="handleSearch" /></p>
+            <p><input type="search" placeholder="search" ref="searchInput" @input="handleSearch" @keydown.enter.prevent="handleSearch" /></p>
             <p>Click to select:</p>
             <div class="lcf-ml-index">
                 <template v-for="upload in uploads">
@@ -38,14 +38,15 @@ var getter = {
     _counter: 1,
     _getting: false,
 };
-getter.get = function(search, page, callback) {
+getter.get = function(category, search, page, callback) {
     // Save a unique id for each call to get()
     // The idea of this is that if get() is called while a previous get() is still running,
     // then the second call can overrule the first one, and we'll only run the second callback
     var id = getter._counter++;
-    console.log('get '+id, search, page);
+    console.log('get '+id, category, search, page);
     getter._getting = id;
     axios.get('/lcf/media-library', {params: {
+        category: category,
         search: search,
         page: page
     }}).then(response => {
@@ -61,9 +62,9 @@ getter.getDebounce = _.debounce(getter.get, 300);
 getter.isGetting = function() {
     return (getter._getting !== false);
 };
-window.getter = getter;
 
 export default {
+    props: ['category'],
     data: function() {
         return {
             mode: 'library',
@@ -107,7 +108,7 @@ export default {
         },
         handleSearch: function() {
             var searchString = this.$refs.searchInput.value;
-            getter.getDebounce(this.$refs.searchInput.value, 0, (items) => {
+            getter.getDebounce(this.category, this.$refs.searchInput.value, 0, (items) => {
                 this.searchString = searchString;
                 this.page = 0;
                 this.hasMore = (items.length == 50);
@@ -120,7 +121,7 @@ export default {
             var scrollProportion = ((ele.scrollTop + ele.offsetHeight) / ele.scrollHeight);
             if (this.hasMore && !getter.isGetting() && scrollProportion > 0.9) {
                 var page = this.page + 1;
-                getter.get(this.searchString, page, (items) => {
+                getter.get(this.category, this.searchString, page, (items) => {
                     this.page = page;
                     this.hasMore = (items.length == 50);
                     this.libraryAppend(items);
@@ -176,6 +177,7 @@ export default {
             nextUpload.progress = 0;
             var formData = new FormData();
             formData.append('file', nextUpload.file);
+            formData.append('category', this.category);
 
             axios.post('/lcf/media-library', formData, {
                 onUploadProgress: function(e) {
@@ -226,7 +228,7 @@ export default {
         }
     },
     created: function() {
-        getter.get('', 0, (items) => {
+        getter.get(this.category, '', 0, (items) => {
             this.libraryAppend(items);
             this.hasMore = (items.length == 50);
         });

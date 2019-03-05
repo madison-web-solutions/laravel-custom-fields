@@ -194,6 +194,8 @@
     padding: 5px;
     border: 1px solid grey;
     transition: background-color 0.2s ease-in-out;
+    margin-bottom: 5px;
+    
     &:hover {
         background-color: #ddd;
     }

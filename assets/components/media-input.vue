@@ -9,7 +9,7 @@
             <button type="button" @click="openLibrary" data-action="select-image">{{ value ? 'Change' : 'Select' }}</button>
             <button type="button" v-if="value" @click="remove" data-action="remove-image">Remove</button>
         </template>
-        <media-library v-if="libraryOpen" @select="select" @close="closeLibrary" />
+        <media-library v-if="libraryOpen" :category="field.options.category" @select="select" @close="closeLibrary" />
     </div>
 </template>
 

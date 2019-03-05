@@ -9,6 +9,8 @@ class MediaType
     protected $category;
     protected $sizable;
 
+    protected static $known_extensions = ['jpg', 'png', 'gif', 'tif', 'svg', 'txt', 'rtf', 'md', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pptx'];
+
     public function __construct(string $extension)
     {
         $extension = strtolower(ltrim($extension, '.'));
@@ -151,12 +153,10 @@ class MediaType
         return false;
     }
 
-    public static function allCategories()
+    public static function allExtensionsForCategory(string $category)
     {
-        $categories = [];
-        foreach (static::members() as $type) {
-            $categories[$type->category] = true;
-        }
-        return array_keys($categories);
+        return array_filter(self::$known_extensions, function ($ext) use ($category) {
+            return strtolower((new MediaType($ext))->category) == $category;
+        });
     }
 }
