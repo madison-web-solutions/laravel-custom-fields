@@ -44,10 +44,10 @@
     }
 
 
-        button[data-name="append"] {
-            width: 19rem;
-            position: absolute;
-        }
+    button[data-name="append"] {
+        width: 19rem;
+        position: absolute;
+    }
 
     .lcf-repeater-item {
         display: table-row;
@@ -195,7 +195,7 @@
     border: 1px solid grey;
     transition: background-color 0.2s ease-in-out;
     margin-bottom: 5px;
-    
+
     &:hover {
         background-color: #ddd;
     }
@@ -278,7 +278,7 @@
         overflow: auto;
     }
 
-    button {
+    button[name="fullscreen"] {
         position: absolute;
         top: 3px;
         left: calc(50% - 31px);

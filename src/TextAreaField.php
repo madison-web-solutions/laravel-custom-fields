@@ -9,6 +9,8 @@ class TextAreaField extends Field
     {
         $defaults = parent::optionDefaults();
         $defaults['lines'] = 5;
+        $defaults['max'] = null;
+        $defaults['min'] = null;
         return $defaults;
     }
 
@@ -16,6 +18,8 @@ class TextAreaField extends Field
     {
         $rules = parent::optionRules();
         $rules['lines'] = 'integer|min:1';
+        $rules['max'] = 'nullable|integer';
+        $rules['min'] = 'nullable|integer';
         return $rules;
     }
 
@@ -23,6 +27,14 @@ class TextAreaField extends Field
     {
         $rules = parent::getValidationRules();
         $rules[] = 'string';
+        $max = $this->options['max'];
+        if (is_int($max)) {
+            $rules[] = "max:{$max}";
+        }
+        $min = $this->options['min'];
+        if (is_int($min)) {
+            $rules[] = "min:{$min}";
+        }
         return $rules;
     }
 
