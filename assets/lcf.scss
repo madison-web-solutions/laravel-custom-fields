@@ -233,6 +233,20 @@
         margin-right: 5rem;
     }
 }
+
+.lcf-field[data-lcf-field-type="choice"] {
+    position: relative;
+    &:after {
+        content: '\f078';
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        pointer-events: none;
+        font-family: 'Font Awesome\ 5 Free';
+        font-weight: 900;
+    }
+}
 // End choices
 
 // Model / Link searching
