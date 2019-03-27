@@ -28,7 +28,14 @@ var componentNames = [
     'toggle-input'
 ];
 _.forEach(componentNames, function(componentName) {
-    Vue.component(componentName, require('./components/' + componentName + '.vue'));
+    var componentDefn = require('./components/' + componentName + '.vue');
+    // If this is running under Laravel Mix v4 or higher then the require() function will
+    // not automatically pull out the default object from the module, so we attempt to
+    // detect and correct this situation below
+    if (componentDefn.default && componentDefn.__esModule) {
+        componentDefn = componentDefn.default;
+    }
+    Vue.component(componentName, componentDefn);
 });
 
 var initLcf = function() {
