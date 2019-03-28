@@ -2,12 +2,13 @@
     <div>
         <input :name="nameAttr" type="hidden" :value="value" />
         <input type="text" :class="{'lcf-input-has-error': hasError}" disabled :value="displayName" />
-        <input ref="input" type="search" value="" placeholder="Search" @input="search" />
-        <ul v-if="suggestions">
+        <input ref="input" type="search" value="" placeholder="Search" @input="search" @keydown.enter.prevent="search" />
+        <ul v-if="hasResults">
             <li v-for="suggestion in suggestions">
                 <button type="button" @click="change(suggestion)">{{ suggestion.label }}</button>
             </li>
         </ul>
+        <p v-if="noResults">No results</p>
     </div>
 </template>
 
@@ -21,7 +22,7 @@ export default {
     data: function() {
         return {
             displayName: '',
-            suggestions: []
+            suggestions: false, // false means not searched, an empty array means no results
         }
     },
     created: function() {
@@ -42,6 +43,7 @@ export default {
             });
         }
         this.search = _.debounce(() => {
+            this.suggestions = false;
             if (this.$refs.input.value.length >= 2) {
                 axios.get('/lcf/suggestions', {params: {
                     type: this.field.type,
@@ -53,9 +55,20 @@ export default {
             }
         }, 300);
     },
+    computed: {
+        searched: function() {
+            return _.isArray(this.suggestions);
+        },
+        hasResults: function() {
+            return this.searched && (this.suggestions.length > 0);
+        },
+        noResults: function() {
+            return this.searched && (this.suggestions.length == 0);
+        }
+    },
     methods: {
         clearSearch: function() {
-            this.suggestions = [];
+            this.suggestions = false;
             this.$refs.input.value = '';
         },
         change: function(suggestion) {
