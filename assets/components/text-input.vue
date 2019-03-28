@@ -1,5 +1,5 @@
 <template>
-    <input ref="input" :name="nameAttr" type="text" :class="{'lcf-input-has-error': hasError}" :value="value" :placeholder="placeholder" @change="change" />
+    <input ref="input" :name="nameAttr" type="text" :maxlength="maxlength" :class="{'lcf-input-has-error': hasError}" :value="value" :placeholder="placeholder" @change="change" />
 </template>
 
 <script>
@@ -16,6 +16,9 @@ export default {
     methods: {
         change: function() {
             this.updateMyValue(this.$refs.input.value);
+        },
+        maxlength: function() {
+            return _.get(this.field, 'options.max', false);
         }
     }
 };

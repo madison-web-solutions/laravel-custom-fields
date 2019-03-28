@@ -1,5 +1,5 @@
 <template>
-    <textarea ref="input" :name="nameAttr" :rows="lines" :class="{'lcf-input-has-error': hasError}" :placeholder="field.placeholder" @change="change">{{ value }}</textarea>
+    <textarea ref="input" :name="nameAttr" :rows="lines" :maxlength="maxlength" :class="{'lcf-input-has-error': hasError}" :placeholder="field.placeholder" @change="change">{{ value }}</textarea>
 </template>
 
 <script>
@@ -16,6 +16,9 @@ export default {
     computed: {
         lines: function() {
             return _.get(this.field, 'options.lines', 5);
+        },
+        maxlength: function() {
+            return _.get(this.field, 'options.max', false);
         },
     },
     methods: {
