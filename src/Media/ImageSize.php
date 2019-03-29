@@ -1,7 +1,9 @@
 <?php
 namespace MadisonSolutions\LCF\Media;
 
+use InvalidArgumentException;
 use Intervention\Image\Image;
+use Intervention\Image\ImageManager;
 
 class ImageSize
 {
@@ -101,7 +103,7 @@ class ImageSize
 
     public function setFormat(string $format)
     {
-        $formats = ['jpg', 'png'];
+        $formats = ['jpg', 'png', 'webp'];
         if (! in_array($format, $formats)) {
             throw new \Exception("Unexpected format '{$format}' - expected " . implode(', ', $formats));
         }
@@ -132,6 +134,22 @@ class ImageSize
                 break;
             case 'jpg':
                 return $resized->encode('jpg', 80);
+                break;
+            case 'webp':
+                // I couldn't get webp support working with either GD or ImageMagick
+                // so I'm resorting to saving as png to a temporary file, then converting
+                // to webp format via the cwebp command line tool
+                if (! `which cwebp`) {
+                    throw new \Exception("The cwebp command line tool must be installed in order to save images in webp format");
+                }
+                $temp_png_path = tempnam(sys_get_temp_dir(), 'png_');
+                file_put_contents($temp_png_path, $resized->encode('png'));
+                $temp_webp_path = tempnam(sys_get_temp_dir(), 'web_p');
+                exec('cwebp  ' . escapeshellarg($temp_png_path) . ' -o ' . escapeshellarg($temp_webp_path));
+                $gd_image_data = file_get_contents($temp_webp_path);
+                unlink($temp_png_path);
+                unlink($temp_webp_path);
+                return $gd_image_data;
                 break;
         }
     }

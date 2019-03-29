@@ -53,6 +53,9 @@ class MediaItem extends Model
 
     public function urlOrCreate($size = null)
     {
+        if (config('lcf.automatically_create_webp_images', false) && $size) {
+            $this->maybeCreateWebpVersion($size);
+        }
         if (! $this->fileExists($size)) {
             try {
                 $this->createImageSize($size);
@@ -61,6 +64,15 @@ class MediaItem extends Model
             }
         }
         return $this->url($size);
+    }
+
+    protected function maybeCreateWebpVersion($size)
+    {
+        $size = ImageSize::coerce($size);
+        if ($size->format == 'png' || $size->format == 'jpg') {
+            $webp_size = (clone $size)->setFormat('webp');
+            $this->urlOrCreate($webp_size);
+        }
     }
 
     // throws Intervention\Image\Exception\NotReadableException
