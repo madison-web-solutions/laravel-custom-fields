@@ -1,6 +1,6 @@
 <template>
     <div ref="container" class="lcf-repeater-field">
-        <div class="lcf-repeater-item" v-for="childId, index in childNodeIds" :key="childId" :draggable="draggingIndex !== false" @dragstart="dragStart">
+        <div class="lcf-repeater-item" v-for="childId, index in childNodeIds" :key="childId" :data-index="index" :draggable="draggingIndex !== false" @dragstart="dragStart" :class="{'lcf-drag-hide': (draggingStartedIndex === index)}">
             <div class="lcf-field-controls">
                 <button v-if="! isFull" type="button" @click="insert(index)" class="lcf-btn-icon" data-name="insert" aria-label="Insert section" title="Insert section">
                     <i class="fas fa-plus-circle"></i>
@@ -38,10 +38,10 @@ export default {
     data: function() {
         return {
             draggingIndex: false,
+            draggingStartedIndex: false
         };
     },
     created: function() {
-        this.draggingItem = false;
         this.fillUp();
     },
     computed: {
@@ -90,14 +90,14 @@ export default {
                 this.append();
             }
         },
-        getItems: function(excluding) {
+        getItems: function(excludingIndex) {
             return _.filter(this.$refs.container.childNodes, (ele) => {
-                return (ele !== excluding) && (ele.nodeType == 1) && ele.classList.contains('lcf-repeater-item');
+                return (ele.nodeType == 1) && ele.classList.contains('lcf-repeater-item') && (ele.getAttribute('data-index') != excludingIndex.toString());
             });
         },
         getClosest: function(pageY) {
             var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            var midpoints = _.map(this.getItems(this.draggingItem), (ele) => {
+            var midpoints = _.map(this.getItems(this.draggingIndex), (ele) => {
                 var rect = ele.getBoundingClientRect();
                 return scrollTop + rect.top + 0.5 * rect.height;
             });
@@ -113,7 +113,7 @@ export default {
             if (newIndex === false) {
                 marker.classList.remove('active');
             } else {
-                var items = this.getItems(this.draggingItem);
+                var items = this.getItems(this.draggingIndex);
                 if (newIndex === items.length) {
                     var lastItem = items[items.length - 1];
                     var pos = lastItem.offsetTop + lastItem.offsetHeight;
@@ -130,7 +130,9 @@ export default {
         },
         dragStart: function(e) {
             if (this.draggingIndex !== false) {
-                this.draggingItem = e.target;
+                this.$nextTick(() => {
+                    this.draggingStartedIndex = this.draggingIndex;
+                });
                 document.addEventListener('dragover', this.dragOver);
                 document.addEventListener('dragend', this.dragEnd);
             }
@@ -140,13 +142,14 @@ export default {
             this.showInsertPosition(false);
             this.move(this.draggingIndex, newIndex);
             this.draggingIndex = false;
-            this.draggingItem = false;
+            this.draggingStartedIndex = false;
             document.removeEventListener('dragover', this.dragOver);
             document.removeEventListener('dragend', this.dragEnd);
         },
         dragOver: function(e) {
             var newIndex = this.getClosest(e.pageY);
             this.showInsertPosition(newIndex);
+            e.preventDefault();
         }
     }
 };
