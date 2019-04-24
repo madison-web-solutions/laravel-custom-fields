@@ -195,6 +195,7 @@
     border: 1px solid grey;
     transition: background-color 0.2s ease-in-out;
     margin-bottom: 5px;
+    overflow: hidden;
 
     &:hover {
         background-color: #ddd;
@@ -205,6 +206,9 @@
         background-size: contain;
         background-position: center center;
         background-repeat: no-repeat;
+    }
+    span {
+        font-size: 1.4rem;
     }
     [data-name=remove] {
         position: absolute;

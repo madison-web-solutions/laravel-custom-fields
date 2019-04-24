@@ -63,11 +63,11 @@ class TimestampField extends Field
             $day = (int) gmdate("d", $timestamp);
         }
         if ($this->type == 'time' || $this->type == 'datetime') {
-            $year = (int) gmdate("Y", $timestamp);
-            $month = (int) gmdate("m", $timestamp);
-            $day = (int) gmdate("d", $timestamp);
+            $hour = (int) gmdate("G", $timestamp);
+            $minute = (int) gmdate("i", $timestamp);
+            $second = (int) gmdate("s", $timestamp);
         }
-        gmmktime($hour, $minute, $second, $month, $day, $year);
+        return gmmktime($hour, $minute, $second, $month, $day, $year);
     }
 
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
