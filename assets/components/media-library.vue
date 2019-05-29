@@ -177,7 +177,9 @@ export default {
             nextUpload.progress = 0;
             var formData = new FormData();
             formData.append('file', nextUpload.file);
-            formData.append('category', this.category);
+            if (this.category) {
+                formData.append('category', this.category);
+            }
 
             axios.post('/lcf/media-library', formData, {
                 onUploadProgress: function(e) {

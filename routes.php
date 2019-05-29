@@ -97,7 +97,7 @@ Route::post('lcf/media-library', function (Request $request) {
     if ($mediaType->category == 'Unknown') {
         return ['ok' => false, 'error' => 'Unrecognised format'];
     }
-    $category = $request->input('category');
+    $category = $request->input('category', null);
     if ($category && strtolower($mediaType->category) !== $category) {
         return ['ok' => false, 'error' => "Must upload a file of type: {$category}, received type {$mediaType->category}"];
     }
