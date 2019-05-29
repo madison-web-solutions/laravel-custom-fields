@@ -65,6 +65,7 @@ class LinkField extends Field
                 }
             }
         }
+        $output = null;
         return false;
     }
 

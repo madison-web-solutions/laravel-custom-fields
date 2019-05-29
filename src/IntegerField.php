@@ -48,6 +48,10 @@ class IntegerField extends Field
 
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
     {
-        return Coerce::toInt($input, $output);
+        if (! Coerce::toInt($input, $output)) {
+            $output = null;
+            return false;
+        }
+        return true;
     }
 }

@@ -58,6 +58,7 @@ class MediaField extends Field
             $output = $obj;
             return true;
         }
+        $output = null;
         return false;
     }
 

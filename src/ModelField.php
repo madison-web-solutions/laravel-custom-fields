@@ -62,6 +62,7 @@ class ModelField extends Field
             $output = $obj;
             return true;
         }
+        $output = null;
         return false;
     }
 

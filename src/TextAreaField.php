@@ -51,6 +51,7 @@ class TextAreaField extends Field
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
     {
         if (! Coerce::toString($input, $output)) {
+            $output = null;
             return false;
         }
         if ($output === '') {

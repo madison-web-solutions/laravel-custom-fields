@@ -4,6 +4,7 @@ namespace MadisonSolutions\LCFTest;
 use MadisonSolutions\LCF\CompoundField;
 use MadisonSolutions\LCF\TextField;
 use MadisonSolutions\LCF\IntegerField;
+use MadisonSolutions\LCF\RepeaterField;
 use Illuminate\Validation\ValidationException;
 
 class CompoundFieldTest extends TestCase
@@ -139,5 +140,38 @@ class CompoundFieldTest extends TestCase
                 $field = new CompoundField($options);
             });
         }
+    }
+
+    public function testPartialCoersion()
+    {
+        $field = new CompoundField([
+            'sub_fields' => [
+                'name' => new TextField([]),
+                'age' => new IntegerField([]),
+                'scores' => new RepeaterField([
+                    'sub_field' => new IntegerField([]),
+                ])
+            ],
+        ]);
+
+        $input = ['name' => 'Dan', 'age' => 'foo', 'scores' => [1, 2, 3]];
+        $expected_output = ['name' => 'Dan', 'age' => null, 'scores' => [1, 2, 3]];
+        $output = $field->coerce($input, 0);
+        $this->assertSame($expected_output, $output);
+
+        $input = ['name' => null, 'age' => '37', 'scores' => [1, '2', 3, null]];
+        $expected_output = ['name' => null, 'age' => 37, 'scores' => [1, 2, 3, null]];
+        $output = $field->coerce($input, 0);
+        $this->assertSame($expected_output, $output);
+
+        $input = ['name' => 'Dan', 'scores' => [1, 2, 3, 'foo'], 'dummy' => 'dummy'];
+        $expected_output = ['name' => 'Dan', 'age' => null, 'scores' => [1, 2, 3, null]];
+        $output = $field->coerce($input, 0);
+        $this->assertSame($expected_output, $output);
+
+        $input = ['name' => ['Dan'], 'age' => 37, 'scores' => 'foo'];
+        $expected_output = ['name' => null, 'age' => 37, 'scores' => [null]];
+        $output = $field->coerce($input, 0);
+        $this->assertSame($expected_output, $output);
     }
 }

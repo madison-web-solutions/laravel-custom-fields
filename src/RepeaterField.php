@@ -46,7 +46,6 @@ class RepeaterField extends Field
 
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
     {
-        $ok = true;
         if (! is_array($input)) {
             $input = [$input];
         }
@@ -54,6 +53,7 @@ class RepeaterField extends Field
             $output = null;
             return true;
         }
+        $ok = true;
         $output = [];
         foreach ($input as $sub_input) {
             if (! $this->sub_field->doCoerce($sub_input, $sub_output, $on_fail)) {

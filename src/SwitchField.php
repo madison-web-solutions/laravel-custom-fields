@@ -45,6 +45,7 @@ class SwitchField extends Field
     {
         if ($input instanceof SwitchValue) {
             if (! isset($this->switch_fields[$input->switch])) {
+                $output = null;
                 return false;
             }
             $switch_name = $input->switch;
@@ -52,11 +53,13 @@ class SwitchField extends Field
         } elseif (is_array($input) && isset($input['switch']) && is_string($input['switch'])) {
             if (!isset($this->switch_fields[$input['switch']])) {
                 // The switch field doesn't exist
+                $output = null;
                 return false;
             }
             $switch_name = $input['switch'];
             $switch_value_input = $input[$switch_name] ?? null;
         } else {
+            $output = null;
             return false;
         }
         $switch_field = $this->switch_fields[$switch_name];

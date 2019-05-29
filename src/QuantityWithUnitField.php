@@ -113,6 +113,7 @@ class QuantityWithUnitField extends Field
             $output = $parsed[0] . $parsed[1];
             return true;
         } else {
+            $output = null;
             return false;
         }
     }

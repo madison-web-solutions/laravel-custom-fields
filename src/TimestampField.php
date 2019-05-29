@@ -83,6 +83,7 @@ class TimestampField extends Field
         if (is_string($input)) {
             $timestamp = strtotime($input);
             if ($timestamp === false) {
+                $output = null;
                 return false;
             } else {
                 $output = $this->truncate($timestamp);
@@ -93,6 +94,7 @@ class TimestampField extends Field
             $output = $this->truncate($timestamp);
             return true;
         }
+        $output = null;
         return false;
     }
 }

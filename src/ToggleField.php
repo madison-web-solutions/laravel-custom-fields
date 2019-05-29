@@ -51,6 +51,7 @@ class ToggleField extends Field
             $output = false;
             return true;
         } else {
+            $output = null;
             return false;
         }
     }

@@ -44,11 +44,7 @@ abstract class Field implements JsonSerializable
     public function __construct(array $options)
     {
         $this->options = $options + $this->optionDefaults();
-        try {
-            Validator::make($this->options, $this->optionRules())->validate();
-        } catch (\Exception $e) {
-            error_log(json_encode($e->errors()));
-        }
+        Validator::make($this->options, $this->optionRules())->validate();
     }
 
     public function __get($name)
@@ -121,16 +117,17 @@ abstract class Field implements JsonSerializable
      */
     protected function doCoerce($input, &$output, int $on_fail) : bool
     {
+        // The eventual value of $output should depend only on $input,
+        // not whatever it happened to be set to outside of this function
+        // So start by erasing any previous value of $output
+        $output = null;
         if (is_null($input)) {
             $output = null;
             return true;
         }
         if ($this->coerceNotNull($input, $output, $on_fail)) {
-            // $output was set successfully
             return true;
         }
-        // coercion failed, value of output now cannot be trusted, so set to null
-        $output = null;
         $msg = "Failed to coerce value ".json_encode($input)." to ".get_class($this);
         if ($on_fail & self::COERCE_FAIL_LOG) {
             $this->log($msg, $input);
@@ -144,6 +141,11 @@ abstract class Field implements JsonSerializable
     /**
      * Take a value of any type, but guaranteed not to be null, and try to convert it to the right type for this field
      * Return true, and store the coerced value in $output if the coersion succeeds, return false otherwise
+     * $output should always be set to a value which is valid for the field type, even if coersion fails
+     * For a single valued field, if coersion fails, then $output should normally be set to null (which is always a valid value for any field)
+     * For complex fields with nested sub-fields, if coersion of an inner field fails, then coersion of the outer field must also be
+     * deemed to have failed, and the function should return null, however $output might still contain values from other sub-fields which
+     * were valid.
      */
     abstract protected function coerceNotNull($input, &$output, int $on_fail) : bool;
 

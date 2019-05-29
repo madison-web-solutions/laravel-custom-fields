@@ -48,15 +48,19 @@ class OptionsField extends Field
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
     {
         if (! is_array($input)) {
+            $output = null;
             return false;
         }
         $output = [];
+        $ok = true;
         foreach ($this->choices as $value => $label) {
-            if (! Coerce::toBool($input[$value] ?? false, $sub_output)) {
-                return false;
+            if (Coerce::toBool($input[$value] ?? false, $sub_output)) {
+                $output[$value] = $sub_output;
+            } else {
+                $output[$value] = false;
+                $ok = false;
             }
-            $output[$value] = $sub_output;
         }
-        return true;
+        return $ok;
     }
 }

@@ -50,14 +50,13 @@ class ChoiceField extends Field
 
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
     {
-        if (! Coerce::toArrayKey($input, $output)) {
-            return false;
+        if (Coerce::toArrayKey($input, $output)) {
+            if (array_key_exists($output, $this->choices)) {
+                return true;
+            }
         }
-        if (!array_key_exists($input, $this->choices)) {
-            $output = null;
-            return false;
-        }
-        return true;
+        $output = null;
+        return false;
     }
 
     public function getSuggestions(string $search)
