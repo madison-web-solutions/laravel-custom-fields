@@ -1,8 +1,9 @@
 <template>
     <div class="lcf-ml-preview" @click="click">
-        <div class="lcf-ml-thumb" :style="style" />
+        <div class="lcf-ml-thumb" :style="style">
+            <p v-if="! isImage" class="lcf-ml-thumb-alt"><strong>Media Type:</strong><br />{{ item.category }}</p>
+        </div>
         <span>{{ item.title }}</span>
-        <button v-if="deletable" type="button" data-name="remove" @click.stop="deleteItem">Delete</button>
     </div>
 </template>
 
@@ -11,10 +12,6 @@ export default {
     props: {
         item: {
             required: true
-        },
-        deletable: {
-            required: false,
-            default: false
         }
     },
     computed: {
@@ -24,14 +21,14 @@ export default {
                 style.backgroundImage = 'url('+this.item.thumb+')';
             }
             return style;
+        },
+        isImage: function() {
+            return this.item.category == 'Image';
         }
     },
     methods: {
         click: function() {
             this.$emit('select', {item: this.item});
-        },
-        deleteItem: function() {
-            this.$emit('deleteItem', {item: this.item});
         }
     }
 };

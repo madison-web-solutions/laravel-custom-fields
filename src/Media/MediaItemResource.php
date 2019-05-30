@@ -29,6 +29,7 @@ class MediaItemResource extends Resource
             'alt' => $this->alt,
             'mimeType' => ($type ? $type->mimeType : null),
             'category' => ($type ? $type->category : null),
+            'orig' => $this->url(),
             'thumb' => ($type->sizable ? $this->urlOrCreate(self::thumbSize()) : null),
         ];
         return $out;

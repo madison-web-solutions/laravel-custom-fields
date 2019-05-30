@@ -13,6 +13,7 @@ var componentNames = [
     'link-input',
     'markdown-input',
     'media-input',
+    'media-inspect',
     'media-library',
     'media-preview',
     'number-input',
@@ -46,6 +47,16 @@ var initLcf = function() {
             store: store,
             render: function(h) {
                 return h('field-wrapper', {props: props});
+            }
+        });
+    });
+    _.forEach(document.querySelectorAll('lcf-media-library'), function(el) {
+        var props = JSON.parse(el.getAttribute('data-props'));
+        new Vue({
+            el: el,
+            store: store,
+            render: function(h) {
+                return h('media-library', {props: props});
             }
         });
     });

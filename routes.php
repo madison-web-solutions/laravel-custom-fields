@@ -62,7 +62,7 @@ Route::get('lcf/media-library', function (Request $request) {
         foreach ($words as $word) {
             $query->where(function ($q) use ($word) {
                 $wordLike = '%' . str_replace('%', '\\%', $word) . '%';
-                $q->where('title', 'ILIKE', $wordLike)->orWhere('alt', 'ILIKE', $wordLike);
+                $q->where('title', 'ILIKE', $wordLike)->orWhere('alt', 'ILIKE', $wordLike)->orWhere('extension', $word);
             });
         }
     }
@@ -111,6 +111,23 @@ Route::post('lcf/media-library', function (Request $request) {
     $item->setUniqueSlug($basename);
     $item->save();
     $item->setFileFromUpload($file);
+    return [
+        'ok' => true,
+        'item' => new MediaItemResource($item),
+    ];
+});
+
+Route::post('lcf/media-library/update', function (Request $request) {
+    // @todo authorization
+    $request->validate([
+        'item_id' => 'required|integer',
+        'title' => 'required|string|max:255',
+        'alt' => 'nullable|string|max:255',
+    ]);
+    $item = MediaItem::findOrFail($request->item_id);
+    $item->title = $request->title;
+    $item->alt = $request->alt;
+    $item->save();
     return [
         'ok' => true,
         'item' => new MediaItemResource($item),

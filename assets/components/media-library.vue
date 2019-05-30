@@ -1,13 +1,13 @@
 <template>
     <div class="lcf-media-library" :class="cssClass" @dragover.prevent="dragIn" @dragenter.prevent="dragIn" @dragleave.prevent="dragOut" @dragend.prevent="dragOut" @drop.prevent="dragDrop">
-        <div class="lcf-ml-tabs">
+        <div v-if="! showInspect" class="lcf-ml-tabs">
             <button type="button" :class="{active: mode == 'library'}" @click.prevent="libraryMode">Library</button>
             <button type="button" :class="{active: mode == 'upload'}" @click.prevent="uploadMode">Upload</button>
-            <button type="button" @click="cancel">Cancel</button>
+            <button v-if="! standalone" type="button" @click="cancel">Cancel</button>
         </div>
         <div class="lcf-ml-panel" v-if="showLibrary" @scroll="handleScroll">
             <p><input type="search" placeholder="search" ref="searchInput" @input="handleSearch" @keydown.enter.prevent="handleSearch" /></p>
-            <p>Click to select:</p>
+            <p v-if="! standalone" >Click to select:</p>
             <div class="lcf-ml-index">
                 <template v-for="upload in uploads">
                     <div class="lcf-ml-preview" :class="'lcf-ml-'+upload.status" v-if="upload.status != 'done'">
@@ -15,9 +15,8 @@
                         <p v-if="upload.status == 'active'">{{ upload.progress }}%</p>
                         <p v-if="upload.status == 'error'">Error: {{ upload.error }}</p>
                     </div>
-                    <media-preview v-if="upload.status == 'done'" :key="upload.item.id" :item="upload.item" @select="select" />
                 </template>
-                <media-preview v-for="item in library" :key="item.id" :item="item" :deletable="true" @select="select" @deleteItem="deleteItem" />
+                <media-preview v-for="item in library" :key="item.id" :item="item" @select="select" />
             </div>
         </div>
         <div class="lcf-ml-panel" v-if="showUpload">
@@ -27,11 +26,15 @@
                 <p>... or drag and drop into this box</p>
             </div>
         </div>
+        <div class="lcf-ml-panel" v-if="showInspect">
+            <media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @selectItem="selectSelectedItem" @deleteItem="deleteSelectedItem" @updated="selectedItemUpdated" />
+        </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import _ from 'lodash';
 
 // Helper object for fetching media info from the server
 var getter = {
@@ -64,7 +67,16 @@ getter.isGetting = function() {
 };
 
 export default {
-    props: ['category'],
+    props: {
+        category: {
+            required: false
+        },
+        standalone: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    },
     data: function() {
         return {
             mode: 'library',
@@ -75,7 +87,8 @@ export default {
             searchString: null,
             page: 0,
             hasMore: true,
-            library: {},
+            library: [],
+            selectedItemId: null,
         }
     },
     computed: {
@@ -84,27 +97,46 @@ export default {
                 'has-drag-obj': this.hasDragObj
             }
         },
+        selectedItem: function() {
+            return _.find(this.library, item => item.id == this.selectedItemId);
+        },
         showUpload: function() {
             return this.hasDragObj || this.mode == 'upload';
         },
         showLibrary: function() {
-            return ! this.showUpload;
+            return this.mode == 'library' && ! this.hasDragObj;
+        },
+        showInspect: function() {
+            return this.mode == 'inspect' && this.selectedItem && ! this.hasDragObj;
         }
     },
     methods: {
         libraryMode: function() {
             this.mode = 'library';
+            this.selectedItemId = null;
         },
         uploadMode: function() {
             this.mode = 'upload';
         },
         libraryClear: function() {
-            this.library = {};
+            this.library = [];
         },
-        libraryAppend: function(items) {
+        libraryAddMany: function(items, atStart) {
             _.forEach(items, item => {
-                this.$set(this.library, item.id, item);
+                this.libraryAdd(item, atStart);
             });
+        },
+        libraryAdd: function(item, atStart) {
+            var index = _.findIndex(this.library, existingItem => existingItem.id == item.id);
+            if (index == -1) {
+                if (atStart) {
+                    this.library.unshift(item);
+                } else {
+                    this.library.push(item);
+                }
+            } else {
+                this.library.splice(index, 1, item);
+            }
         },
         handleSearch: function() {
             var searchString = this.$refs.searchInput.value;
@@ -113,7 +145,7 @@ export default {
                 this.page = 0;
                 this.hasMore = (items.length == 50);
                 this.libraryClear();
-                this.libraryAppend(items);
+                this.libraryAddMany(items);
             });
         },
         handleScroll: function(e) {
@@ -124,7 +156,7 @@ export default {
                 getter.get(this.category, this.searchString, page, (items) => {
                     this.page = page;
                     this.hasMore = (items.length == 50);
-                    this.libraryAppend(items);
+                    this.libraryAddMany(items);
                 });
             }
         },
@@ -152,7 +184,6 @@ export default {
                     status: 'new',
                     progress: 0,
                     error: null,
-                    item: null
                 });
             }
             this.next();
@@ -195,16 +226,19 @@ export default {
                 this.uploading = false;
                 this.next();
             }).catch(err => {
-                console.log(err);
-                this.setUploadError(nextUpload, 'upload error');
+                var msg = 'upload error';
+                if (err.response.status == 413) {
+                    msg = 'File too large';
+                }
+                this.setUploadError(nextUpload, msg);
                 this.uploading = false;
                 this.next();
             });
         },
         setUploadDone(upload, item) {
-            upload.status = 'done';
-            upload.progress = 100;
-            upload.item = item;
+            var index = this.uploads.indexOf(upload);
+            this.uploads.splice(index, 1);
+            this.libraryAdd(item, true);
         },
         setUploadError(upload, error) {
             upload.status = 'error';
@@ -212,18 +246,29 @@ export default {
         },
         select(e) {
             if (e.item != null) {
-                this.$emit('select', e);
+                this.mode = 'inspect';
+                this.selectedItemId = e.item.id;
             }
         },
-        deleteItem: function(e) {
-            if (e.item != null) {
+        selectSelectedItem: function() {
+            if (this.selectedItem) {
+                this.$emit('select', {item: this.selectedItem});
+            }
+        },
+        deleteSelectedItem: function() {
+            if (this.selectedItem) {
                 if (confirm("Are you sure you wish to delete this media item - this cannot be undone!")) {
-                    axios.post('/lcf/media-library/delete', {item_id: e.item.id}).then(response => {
-                        var index = this.library.indexOf(e.item);
+                    axios.post('/lcf/media-library/delete', {item_id: this.selectedItemId}).then(response => {
+                        var index = _.findIndex(this.library, item => item.id == this.selectedItemId);
                         this.library.splice(index, 1);
+                        this.selectedItemId = null;
+                        this.libraryMode();
                     });
                 }
             }
+        },
+        selectedItemUpdated: function(newItem) {
+            this.libraryAdd(newItem);
         },
         cancel: function() {
             this.$emit('close');
@@ -231,7 +276,7 @@ export default {
     },
     created: function() {
         getter.get(this.category, '', 0, (items) => {
-            this.libraryAppend(items);
+            this.libraryAddMany(items);
             this.hasMore = (items.length == 50);
         });
     }
