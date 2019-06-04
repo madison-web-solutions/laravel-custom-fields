@@ -8,11 +8,6 @@ use MadisonSolutions\LCF\Validator;
 
 class IntegerField extends ScalarField
 {
-    public function inputComponent() : string
-    {
-        return 'lcf-number-input';
-    }
-
     public function optionDefaults() : array
     {
         $defaults = parent::optionDefaults();
@@ -27,6 +22,18 @@ class IntegerField extends ScalarField
         $rules['max'] = 'nullable|integer';
         $rules['min'] = 'nullable|integer';
         return $rules;
+    }
+
+    public function inputComponent() : string
+    {
+        return 'lcf-number-input';
+    }
+
+    public function jsonSerialize()
+    {
+        $data = parent::jsonSerialize();
+        $data['settings']['integers_only'] = true;
+        return $data;
     }
 
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)

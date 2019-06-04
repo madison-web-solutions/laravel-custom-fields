@@ -1,7 +1,7 @@
 <template>
     <div class="lcf-input lcf-input-lat-lng">
-        <input ref="lat" type="text" :name="this.name + '[lat]'" :value="lat" @change="change" />
-        <input ref="lng" type="text" :name="this.name + '[lng]'" :value="lng" @change="change" />
+        <input ref="lat" type="text" :name="name + '[lat]'" :value="lat" @change="change" />
+        <input ref="lng" type="text" :name="name + '[lng]'" :value="lng" @change="change" />
     </div>
 </template>
 
