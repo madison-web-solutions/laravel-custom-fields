@@ -130,9 +130,9 @@ export default {
         },
         dragStart: function(e) {
             if (this.draggingIndex !== false) {
-                this.$nextTick(() => {
+                window.setTimeout(() => {
                     this.draggingStartedIndex = this.draggingIndex;
-                });
+                }, 100);
                 document.addEventListener('dragover', this.dragOver);
                 document.addEventListener('dragend', this.dragEnd);
             }
