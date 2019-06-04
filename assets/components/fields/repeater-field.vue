@@ -11,6 +11,7 @@
             </div>
             <component :is="subField.fieldComponent" :key="id" :path="path.concat(index)" :field="subField" />
         </div>
+        <button type="button" @click="insert(length)" class="lcf-btn-icon">add</button>
         <lcf-error-messages :errors="errors" />
     </div>
 </template>
@@ -20,12 +21,9 @@ import { get, keys } from 'lodash-es';
 import FieldMixin from '../../field-mixin.js';
 export default {
     mixins: [FieldMixin],
-    created: function() {
-        this.$lcfStore.objectInitKeys(this.pathStr, keys(this.subFields));
-    },
     computed: {
         subField: function() {
-            return get(this.field, 'settings.subField');
+            return get(this.field, 'settings.sub_field');
         },
         length: function() {
             return this.childIds ? this.childIds.length: 0;

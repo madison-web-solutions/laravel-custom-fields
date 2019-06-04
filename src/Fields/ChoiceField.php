@@ -37,7 +37,7 @@ class ChoiceField extends ScalarField
         }
     }
 
-    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
+    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_scalar($input) || ! array_key_exists($input, $this->choices)) {
             $messages[$path][] = "Invalid value";

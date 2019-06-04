@@ -1,13 +1,13 @@
 <?php
 namespace MadisonSolutions\LCFTest;
 
-use MadisonSolutions\LCF\IntegerField;
+use MadisonSolutions\LCF\LCF;
 
 class IntegerFieldTest extends TestCase
 {
     public function testCanConvertValidValuesToInteger()
     {
-        $field = new IntegerField([]);
+        $field = LCF::newIntegerField([]);
 
         $this->assertCoerceOk($field, null, null);
         $this->assertCoerceOk($field, 10, 10);
@@ -22,7 +22,7 @@ class IntegerFieldTest extends TestCase
 
     public function testCannotConvertInvalidValuesToInteger()
     {
-        $field = new IntegerField([]);
+        $field = LCF::newIntegerField([]);
 
         $this->assertCoerceFails($field, []);
         $this->assertCoerceFails($field, new \stdClass());
@@ -33,25 +33,72 @@ class IntegerFieldTest extends TestCase
 
     public function testBasicValidationWorks()
     {
-        $field = new IntegerField([]);
+        $field = LCF::newIntegerField([]);
 
         $this->assertValidationPasses($field, 10);
-        $this->assertValidationPasses($field, '10');
+        $this->assertValidationPasses($field, 0);
+        $this->assertValidationPasses($field, -5);
         $this->assertValidationPasses($field, null);
-        $this->assertValidationPasses($field, '');
         $this->assertValidationPassesWhenValueOmitted($field);
 
+        // strings '' and '10' fail because coercion should be done before validation
+        $this->assertValidationFails($field, '');
+        $this->assertValidationFails($field, '10');
+        $this->assertCoerceFails($field, 2.5);
         $this->assertValidationFails($field, 'cheese');
         $this->assertValidationFails($field, ['cheese']);
     }
 
     public function testRequiredAttributeWorks()
     {
-        $field = new IntegerField(['required' => true]);
+        $field = LCF::newIntegerField(['required' => true]);
 
         $this->assertValidationPasses($field, 10);
         $this->assertValidationFails($field, null);
         $this->assertValidationFails($field, '');
         $this->assertValidationFailsWhenValueOmitted($field);
+    }
+
+    public function testOTherValidationRulesWork()
+    {
+        $field = LCF::newIntegerField([
+            'min' => 5,
+        ]);
+        $this->assertValidationPasses($field, 5);
+        $this->assertValidationFails($field, 4);
+
+        $field = LCF::newIntegerField([
+            'min' => 0,
+        ]);
+        $this->assertValidationPasses($field, 5);
+        $this->assertValidationPasses($field, 0);
+        $this->assertValidationFails($field, -5);
+
+        $field = LCF::newIntegerField([
+            'max' => 10,
+        ]);
+        $this->assertValidationPasses($field, 10);
+        $this->assertValidationFails($field, 11);
+
+        $field = LCF::newIntegerField([
+            'max' => 0,
+        ]);
+        $this->assertValidationPasses($field, -5);
+        $this->assertValidationPasses($field, 0);
+        $this->assertValidationFails($field, 10);
+    }
+
+    public function testOtherValidationRulesInteractionWithRequiredAttriute()
+    {
+        $field = LCF::newTextField([
+            'min' => 5,
+        ]);
+        $this->assertValidationPasses($field, null);
+
+        $field = LCF::newTextField([
+            'required' => true,
+            'min' => 5,
+        ]);
+        $this->assertValidationFails($field, null);
     }
 }

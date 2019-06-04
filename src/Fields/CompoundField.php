@@ -26,10 +26,10 @@ class CompoundField extends Field
 
     public function fieldComponent() : string
     {
-        return 'compound-field';
+        return 'lcf-compound-field';
     }
 
-    protected function coerceNotNull($input, &$output, int $on_fail) : bool
+    protected function coerceNotNull($input, &$output, bool $keep_invalid) : bool
     {
         $ok = true;
         if (! is_array($input)) {
@@ -38,7 +38,7 @@ class CompoundField extends Field
         $output = [];
         foreach ($this->sub_fields as $key => $field) {
             $sub_input = $input[$key] ?? null;
-            if (! $field->doCoerce($sub_input, $sub_output, $on_fail)) {
+            if (! $field->coerce($sub_input, $sub_output, $keep_invalid)) {
                 $ok = false;
             }
             $output[$key] = $sub_output;
@@ -46,25 +46,17 @@ class CompoundField extends Field
         return $ok;
     }
 
-    protected function toPrimitiveNotNull($cast_value)
-    {
-        $primitive_value = [];
-        foreach ($this->sub_fields as $key => $field) {
-            $primitive_value[$key] = $field->toPrimitive($cast_value[$key]);
-        }
-        return $primitive_value;
-    }
-
-    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
+    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_array($value)) {
             $messages[$path][] = "Invalid value";
             return;
         }
         foreach ($this->sub_fields as $key => $field) {
-            if ($this->testCondition($key, $validator->getData(), $path) !== false) {
-                $field->validate("{$path}.{$key}", $value[$key] ?? null, $messages, $validator);
+            if ($validator && $this->testCondition($key, $validator->getData(), $path) === false) {
+                continue;
             }
+            $field->validate("{$path}.{$key}", $value[$key] ?? null, $messages, $validator);
         }
     }
 

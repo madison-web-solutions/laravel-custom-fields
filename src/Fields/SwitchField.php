@@ -3,7 +3,7 @@
 namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\LCF\Field;
-use MadisonSolutions\LCF\SwtichValue;
+use MadisonSolutions\LCF\SwitchValue;
 use MadisonSolutions\LCF\Validator;
 
 class SwitchField extends Field
@@ -27,14 +27,14 @@ class SwitchField extends Field
 
     public function fieldComponent() : string
     {
-        return 'switch-field';
+        return 'lcf-switch-field';
     }
 
-    protected function coerceNotNull($input, &$output, int $on_fail) : bool
+    protected function coerceNotNull($input, &$output, bool $keep_invalid) : bool
     {
         if ($input instanceof SwitchValue) {
             if (! isset($this->switch_fields[$input->switch])) {
-                $output = null;
+                $output = ($keep_invalid ? $input : null);
                 return false;
             }
             $switch_name = $input->switch;
@@ -42,32 +42,22 @@ class SwitchField extends Field
         } elseif (is_array($input) && isset($input['switch']) && is_string($input['switch'])) {
             if (!isset($this->switch_fields[$input['switch']])) {
                 // The switch field doesn't exist
-                $output = null;
+                $output = ($keep_invalid ? $input : null);
                 return false;
             }
             $switch_name = $input['switch'];
             $switch_value_input = $input[$switch_name] ?? null;
         } else {
-            $output = null;
+            $output = ($keep_invalid ? $input : null);
             return false;
         }
         $switch_field = $this->switch_fields[$switch_name];
-        $ok = $switch_field->doCoerce($switch_value_input, $switch_value_output, $on_fail);
+        $ok = $switch_field->coerce($switch_value_input, $switch_value_output, $keep_invalid);
         $output = new SwitchValue($switch_name, $switch_value_output);
         return $ok;
     }
 
-    protected function toPrimitiveNotNull($cast_value)
-    {
-        $switch_name = $cast_value->switch;
-        $switch_field = $this->switch_fields[$switch_name];
-        return [
-            'switch' => $switch_name,
-            $switch_name => $switch_field->toPrimitive($cast_value->value),
-        ];
-    }
-
-    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
+    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! ($value instanceof SwitchValue)) {
             $messages[$path][] = "Invalid value";

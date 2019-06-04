@@ -20,7 +20,7 @@ export default {
     },
     computed: {
         switchFields: function() {
-            return get(this.field, 'settings.switchFields');
+            return get(this.field, 'settings.switch_fields');
         },
         switchKeys: function() {
             return keys(this.switchFields);
@@ -40,7 +40,7 @@ export default {
     },
     methods: {
         switchLabel: function(key) {
-            return get(this.field, 'settings.switchLabels.' + key, key);
+            return get(this.field, 'settings.switch_labels.' + key, key);
         },
         getValidSwitchKey: function(input) {
             if (input && this.switchFields[input]) {

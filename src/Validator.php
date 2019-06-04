@@ -2,35 +2,70 @@
 
 namespace MadisonSolutions\LCF;
 
+use Illuminate\Support\MessageBag;
 use Illuminate\Validation\Validator as LaravelValidator;
 
 class Validator extends LaravelValidator
 {
-    public static function make(array $data, array $rules, array $messages = [], array $customAttributes = [])
+    protected $fields;
+
+    public function __construct(array $data = [], array $fields = [], array $rules = [])
     {
-        return new Validator(validator()->getTranslator(), $data, $rules, $messages, $customAttributes);
+        parent::__construct(validator()->getTranslator(), $data, $rules, [], []);
+        $this->fields = $fields;
     }
 
     /**
-     * Validate an attribute using a custom rule object.
+     * Determine if the data passes the validation rules.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @param  \Illuminate\Contracts\Validation\Rule  $rule
-     * @return void
+     * @return bool
      */
-    protected function validateUsingCustomRule($attribute, $value, $rule)
+    public function passes()
     {
-        if ($rule instanceof FieldValidationRule) {
-            $rule->validate($attribute, $value, $messages, $this);
-            foreach ($messages as $path => $path_messages) {
-                $this->failedRules[$path][get_class($rule)] = [];
-                foreach ($path_messages as $message) {
-                    $this->messages->add($path, $this->makeReplacements($message, $attribute, get_class($rule), []));
+        $this->messages = new MessageBag;
+
+        [$this->distinctValues, $this->failedRules] = [[], []];
+
+        // Do LCF field validation first
+        foreach ($this->fields as $field_name => $field) {
+            $this->validateField($field_name, $field);
+        }
+
+        // We'll spin through each rule, validating the attributes attached to that
+        // rule. Any error messages will be added to the containers with each of
+        // the other error messages, returning true if we don't have messages.
+        foreach ($this->rules as $attribute => $rules) {
+            $attribute = str_replace('\.', '->', $attribute);
+
+            foreach ($rules as $rule) {
+                $this->validateAttribute($attribute, $rule);
+
+                if ($this->shouldStopValidating($attribute)) {
+                    break;
                 }
             }
-        } else {
-            return parent::validateUsingCustomRule($attribute, $value, $rule);
+        }
+
+        // Here we will spin through all of the "after" hooks on this validator and
+        // fire them off. This gives the callbacks a chance to perform all kinds
+        // of other validation that needs to get wrapped up in this operation.
+        foreach ($this->after as $after) {
+            call_user_func($after);
+        }
+
+        return $this->messages->isEmpty();
+    }
+
+    protected function validateField($field_name, $field)
+    {
+        $value = $this->getValue($field_name);
+        $field->validate($field_name, $value, $field_messages, $this);
+
+        foreach ($field_messages as $path => $path_messages) {
+            $this->failedRules[$path]['LCFField'] = [];
+            foreach ($path_messages as $message) {
+                $this->messages->add($path, $this->makeReplacements($message, $path, 'LCFField', []));
+            }
         }
     }
 

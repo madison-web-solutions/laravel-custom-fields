@@ -91,6 +91,12 @@ abstract class Field implements JsonSerializable
         ];
     }
 
+    public function defaultValue()
+    {
+        $this->coerce($this->options['default'] ?? null, $output);
+        return $output;
+    }
+
     /**
      * Take a value and try to convert it into the right type for this field
      * May be the right type already, or may be a 'primitive' representation
@@ -120,6 +126,27 @@ abstract class Field implements JsonSerializable
      * were valid.
      */
     abstract protected function coerceNotNull($input, &$output, bool $keep_invalid) : bool;
+
+    /**
+     * Take a raw value from the database and try to convert it to the right type for this field
+     * Possibly involves some kind of deserializing
+     * If the conversion fails, log an error and return null - don't throw errors
+     */
+    public function fromDatabase($db_value)
+    {
+        $primitive_value = $this->databaseDeserialize($db_value);
+        $this->coerce($primitive_value, $output);
+        return $output;
+    }
+
+    /**
+     * Take a value and coerce it to the right type for this field, then convert to raw data to be inserted into a database
+     */
+    public function toDatabase($value)
+    {
+        $this->coerce($value, $cast_value);
+        return is_null($cast_value) ? null : $this->databaseSerializeNotNull($cast_value);
+    }
 
     /**
      * Take a raw value from the database and deserialize if necessary
@@ -160,76 +187,16 @@ abstract class Field implements JsonSerializable
     }
 
     /**
-     * Take a value guaranteed to be the correct primitive representation for this field, and guaranteed not to be null
+     * Take a value guaranteed to be the correct type for this field, and guaranteed not to be null
      * and return the representation of it suitable for storage in a database - should never fail
      */
-    protected function databaseSerializeNotNull($primitive_value)
+    protected function databaseSerializeNotNull($cast_value)
     {
         if ($this->store_in_json) {
-            return json_encode($primitive_value);
+            return json_encode($cast_value);
         } else {
-            return $primitive_value;
+            return $cast_value;
         }
-    }
-
-    public function defaultValue()
-    {
-        $this->coerce($this->options['default'] ?? null, $output);
-        return $output;
-    }
-
-    /**
-     * Take a raw value from the database and try to convert it to the right type for this field
-     * Possibly involves some kind of deserializing
-     * If the conversion fails, log an error and return null - don't throw errors
-     */
-    public function fromDatabase($db_value)
-    {
-        $primitive_value = $this->databaseDeserialize($db_value);
-        $this->coerce($primitive_value, $output);
-        return $output;
-    }
-
-    /**
-     * Take a value and coerce it to the right type for this field, then obtain the 'primitive' representation of it
-     * This could then be used on the front-end via json
-     * Behaviour if the coersion fails determined by 2nd param $on_fail which is an options bitmask
-     */
-    public function toPrimitive($value)
-    {
-        if ($this->coerce($value, $cast_value)) {
-            return is_null($cast_value) ? null : $this->toPrimitiveNotNull($cast_value);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Take a value guaranteed to be the right type for this field, and guaranteed not to be null
-     * and return the 'primitive' representation of it - should never fail
-     * Default is to return the value unchanged - thus assuming that the correct type for the field is already 'primitive'
-     */
-    protected function toPrimitiveNotNull($cast_value)
-    {
-        return $cast_value;
-    }
-
-    /**
-     * Take a value and coerce it to the right type for this field, then convert to raw data to be inserted into a database
-     */
-    public function toDatabase($value)
-    {
-        $primitive_value = $this->toPrimitive($value);
-        if (is_null($primitive_value)) {
-            return null;
-        } else {
-            return $this->databaseSerializeNotNull($primitive_value);
-        }
-    }
-
-    public function validationRule()
-    {
-        return new FieldValidationRule($this);
     }
 
     public function validate(string $path, $value, &$messages, Validator $validator)
@@ -246,7 +213,7 @@ abstract class Field implements JsonSerializable
         return $this->validateNotNull($path, $value, $messages, $validator);
     }
 
-    public function validateNotNull(string $path, $cast_value, &$messages, Validator $validator)
+    public function validateNotNull(string $path, $cast_value, &$messages, ?Validator $validator = null)
     {
         //
     }

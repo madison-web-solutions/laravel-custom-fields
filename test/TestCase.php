@@ -2,7 +2,7 @@
 namespace MadisonSolutions\LCFTest;
 
 use MadisonSolutions\LCF\Field;
-use Illuminate\Support\MessageBag;
+use MadisonSolutions\LCF\Validator as LCFValidator;
 use Tests\TestCase as LaravelTestCase;
 use TypeError;
 
@@ -22,45 +22,41 @@ class TestCase extends LaravelTestCase
 
     protected function assertCoerceOk(Field $field, $input, $expected_output)
     {
-        $this->assertSame($expected_output, $field->toPrimitive($input));
+        $result = $field->coerce($input, $output);
+        $this->assertTrue($result);
+        $this->assertSame(json_encode($expected_output), json_encode($output));
     }
 
-    protected function assertCoerceFails(Field $field, $value)
+    protected function assertCoerceFails(Field $field, $input, $expected_output = null)
     {
-        $error = null;
-        try {
-            $field->coerce($value);
-        } catch (TypeError $e) {
-            $error = $e;
-        }
-        $this->assertInstanceOf(TypeError::class, $error);
+        $result = $field->coerce($input, $output);
+        $this->assertFalse($result);
+        $this->assertSame(json_encode($expected_output), json_encode($output));
     }
 
     protected function assertValidationPasses(Field $field, $value)
     {
-        $messages = new MessageBag();
-        $field->validate(['dummy' => $value], 'dummy', $messages);
-        $this->assertTrue($messages->isEmpty());
+        $v = new LCFValidator(['dummy' => $value], ['dummy' => $field]);
+        $this->assertSame([], $v->messages()->all());
+        $this->assertTrue($v->passes());
     }
 
     protected function assertValidationFails(Field $field, $value)
     {
-        $messages = new MessageBag();
-        $field->validate(['dummy' => $value], 'dummy', $messages);
-        $this->assertFalse($messages->isEmpty());
+        $v = new LCFValidator(['dummy' => $value], ['dummy' => $field]);
+        $this->assertFalse($v->passes());
     }
 
     protected function assertValidationPassesWhenValueOmitted(Field $field)
     {
-        $messages = new MessageBag();
-        $field->validate([], 'dummy', $messages);
-        $this->assertTrue($messages->isEmpty());
+        $v = new LCFValidator([], ['dummy' => $field]);
+        $this->assertSame([], $v->messages()->all());
+        $this->assertTrue($v->passes());
     }
 
     protected function assertValidationFailsWhenValueOmitted(Field $field)
     {
-        $messages = new MessageBag();
-        $field->validate([], 'dummy', $messages);
-        $this->assertFalse($messages->isEmpty());
+        $v = new LCFValidator([], ['dummy' => $field]);
+        $this->assertFalse($v->passes());
     }
 }

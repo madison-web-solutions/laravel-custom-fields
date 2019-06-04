@@ -30,7 +30,7 @@ class RepeaterField extends Field
 
     public function fieldComponent() : string
     {
-        return 'repeater-field';
+        return 'lcf-repeater-field';
     }
 
     protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
@@ -54,17 +54,16 @@ class RepeaterField extends Field
         return $ok;
     }
 
-    protected function toPrimitiveNotNull($cast_value)
-    {
-        return array_map(function ($value) {
-            return $this->sub_field->toPrimitive($value);
-        }, $cast_value);
-    }
-
-    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
+    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_array($value)) {
             $messages[$path][] = "Invalid value";
+            return;
+        }
+        if (count($value) == 0) {
+            if ($this->options['required']) {
+                $messages[$path][] = "This field is required";
+            }
             return;
         }
         $max = $this->options['max'];

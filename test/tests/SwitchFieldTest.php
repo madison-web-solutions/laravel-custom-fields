@@ -1,9 +1,7 @@
 <?php
 namespace MadisonSolutions\LCFTest;
 
-use MadisonSolutions\LCF\SwitchField;
-use MadisonSolutions\LCF\TextField;
-use MadisonSolutions\LCF\IntegerField;
+use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCF\SwitchValue;
 use Illuminate\Validation\ValidationException;
 
@@ -11,10 +9,10 @@ class SwitchFieldTest extends TestCase
 {
     public function testCanConvertValidValuesToSwitchField()
     {
-        $field = new SwitchField([
+        $field = LCF::newSwitchField([
             'switch_fields' => [
-                'num' => new IntegerField([]),
-                'level' => new TextField([]),
+                'num' => LCF::newIntegerField([]),
+                'level' => LCF::newTextField([]),
             ],
         ]);
 
@@ -34,92 +32,92 @@ class SwitchFieldTest extends TestCase
 
     public function testCannotConvertInvalidValuesToSwitchField()
     {
-        $field = new SwitchField([
+        $field = LCF::newSwitchField([
             'switch_fields' => [
-                'num' => new IntegerField([]),
-                'level' => new TextField([]),
+                'num' => LCF::newIntegerField([]),
+                'level' => LCF::newTextField([]),
             ],
         ]);
 
         $this->assertCoerceFails($field, 10);
         $this->assertCoerceFails($field, ['num' => 10]);
-        $this->assertCoerceFails($field, ['switch' => 'num', 'num' => 'foo']);
+        $this->assertCoerceFails($field, ['switch' => 'num', 'num' => 'foo'], ['switch' => 'num', 'num' => null]);
         $this->assertCoerceFails($field, ['switch' => 'foo', 'num' => 10]);
-        $this->assertCoerceFails($field, new SwitchValue('num', 'foo'));
+        $this->assertCoerceFails($field, new SwitchValue('num', 'foo'), ['switch' => 'num', 'num' => null]);
         $this->assertCoerceFails($field, new SwitchValue('foo', null));
     }
 
     public function testBasicValidationWorks()
     {
-        $field = new SwitchField([
+        $field = LCF::newSwitchField([
             'switch_fields' => [
-                'num' => new IntegerField([]),
-                'level' => new TextField([]),
+                'num' => LCF::newIntegerField([]),
+                'level' => LCF::newTextField([]),
             ],
         ]);
 
         $this->assertValidationPasses($field, null);
-        $this->assertValidationPasses($field, ['switch' => 'num', 'num' => null]);
-        $this->assertValidationPasses($field, ['switch' => 'num']);
-        $this->assertValidationPasses($field, ['switch' => 'num', 'num' => 10]);
-        $this->assertValidationPasses($field, ['switch' => 'level', 'level' => 'high']);
+        $this->assertValidationPasses($field, new SwitchValue('num', null));
+        $this->assertValidationPasses($field, new SwitchValue('num'));
+        $this->assertValidationPasses($field, new SwitchValue('num', 10));
+        $this->assertValidationPasses($field, new SwitchValue('level', 'high'));
         $this->assertValidationPassesWhenValueOmitted($field);
 
         $this->assertValidationFails($field, 'foo');
-        $this->assertValidationFails($field, ['num' => 10]);
-        $this->assertValidationFails($field, ['switch' => 'foo', 'num' => 10]);
-        $this->assertValidationFails($field, ['switch' => 'num', 'num' => 'foo']);
+        $this->assertValidationFails($field, ['switch' => 'num', 'num' => 10]);
+        $this->assertValidationFails($field, new SwitchValue('foo', 10));
+        $this->assertValidationFails($field, new SwitchValue('num', 'foo'));
     }
 
     public function testRequiredAttributeWorks()
     {
         // Outer switch required, inner value not required
-        $field = new SwitchField([
+        $field = LCF::newSwitchField([
             'required' => true,
             'switch_fields' => [
-                'num' => new IntegerField([]),
-                'level' => new TextField([]),
+                'num' => LCF::newIntegerField([]),
+                'level' => LCF::newTextField([]),
             ],
         ]);
 
-        $this->assertValidationPasses($field, ['switch' => 'num', 'num' => 10]);
+        $this->assertValidationPasses($field, new SwitchValue('num', 10));
         $this->assertValidationFails($field, null);
-        $this->assertValidationPasses($field, ['switch' => 'num', 'num' => null]);
-        $this->assertValidationPasses($field, ['switch' => 'num']);
+        $this->assertValidationPasses($field, new SwitchValue('num', null));
+        $this->assertValidationPasses($field, new SwitchValue('num'));
         $this->assertValidationFailsWhenValueOmitted($field);
 
         // Outer switch required, inner value also required
-        $field = new SwitchField([
+        $field = LCF::newSwitchField([
             'required' => true,
             'switch_fields' => [
-                'num' => new IntegerField([
+                'num' => LCF::newIntegerField([
                     'required' => true,
                 ]),
-                'level' => new TextField([]),
+                'level' => LCF::newTextField([]),
             ],
         ]);
 
-        $this->assertValidationPasses($field, ['switch' => 'num', 'num' => 10]);
+        $this->assertValidationPasses($field, new SwitchValue('num', 10));
         $this->assertValidationFails($field, null);
-        $this->assertValidationFails($field, ['switch' => 'num', 'num' => null]);
-        $this->assertValidationFails($field, ['switch' => 'num']);
+        $this->assertValidationFails($field, new SwitchValue('num', null));
+        $this->assertValidationFails($field, new SwitchValue('num'));
         $this->assertValidationFailsWhenValueOmitted($field);
 
         // Outer switch not required, inner value required if present
-        $field = new SwitchField([
+        $field = LCF::newSwitchField([
             'required' => false,
             'switch_fields' => [
-                'num' => new IntegerField([
+                'num' => LCF::newIntegerField([
                     'required' => true,
                 ]),
-                'level' => new TextField([]),
+                'level' => LCF::newTextField([]),
             ],
         ]);
 
-        $this->assertValidationPasses($field, ['switch' => 'num', 'num' => 10]);
+        $this->assertValidationPasses($field, new SwitchValue('num', 10));
         $this->assertValidationPasses($field, null);
-        $this->assertValidationFails($field, ['switch' => 'num', 'num' => null]);
-        $this->assertValidationFails($field, ['switch' => 'num']);
+        $this->assertValidationFails($field, new SwitchValue('num', null));
+        $this->assertValidationFails($field, new SwitchValue('num'));
         $this->assertValidationPassesWhenValueOmitted($field);
     }
 
@@ -139,9 +137,9 @@ class SwitchFieldTest extends TestCase
         ];
         foreach ($invalid_keys as $invalid_key) {
             $this->assertExceptionThrown(ValidationException::class, function () use ($invalid_key) {
-                $field = new SwitchField([
+                $field = LCF::newSwitchField([
                     'switch_fields' => [
-                        $invalid_key => new IntegerField([]),
+                        $invalid_key => LCF::newIntegerField([]),
                     ],
                 ]);
             });
@@ -157,7 +155,7 @@ class SwitchFieldTest extends TestCase
         ];
         foreach ($invalid_options as $options) {
             $this->assertExceptionThrown(ValidationException::class, function () use ($options) {
-                $field = new SwitchField($options);
+                $field = LCF::newSwitchField($options);
             });
         }
     }

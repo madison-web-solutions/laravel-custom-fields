@@ -23,17 +23,9 @@ class LCFServiceProvider extends ServiceProvider
             }
         });
 
-        Request::macro('lcfValidate', function (array $rules, ...$params) {
-            foreach ($rules as $field_name => $field_rules) {
-                if (is_array($field_rules)) {
-                    foreach ($field_rules as $i => $rule) {
-                        if ($rule instanceof Field) {
-                            $rules[$field_name][$i] = $rule->validationRule();
-                        }
-                    }
-                }
-            }
-            Validator::make($this->all(), $rules, ...$params)->validate();
+        Request::macro('lcfValidate', function (array $fields, array $extra_rules = []) {
+            $v = new Validator($this->all(), $fields, $extra_rules);
+            $v->validate();
         });
 
         //$this->loadRoutesFrom(dirname(__DIR__) . '/routes.php');

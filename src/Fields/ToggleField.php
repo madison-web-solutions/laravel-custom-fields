@@ -31,7 +31,7 @@ class ToggleField extends ScalarField
         return $rules;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
+    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_bool($value)) {
             $messages[$path][] = "Invalid value";

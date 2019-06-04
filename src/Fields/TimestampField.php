@@ -32,18 +32,16 @@ class TimestampField extends ScalarField
         return $rules;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
+    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_int($value)) {
             $messages[$path][] = "Invalid value";
             return;
         }
-        $max = $this->options['max'];
-        if (is_int($max) && $value > $max) {
+        if (Coerce::toInt($this->options['max'], $max_int) && $value > $max_int) {
             $messages[$path][] = "Maximum value is {$max}";
         }
-        $min = $this->options['min'];
-        if (is_int($min) && $value < $min) {
+        if (Coerce::toInt($this->options['min'], $min_int) && $value < $min_int) {
             $messages[$path][] = "Minumum value is {$min}";
         }
     }

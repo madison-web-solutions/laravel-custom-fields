@@ -2,12 +2,14 @@
 
 namespace MadisonSolutions\LCF;
 
-class SwitchValue
+use JsonSerializable;
+
+class SwitchValue implements JsonSerializable
 {
     protected $switch;
     protected $value;
 
-    public function __construct(string $switch, $value)
+    public function __construct(string $switch, $value = null)
     {
         $this->switch = $switch;
         $this->value = $value;
@@ -35,5 +37,14 @@ class SwitchValue
             default:
                 return ($key === $this->switch);
         }
+    }
+
+    public function jsonSerialize()
+    {
+        $ret = [
+            'switch' => $this->switch,
+        ];
+        $ret[$this->switch] = $this->value;
+        return $ret;
     }
 }

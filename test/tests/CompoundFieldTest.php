@@ -1,20 +1,17 @@
 <?php
 namespace MadisonSolutions\LCFTest;
 
-use MadisonSolutions\LCF\CompoundField;
-use MadisonSolutions\LCF\TextField;
-use MadisonSolutions\LCF\IntegerField;
-use MadisonSolutions\LCF\RepeaterField;
+use MadisonSolutions\LCF\LCF;
 use Illuminate\Validation\ValidationException;
 
 class CompoundFieldTest extends TestCase
 {
     public function testCanConvertValidValuesToCompoundField()
     {
-        $field = new CompoundField([
+        $field = LCF::newCompoundField([
             'sub_fields' => [
-                'num' => new IntegerField([]),
-                'level' => new TextField([]),
+                'num' => LCF::newIntegerField([]),
+                'level' => LCF::newTextField([]),
             ],
         ]);
 
@@ -28,21 +25,21 @@ class CompoundFieldTest extends TestCase
 
     public function testCannotConvertInvalidValuesToCompoundField()
     {
-        $field = new CompoundField([
+        $field = LCF::newCompoundField([
             'sub_fields' => [
-                'num' => new IntegerField([]),
+                'num' => LCF::newIntegerField([]),
             ],
         ]);
 
         $this->assertCoerceFails($field, 10);
-        $this->assertCoerceFails($field, ['num' => 'foo']);
+        $this->assertCoerceFails($field, ['num' => 'foo'], ['num' => null]);
     }
 
     public function testBasicValidationWorks()
     {
-        $field = new CompoundField([
+        $field = LCF::newCompoundField([
             'sub_fields' => [
-                'num' => new IntegerField([]),
+                'num' => LCF::newIntegerField([]),
             ],
         ]);
 
@@ -60,10 +57,10 @@ class CompoundFieldTest extends TestCase
     public function testRequiredAttributeWorks()
     {
         // Outer compound required, inner values not required
-        $field = new CompoundField([
+        $field = LCF::newCompoundField([
             'required' => true,
             'sub_fields' => [
-                'num' => new IntegerField([]),
+                'num' => LCF::newIntegerField([]),
             ],
         ]);
 
@@ -73,10 +70,10 @@ class CompoundFieldTest extends TestCase
         $this->assertValidationFailsWhenValueOmitted($field);
 
         // Outer compound required, inner value also required
-        $field = new CompoundField([
+        $field = LCF::newCompoundField([
             'required' => true,
             'sub_fields' => [
-                'num' => new IntegerField([
+                'num' => LCF::newIntegerField([
                     'required' => true,
                 ]),
             ],
@@ -89,10 +86,10 @@ class CompoundFieldTest extends TestCase
 
 
         // Outer compound not required, inner value required when outer is present
-        $field = new CompoundField([
+        $field = LCF::newCompoundField([
             'required' => false,
             'sub_fields' => [
-                'num' => new IntegerField([
+                'num' => LCF::newIntegerField([
                     'required' => true,
                 ]),
             ],
@@ -119,9 +116,9 @@ class CompoundFieldTest extends TestCase
         ];
         foreach ($invalid_keys as $invalid_key) {
             $this->assertExceptionThrown(ValidationException::class, function () use ($invalid_key) {
-                $field = new CompoundField([
+                $field = LCF::newCompoundField([
                     'sub_fields' => [
-                        $invalid_key => new IntegerField([]),
+                        $invalid_key => LCF::newIntegerField([]),
                     ],
                 ]);
             });
@@ -137,41 +134,37 @@ class CompoundFieldTest extends TestCase
         ];
         foreach ($invalid_options as $options) {
             $this->assertExceptionThrown(ValidationException::class, function () use ($options) {
-                $field = new CompoundField($options);
+                $field = LCF::newCompoundField($options);
             });
         }
     }
 
     public function testPartialCoersion()
     {
-        $field = new CompoundField([
+        $field = LCF::newCompoundField([
             'sub_fields' => [
-                'name' => new TextField([]),
-                'age' => new IntegerField([]),
-                'scores' => new RepeaterField([
-                    'sub_field' => new IntegerField([]),
+                'name' => LCF::newTextField([]),
+                'age' => LCF::newIntegerField([]),
+                'scores' => LCF::newRepeaterField([
+                    'sub_field' => LCF::newIntegerField([]),
                 ])
             ],
         ]);
 
         $input = ['name' => 'Dan', 'age' => 'foo', 'scores' => [1, 2, 3]];
         $expected_output = ['name' => 'Dan', 'age' => null, 'scores' => [1, 2, 3]];
-        $output = $field->coerce($input, 0);
-        $this->assertSame($expected_output, $output);
+        $this->assertCoerceFails($field, $input, $expected_output);
 
         $input = ['name' => null, 'age' => '37', 'scores' => [1, '2', 3, null]];
         $expected_output = ['name' => null, 'age' => 37, 'scores' => [1, 2, 3, null]];
-        $output = $field->coerce($input, 0);
-        $this->assertSame($expected_output, $output);
+        $this->assertCoerceOk($field, $input, $expected_output);
 
         $input = ['name' => 'Dan', 'scores' => [1, 2, 3, 'foo'], 'dummy' => 'dummy'];
         $expected_output = ['name' => 'Dan', 'age' => null, 'scores' => [1, 2, 3, null]];
-        $output = $field->coerce($input, 0);
-        $this->assertSame($expected_output, $output);
+        $this->assertCoerceFails($field, $input, $expected_output);
 
         $input = ['name' => ['Dan'], 'age' => 37, 'scores' => 'foo'];
-        $expected_output = ['name' => null, 'age' => 37, 'scores' => [null]];
-        $output = $field->coerce($input, 0);
-        $this->assertSame($expected_output, $output);
+        $expected_output = ['name' => null, 'age' => 37, 'scores' => null];
+        $this->assertCoerceFails($field, $input, $expected_output);
     }
 }

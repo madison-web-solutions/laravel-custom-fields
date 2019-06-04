@@ -1,21 +1,19 @@
 <?php
 namespace MadisonSolutions\LCFTest;
 
-use MadisonSolutions\LCF\RepeaterField;
-use MadisonSolutions\LCF\SwitchField;
-use MadisonSolutions\LCF\IntegerField;
+use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCF\SwitchValue;
 
 class NestedFieldsTest extends TestCase
 {
     public function testCanConvertValidValuesToNestedField()
     {
-        $field = new RepeaterField([
-            'sub_field' => new SwitchField([
+        $field = LCF::newRepeaterField([
+            'sub_field' => LCF::newSwitchField([
                 'switch_fields' => [
-                    'num' => new IntegerField([]),
-                    'scores' => new RepeaterField([
-                        'sub_field' => new IntegerField([]),
+                    'num' => LCF::newIntegerField([]),
+                    'scores' => LCF::newRepeaterField([
+                        'sub_field' => LCF::newIntegerField([]),
                     ]),
                 ],
             ]),
@@ -38,24 +36,25 @@ class NestedFieldsTest extends TestCase
 
     public function testCannotConvertInvalidValuesToNestedField()
     {
-        $field = new RepeaterField([
-            'sub_field' => new SwitchField([
+        $field = LCF::newRepeaterField([
+            'sub_field' => LCF::newSwitchField([
                 'switch_fields' => [
-                    'num' => new IntegerField([]),
-                    'scores' => new RepeaterField([
-                        'sub_field' => new IntegerField([]),
+                    'num' => LCF::newIntegerField([]),
+                    'scores' => LCF::newRepeaterField([
+                        'sub_field' => LCF::newIntegerField([]),
                     ]),
                 ],
             ]),
         ]);
 
         $this->assertCoerceFails($field, 10);
-        $this->assertCoerceFails($field, [10]);
-        $this->assertCoerceFails($field, [['switch' => 'foo']]);
-        $this->assertCoerceFails($field, [['switch' => 'num', 'num' => 'foo']]);
-        $this->assertCoerceFails($field, [new SwitchValue('foo', 10)]);
-        $this->assertCoerceFails($field, [new SwitchValue('num', 'foo')]);
-        $this->assertCoerceFails($field, [new SwitchValue('num', 10), 'foo']);
-        $this->assertCoerceFails($field, [new SwitchValue('num', 10), new SwitchValue('scores', 'foo')]);
+        $this->assertCoerceFails($field, [10], [null]);
+        $this->assertCoerceFails($field, [['switch' => 'foo']], [null]);
+        $this->assertCoerceFails($field, [['switch' => 'num', 'num' => 'foo']], [new SwitchValue('num', null)]);
+        $this->assertCoerceFails($field, [new SwitchValue('foo', 10)], [null]);
+        $this->assertCoerceFails($field, [new SwitchValue('num', 'foo')], [new SwitchValue('num', null)]);
+        $this->assertCoerceFails($field, [new SwitchValue('num', 10), 'foo'], [new SwitchValue('num', 10), null]);
+        $this->assertCoerceFails($field, [new SwitchValue('num', 10), new SwitchValue('scores', 'foo')], [new SwitchValue('num', 10), new SwitchValue('scores', null)]);
+        $this->assertCoerceFails($field, [new SwitchValue('num', 10), new SwitchValue('scores', [10, 'foo'])], [new SwitchValue('num', 10), new SwitchValue('scores', [10, null])]);
     }
 }
