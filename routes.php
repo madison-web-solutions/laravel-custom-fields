@@ -1,4 +1,5 @@
 <?php
+
 namespace MadisonSolutions\LCF;
 
 use MadisonSolutions\LCF\Media\MediaItem;

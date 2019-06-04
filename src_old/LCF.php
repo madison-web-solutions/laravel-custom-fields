@@ -1,14 +1,14 @@
 <?php
-
 namespace MadisonSolutions\LCF;
 
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\MessageBag;
 use Validator;
 
 class LCF
 {
-    //protected $markdown_instance;
-    //protected $link_finder_instance;
+    protected $markdown_instance;
+    protected $link_finder_instance;
 
     public static function shiftPath(&$path)
     {
@@ -18,12 +18,23 @@ class LCF
         return array_shift($path);
     }
 
-    public function validate(array $data, array $rules)
+    public function validateFields(array $data, array $fields, array $extra_rules = [])
     {
-        Validator::make($data, $rules)->validate();
+        $validator = Validator::make($data, $extra_rules);
+        $messages = $validator->messages();
+        foreach ($fields as $key => $field) {
+            $this->validateField($data, $key, $field, $messages);
+        }
+        if (! $messages->isEmpty()) {
+            throw new ValidationException($validator);
+        }
     }
 
-    /*
+    protected function validateField(array $data, string $key, Field $field, MessageBag $messages)
+    {
+        $field->validate($data, $key, $messages);
+    }
+
     public function getMarkdown()
     {
         if (is_null($this->markdown_instance)) {
@@ -44,24 +55,23 @@ class LCF
         }
         return $this->link_finder_instance;
     }
-    */
 
     protected static $classmap = [
-        'ChoiceField' => Fields\ChoiceField::class,
-        'CompoundField' => Fields\CompoundField::class,
-        'IntegerField' => Fields\IntegerField::class,
-        'LinkField' => Fields\LinkField::class,
-        'MarkdownField' => Fields\MarkdownField::class,
-        'MediaField' => Fields\MediaField::class,
-        'ModelField' => Fields\ModelField::class,
-        'OptionsField' => Fields\OptionsField::class,
-        'QuantityWithUnitField' => Fields\QuantityWithUnitField::class,
-        'RepeaterField' => Fields\RepeaterField::class,
-        'SwitchField' => Fields\SwitchField::class,
-        'TextAreaField' => Fields\TextAreaField::class,
-        'TextField' => Fields\TextField::class,
-        'TimestampField' => Fields\TimestampField::class,
-        'ToggleField' => Fields\ToggleField::class,
+        'ChoiceField' => ChoiceField::class,
+        'CompoundField' => CompoundField::class,
+        'IntegerField' => IntegerField::class,
+        'LinkField' => LinkField::class,
+        'MarkdownField' => MarkdownField::class,
+        'MediaField' => MediaField::class,
+        'ModelField' => ModelField::class,
+        'OptionsField' => OptionsField::class,
+        'QuantityWithUnitField' => QuantityWithUnitField::class,
+        'RepeaterField' => RepeaterField::class,
+        'SwitchField' => SwitchField::class,
+        'TextAreaField' => TextAreaField::class,
+        'TextField' => TextField::class,
+        'TimestampField' => TimestampField::class,
+        'ToggleField' => ToggleField::class,
     ];
 
     public static function make(string $classname, array $options)

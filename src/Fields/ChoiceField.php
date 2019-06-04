@@ -1,10 +1,12 @@
 <?php
-namespace MadisonSolutions\LCF;
 
-use Illuminate\Validation\Rule;
+namespace MadisonSolutions\LCF\Fields;
+
 use MadisonSolutions\Coerce\Coerce;
+use MadisonSolutions\LCF\ScalarField;
+use MadisonSolutions\LCF\Validator;
 
-class ChoiceField extends Field
+class ChoiceField extends ScalarField
 {
     public function optionDefaults() : array
     {
@@ -26,36 +28,31 @@ class ChoiceField extends Field
     {
         switch ($this->input) {
             case 'radio':
-                return 'radio-input';
+                return 'lcf-radio-input';
             case 'search':
-                return 'search-input';
+                return 'lcf-search-input';
             case 'select':
             default:
-                return 'select-input';
+                return 'lcf-select-input';
         }
     }
 
-    public function getValidationRules()
+    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
     {
-        $rules = parent::getValidationRules();
-        $rules[] = 'string';
-        $rules[] = Rule::in(array_keys($this->choices));
-        return $rules;
+        if (! is_scalar($input) || ! array_key_exists($input, $this->choices)) {
+            $messages[$path][] = "Invalid value";
+            return;
+        }
     }
 
-    protected function testTypeNotNull($input) : bool
-    {
-        return is_scalar($input) && array_key_exists($input, $this->choices);
-    }
-
-    protected function coerceNotNull($input, &$output, int $on_fail) : bool
+    protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
         if (Coerce::toArrayKey($input, $output)) {
             if (array_key_exists($output, $this->choices)) {
                 return true;
             }
         }
-        $output = null;
+        $output = ($keep_invalid ? $input : null);
         return false;
     }
 

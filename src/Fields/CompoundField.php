@@ -1,7 +1,9 @@
 <?php
-namespace MadisonSolutions\LCF;
 
-use Illuminate\Support\MessageBag;
+namespace MadisonSolutions\LCF\Fields;
+
+use MadisonSolutions\LCF\Field;
+use MadisonSolutions\LCF\Validator;
 
 class CompoundField extends Field
 {
@@ -22,24 +24,9 @@ class CompoundField extends Field
         return $rules;
     }
 
-    public function inputComponent() : string
+    public function fieldComponent() : string
     {
-        return 'compound-input';
-    }
-
-
-    protected function testTypeNotNull($input) : bool
-    {
-        if (! is_array($input)) {
-            return false;
-        }
-        foreach ($this->sub_fields as $key => $field) {
-            $value = $input[$key] ?? null;
-            if (! $field->testType($value)) {
-                return false;
-            }
-        }
-        return true;
+        return 'compound-field';
     }
 
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
@@ -68,22 +55,15 @@ class CompoundField extends Field
         return $primitive_value;
     }
 
-    public function getValidationRules()
+    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
     {
-        $rules = parent::getValidationRules();
-        $rules[] = 'array';
-        return $rules;
-    }
-
-    public function validate(array $data, string $path, MessageBag $messages)
-    {
-        parent::validate($data, $path, $messages);
-        $my_data = data_get($data, $path);
-        if (is_array($my_data)) {
-            foreach ($this->sub_fields as $key => $field) {
-                if ($this->testCondition($key, $data, $path) !== false) {
-                    $field->validate($data, "{$path}.{$key}", $messages);
-                }
+        if (! is_array($value)) {
+            $messages[$path][] = "Invalid value";
+            return;
+        }
+        foreach ($this->sub_fields as $key => $field) {
+            if ($this->testCondition($key, $validator->getData(), $path) !== false) {
+                $field->validate("{$path}.{$key}", $value[$key] ?? null, $messages, $validator);
             }
         }
     }

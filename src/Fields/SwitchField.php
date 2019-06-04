@@ -1,9 +1,10 @@
 <?php
-namespace MadisonSolutions\LCF;
 
-use Illuminate\Validation\Rule;
-use Illuminate\Support\MessageBag;
-use Validator;
+namespace MadisonSolutions\LCF\Fields;
+
+use MadisonSolutions\LCF\Field;
+use MadisonSolutions\LCF\SwtichValue;
+use MadisonSolutions\LCF\Validator;
 
 class SwitchField extends Field
 {
@@ -24,21 +25,9 @@ class SwitchField extends Field
         return $rules;
     }
 
-    public function inputComponent() : string
+    public function fieldComponent() : string
     {
-        return 'switch-input';
-    }
-
-    protected function testTypeNotNull($input) : bool
-    {
-        if (! ($input instanceof SwitchValue)) {
-            return false;
-        }
-        if (!isset($this->switch_fields[$input->switch])) {
-            return false;
-        }
-        $switch_field = $this->switch_fields[$input->switch];
-        return $switch_field->testTypeNotNull($input->value);
+        return 'switch-field';
     }
 
     protected function coerceNotNull($input, &$output, int $on_fail) : bool
@@ -78,29 +67,18 @@ class SwitchField extends Field
         ];
     }
 
-    public function getValidationRules()
+    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
     {
-        $rules = parent::getValidationRules();
-        $rules[] = 'array';
-        return $rules;
-    }
-
-    public function validate(array $data, string $path, MessageBag $messages)
-    {
-        $rules = [
-            $path => $this->getValidationRules(),
-            "{$path}.switch" => ["required_with:{$path}", Rule::in(array_keys($this->switch_fields))],
-        ];
-        $validator = Validator::make($data, $rules);
-        $messages->merge($validator->messages());
-        $my_data = data_get($data, $path);
-        if (is_array($my_data)) {
-            $switch = $my_data['switch'] ?? '';
-            $switch_field = $this->switch_fields[$switch] ?? null;
-            if ($switch_field) {
-                $switch_field->validate($data, "{$path}.{$switch}", $messages);
-            }
+        if (! ($value instanceof SwitchValue)) {
+            $messages[$path][] = "Invalid value";
+            return;
         }
+        if (! isset($this->switch_fields[$value->switch])) {
+            $messages[$path][] = "Invalid value";
+            return false;
+        }
+        $switch_field = $this->switch_fields[$value->switch];
+        $switch_field->validate("{$path}.{$value->switch}", $value->value, $messages, $validator);
     }
 
     public function getSubField(string $key)

@@ -1,13 +1,16 @@
 <?php
-namespace MadisonSolutions\LCF;
+
+namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\Coerce\Coerce;
+use MadisonSolutions\LCF\ScalarField;
+use MadisonSolutions\LCF\Validator;
 
-class ToggleField extends Field
+class ToggleField extends ScalarField
 {
     public function inputComponent() : string
     {
-        return 'toggle-input';
+        return 'lcf-toggle-input';
     }
 
     public function optionDefaults() : array
@@ -28,19 +31,15 @@ class ToggleField extends Field
         return $rules;
     }
 
-    public function getValidationRules()
+    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
     {
-        $rules = parent::getValidationRules();
-        $rules[] = 'in:true,false';
-        return $rules;
+        if (! is_bool($value)) {
+            $messages[$path][] = "Invalid value";
+            return;
+        }
     }
 
-    protected function testTypeNotNull($input) : bool
-    {
-        return is_bool($input);
-    }
-
-    protected function coerceNotNull($input, &$output, int $on_fail) : bool
+    protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
         if (Coerce::toBool($input, $output)) {
             return true;
@@ -51,7 +50,7 @@ class ToggleField extends Field
             $output = false;
             return true;
         } else {
-            $output = null;
+            $output = ($keep_invalid ? $input : null);
             return false;
         }
     }

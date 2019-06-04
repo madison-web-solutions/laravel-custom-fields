@@ -1,14 +1,17 @@
 <?php
-namespace MadisonSolutions\LCF;
+
+namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\Coerce\Coerce;
+use MadisonSolutions\LCF\ScalarField;
+use MadisonSolutions\LCF\Validator;
 use DateTime;
 
-class TimestampField extends Field
+class TimestampField extends ScalarField
 {
     public function inputComponent() : string
     {
-        return 'timestamp-input';
+        return 'lcf-timestamp-input';
     }
 
     public function optionDefaults() : array
@@ -29,24 +32,20 @@ class TimestampField extends Field
         return $rules;
     }
 
-    public function getValidationRules()
+    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
     {
-        $rules = parent::getValidationRules();
-        $rules[] = 'integer';
+        if (! is_int($value)) {
+            $messages[$path][] = "Invalid value";
+            return;
+        }
         $max = $this->options['max'];
-        if (is_int($max)) {
-            $rules[] = "max:{$max}";
+        if (is_int($max) && $value > $max) {
+            $messages[$path][] = "Maximum value is {$max}";
         }
         $min = $this->options['min'];
-        if (is_int($min)) {
-            $rules[] = "min:{$min}";
+        if (is_int($min) && $value < $min) {
+            $messages[$path][] = "Minumum value is {$min}";
         }
-        return $rules;
-    }
-
-    protected function testTypeNotNull($input) : bool
-    {
-        return is_int($input);
     }
 
     protected function truncate(int $timestamp) : int
@@ -70,7 +69,7 @@ class TimestampField extends Field
         return gmmktime($hour, $minute, $second, $month, $day, $year);
     }
 
-    protected function coerceNotNull($input, &$output, int $on_fail) : bool
+    protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
         if (is_int($input)) {
             $output = $this->truncate($input);
@@ -83,7 +82,7 @@ class TimestampField extends Field
         if (is_string($input)) {
             $timestamp = strtotime($input);
             if ($timestamp === false) {
-                $output = null;
+                $output = ($keep_invalid ? $input : null);
                 return false;
             } else {
                 $output = $this->truncate($timestamp);
@@ -94,7 +93,7 @@ class TimestampField extends Field
             $output = $this->truncate($timestamp);
             return true;
         }
-        $output = null;
+        $output = ($keep_invalid ? $input : null);
         return false;
     }
 }

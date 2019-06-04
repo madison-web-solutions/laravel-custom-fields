@@ -1,400 +1,51 @@
-// Labels
-.lcf-help, .lcf-field-errors {
-    font-size: 1.4rem;
+
+.lcf-error-msg {
+    color: red;
 }
 
 .lcf-help {
-    margin-bottom: 0.5rem;
+    font-size: 12px;
 }
 
-.lcf-field-errors {
-    color: #e60300;
-}
-
-// Only make the field labels bold not labels used in choices
-.lcf-sub-field > label, .lcf-compound-key label, .lcf-switch-select label {
-    font-weight: 700;
-
-    &.required:after {
-        content: '*';
-        display: inline-block;
-        vertical-align: top;
-    }
-}
-
-.lcf-compound-key label {
-    margin-bottom: 0.3rem;
-}
-// End labels
-
-// Fields
-.lcf-sub-field, .lcf-compound-item, [data-lcf-field-type="stylistic"] {
-    margin-bottom: 2.6rem;
-}
-
-// Repeater
-.lcf-repeater-field {
-    width: 100%;
-    position: relative;
-    display: table;
-    padding-bottom: 6rem;
-
-    &[data-lcf-field-type="repeater"] {
-        margin-top: 2rem;
-    }
-
-
-    button[data-name="append"] {
-        width: 19rem;
-        position: absolute;
-    }
-
-    .lcf-repeater-item {
-        display: table-row;
-
-        &:nth-child(odd) {
-            background-color: #fff;
-        }
-
-        &:nth-child(even) {
-            background-color: #e4e4e4;
-
-            .lcf-field-controls {
-                background-color: #c7c7c7;
-            }
-        }
-
-        > * {
-            display: table-cell;
-            vertical-align: top;
-            border: 1px solid grey;
-            padding: 2rem 1rem 1rem;
-        }
-    }
-    .lcf-field-controls {
-        width: 7rem;
-        text-align: center;
-        border-right: none;
-        background-color: #dcdcdc;
-
-        .lcf-repeater-move-handle, label {
-            display: block;
-            margin: 0 auto 0.5rem;
-        }
-
-        button {
-            display: inline-block;
-            margin: 0 0.3rem 0.5rem;
-        }
-
-        @media all and (max-width: 1001px) {
-            .lcf-repeater-move-handle {
-                display: none;
-            }
-        }
-    }
-    .lcf-repeater-move-handle {
-        border: 1px solid #383838;
-        cursor: move;
-        padding: 6px;
-        font-size: 20px;
-    }
-    .lcf-repeater-insert-marker {
-        position: absolute;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background-color: red;
-        display: none;
-        &.active {
-            display: block;
-        }
-    }
-
-    .lcf-switch-field {
-        select {
-            margin-bottom: 2rem;
-        }
-    }
-}
-// End repeater
-
-// Media library
-.lcf-media-library {
-
-    &.has-drag-obj {
-        background-color: blue;
-    }
-
-    .lcf-ml-tabs {
-        button {
-            border: 1px solid grey;
-            margin: 5px 2px 0 0;
-            padding: 4px;
-            position: relative;
-            top: 1px;
-            background-color: #ddd;
-            &.active {
-                background-color: white;
-                border-bottom-color: white;
-            }
-            cursor: pointer;
-        }
-    }
-
-    .file-input {
-        width: 0.1px;
-        height: 0.1px;
-        opacity: 0;
-        overflow: hidden;
-        position: absolute;
-        z-index: -1;
-    }
-
-    .lcf-ml-panel {
-        background-color: white;
-        border: 1px solid grey;
-        height: 70vh;
-        overflow: auto;
-        padding: 10px;
-    }
-
-    .lcf-ml-index {
-        .lcf-ml-preview {
-            margin: 0 0 10px 10px;
-            float: left;
-            cursor: pointer;
-
-            @media all and (max-width: 500px) {
-                width: calc((100% / 3) - (30px / 3));
-                &:nth-child(3n + 1) {
-                    margin-left: 0;
-                }
-            }
-
-            @media all and (min-width: 501px) {
-                width: calc((100% / 4) - (30px / 4));
-                &:nth-child(4n + 1) {
-                    margin-left: 0;
-                }
-            }
-        }
-    }
-
-    .lcf-ml-upload-form {
-        padding: 20px;
-        text-align: center;
-        label {
-            display: inline-block;
-            border: 1px solid grey;
-            background-color: #ddd;
-            &:hover {
-                background-color: #ccc;
-            }
-            padding: 10px;
-            margin-bottom: 20px
-        }
-    }
-
-}
-
-.lcf-ml-preview {
-    position: relative;
-    width: 140px;
-    padding: 5px;
-    border: 1px solid grey;
-    transition: background-color 0.2s ease-in-out;
+.lcf-input-wrapper, .lcf-field, .lcf-repeater-item {
     margin-bottom: 5px;
-    overflow: hidden;
+}
 
-    &:hover {
-        background-color: #ddd;
-    }
-    .lcf-ml-thumb {
-        width: 100%;
-        padding-top: 60%;
-        background-size: contain;
-        background-position: center center;
-        background-repeat: no-repeat;
-        position: relative;
-        .lcf-ml-thumb-alt {
-            position: absolute;
-            top: 5%;
-            left: 5%;
-            width: 90%;
-            height: 90%;
-        }
-    }
-    span {
-        font-size: 1.4rem;
+:not(.lcf-repeater-item) > .lcf-compound-field {
+    padding: 5px;
+    border: 1px solid black;
+    > .lcf-field {
+        margin-left: 5px;
     }
 }
 
-.lcf-ml-inspect {
+.lcf-repeater-field {
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.lcf-repeater-item {
     display: flex;
-    > div {
-        width: 50%;
-        padding: 10px;
+    > .lcf-repeater-item-controls {
+        width: 120px;
     }
-    img {
-        max-width: 100%;
+    > .lcf-field {
+        flex-grow: 1;
     }
-    input {
-        margin-bottom: 0.5rem;
-    }
-    button {
-        width: 100%;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-        color: #1C2833;
-        border: 1px solid #1C2833;
-        border-radius: 2px;
-        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-        &[data-name=save] {
-            background-color: skyblue;
-            &:hover {
-                background-color: darken(skyblue, 10%);
-            }
-        }
-        &[data-name=close] {
-            background-color: lightgray;
-            &:hover {
-                background-color: darken(lightgray, 10%);
-            }
-        }
-        &[data-name=select] {
-            background-color: skyblue;
-            &:hover {
-                background-color: darken(skyblue, 10%);
-            }
-        }
-        &[data-name=delete] {
-            background-color: lightcoral;
-            &:hover {
-                background-color: darken(lightcoral, 10%);
-            }
-        }
-    }
-}
-// End media library
-
-// Choices
-.lcf-field[data-lcf-field-type="choice"], [data-lcf-field-type="options"] {
-    label:not(:last-child) {
-        margin-right: 5rem;
-    }
-}
-
-.lcf-field[data-lcf-field-type="choice"] {
-    position: relative;
-    &:after {
-        content: '\f078';
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        pointer-events: none;
-        font-family: 'Font Awesome\ 5 Free';
-        font-weight: 900;
-    }
-}
-// End choices
-
-// Model / Link searching
-.lcf-field[data-lcf-field-type="model"], .lcf-field[data-lcf-field-type="link"] {
-    [disabled="disabled"] {
+    padding: 5px 0;
+    border-bottom: 1px solid black;
+    &:last-child {
+        padding-bottom: 0;
         border-bottom: none;
     }
-
-    ul {
-        margin-top: 1rem;
-    }
-
-    li {
-        margin: 0.5rem 1rem;
-    }
-}
-// End model
-
-// Markdown
-.lcf-field[data-lcf-field-type="markdown"] {
-    > div {
-        display: flex;
-        justify-content: space-between;
-        position: relative;
-    }
-
-    textarea, .preview {
-        width: calc(50% - 10px);
-        position: relative;
-        top: 0;
-        left: 0;
-        transition: all 0.3s ease-in-out;
-    }
-
-    textarea {
-        min-height: 20rem;
-    }
-
-    .preview {
-        max-height: 500px;
-        padding: 1rem 1.2rem;
-        border: 2px solid #aaaaaa;
-        overflow: auto;
-    }
-
-    button[name="fullscreen"] {
-        position: absolute;
-        top: 3px;
-        left: calc(50% - 31px);
-        transition: transform 0.2s ease-in-out;
-        transform: scale(1);
-        z-index: 9100;
-
-        &:hover, &:focus {
-            transform: scale(1.2);
-        }
-    }
-
-    .fullscreen {
-        textarea, .preview {
-            width: 50vw;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            margin: 0;
-            z-index: 9100;
-        }
-
-        textarea {
-            left: 0;
-        }
-
-        .preview {
-            left: 50vw;
-            background-color: #fff;
-            max-height: none;
-        }
-
-        button {
-            position: fixed;
-            top: 5px;
-            transform: scale(1.2);
-
-            &:hover, &:focus {
-                transform: scale(1);
-            }
-        }
-    }
-}
-// End markdown
-// End fields
-
-// Compound field
-.lcf-compound-field, .lcf-compound-key {
-    margin-bottom: 1rem;
 }
 
-.lcf-drag-hide {
-    display: none !important;
+.lcf-field-label {
+    font-weight: bold;
+}
+
+.lcf-input {
+    input {
+        width: 100%;
+    }
 }

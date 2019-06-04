@@ -1,7 +1,9 @@
 <?php
-namespace MadisonSolutions\LCF;
 
-use Illuminate\Support\MessageBag;
+namespace MadisonSolutions\LCF\Fields;
+
+use MadisonSolutions\LCF\Field;
+use MadisonSolutions\LCF\Validator;
 
 class RepeaterField extends Field
 {
@@ -26,28 +28,16 @@ class RepeaterField extends Field
         return $rules;
     }
 
-    public function inputComponent() : string
+    public function fieldComponent() : string
     {
-        return 'repeater-input';
+        return 'repeater-field';
     }
 
-    protected function testTypeNotNull($input) : bool
+    protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
         if (! is_array($input)) {
+            $output = ($keep_invalid ? $input : null);
             return false;
-        }
-        foreach ($input as $value) {
-            if (! $this->sub_field->testType($value)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected function coerceNotNull($input, &$output, int $on_fail) : bool
-    {
-        if (! is_array($input)) {
-            $input = [$input];
         }
         if (count($input) == 0) {
             $output = null;
@@ -56,7 +46,7 @@ class RepeaterField extends Field
         $ok = true;
         $output = [];
         foreach ($input as $sub_input) {
-            if (! $this->sub_field->doCoerce($sub_input, $sub_output, $on_fail)) {
+            if (! $this->sub_field->coerce($sub_input, $sub_output, $keep_invalid)) {
                 $ok = false;
             }
             $output[] = $sub_output;
@@ -71,29 +61,22 @@ class RepeaterField extends Field
         }, $cast_value);
     }
 
-    public function getValidationRules()
+    public function validateNotNull(string $path, $value, &$messages, Validator $validator)
     {
-        $rules = parent::getValidationRules();
-        $rules[] = 'array';
+        if (! is_array($value)) {
+            $messages[$path][] = "Invalid value";
+            return;
+        }
         $max = $this->options['max'];
-        if (is_int($max)) {
-            $rules[] = "max:{$max}";
+        if (is_int($max) && count($value) > $max) {
+            $messages[$path][] = "Maximum of {$max} entries";
         }
         $min = $this->options['min'];
-        if (is_int($min)) {
-            $rules[] = "min:{$min}";
+        if (is_int($min) && count($value) < $min) {
+            $messages[$path][] = "Minumum of {$min} entries";
         }
-        return $rules;
-    }
-
-    public function validate(array $data, string $path, MessageBag $messages)
-    {
-        parent::validate($data, $path, $messages);
-        $my_data = data_get($data, $path);
-        if (is_array($my_data)) {
-            foreach (array_keys($my_data) as $i) {
-                $this->sub_field->validate($data, "{$path}.{$i}", $messages);
-            }
+        foreach ($value as $i => $sub_value) {
+            $this->sub_field->validate("{$path}.{$i}", $sub_value, $messages, $validator);
         }
     }
 

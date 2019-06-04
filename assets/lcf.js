@@ -1,71 +1,36 @@
-import _ from 'lodash';
 import Vue from 'vue';
-import Vuex from 'vuex';
-import storeDefn from './store.js';
+import { forEach } from 'lodash-es';
 
-Vue.use(Vuex);
-var store = new Vuex.Store(storeDefn);
-
-var componentNames = [
-    'compound-input',
-    'field-wrapper',
-    'field',
-    'link-input',
-    'markdown-input',
-    'media-input',
-    'media-inspect',
-    'media-library',
-    'media-preview',
-    'number-input',
-    'options-input',
-    'radio-input',
-    'repeater-input',
-    'search-input',
-    'select-input',
-    'switch-input',
-    'text-input',
-    'text-area-input',
-    'timestamp-input',
-    'toggle-input'
-];
-_.forEach(componentNames, function(componentName) {
-    var componentDefn = require('./components/' + componentName + '.vue');
-    // If this is running under Laravel Mix v4 or higher then the require() function will
-    // not automatically pull out the default object from the module, so we attempt to
-    // detect and correct this situation below
-    if (componentDefn.default && componentDefn.__esModule) {
-        componentDefn = componentDefn.default;
-    }
-    Vue.component(componentName, componentDefn);
+// Load all the components from the components directory
+const componentFiles = require.context('./components', true, /\.vue$/i);
+componentFiles.keys().map(key => {
+    var componentName = 'lcf-' + key.split('/').pop().split('.')[0];
+    Vue.component(componentName, componentFiles(key).default);
 });
 
+// Create the store which will contain lcf data, and store a reference to it in the Vue prototype
+import store from './store.js';
+window.lcfStore = store;
+Vue.prototype.$lcfStore = store;
+
 var initLcf = function() {
-    _.forEach(document.querySelectorAll('lcf-field'), function(el) {
-        var props = JSON.parse(el.getAttribute('data-props'));
+    forEach(document.querySelectorAll('lcf'), function(el) {
+        var component = 'lcf-' + el.getAttribute('data-component');
+        var props = JSON.parse(el.getAttribute('data-props') || '{}');
         new Vue({
             el: el,
-            store: store,
             render: function(h) {
-                return h('field-wrapper', {props: props});
+                return h(component, {props: props});
             }
         });
     });
-    _.forEach(document.querySelectorAll('lcf-media-library'), function(el) {
-        var props = JSON.parse(el.getAttribute('data-props'));
-        new Vue({
-            el: el,
-            store: store,
-            render: function(h) {
-                return h('media-library', {props: props});
-            }
-        });
+
+    forEach(document.querySelectorAll('lcf-initial-errors'), function(el) {
+        var groupName = el.getAttribute('data-group-name');
+        var errors = JSON.parse(el.getAttribute('data-errors') || '{}');
+        store.setErrors(groupName, errors);
     });
 };
-
-// set CSRF token for axios requests
-import axios from 'axios';
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-axios.defaults.headers.common['X-CSRF-TOKEN'] = document.head.querySelector('meta[name="csrf-token"]').content;
 
 if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
     initLcf();

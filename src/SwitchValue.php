@@ -1,4 +1,5 @@
 <?php
+
 namespace MadisonSolutions\LCF;
 
 class SwitchValue

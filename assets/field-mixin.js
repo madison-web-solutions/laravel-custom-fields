@@ -1,83 +1,39 @@
-import _ from 'lodash';
+import { assign, get } from 'lodash-es';
 export default {
-    methods: {
-        getIdAtPath: function(path) {
-            return this.$store.getters.getIdAtPath(path);
-        },
-        getNodeAtPath: function(path) {
-            return this.$store.state.nodes[this.getIdAtPath(path)];
-        },
-        getValueAtPath: function(path) {
-            var node = this.getNodeAtPath(path);
-            return node ? node.value : null;
-        },
-        updateMyValue: function(value) {
-            this.$store.commit('updateValue', {path: this.pathStr, value: value});
-        },
-        resolveRelativePath: function(relativePathStr) {
-            var path = this.path.slice();
-            while (relativePathStr[0] == '^') {
-                path.pop();
-                relativePathStr = relativePathStr.substr(1);
-            }
-            return path.concat(relativePathStr.split('.'));
-        }
-    },
+    props: ['path', 'field'],
     computed: {
-        type: function() {
-            return _.get(this.field, 'type', null);
-        },
-        id: function() {
-            return this.getIdAtPath(this.path);
-        },
-        node: function() {
-            return this.$store.state.nodes[this.id];
-        },
-        childNodeIds: function() {
-            return this.node ? this.node.children : [];
-        },
-        length: function() {
-            return _.isArray(this.childNodeIds) ? this.childNodeIds.length : 0;
-        },
-        value: function() {
-            return this.node ? this.node.value : null;
-        },
-        defaultValue: function() {
-            return _.get(this.field, 'options.default', null);
-        },
-        label: function() {
-            return _.get(this.field, 'options.label', _.startCase(this.myKey));
-        },
-        placeholder: function() {
-            return _.get(this.field, 'options.placeholder', '');
-        },
-        required: function() {
-            return _.get(this.field, 'options.required', false);
-        },
-        help: function() {
-            return _.get(this.field, 'options.help', null);
-        },
-        myKey: function() {
-            return this.path[this.path.length - 1];
-        },
         pathStr: function() {
             return this.path.join('.');
         },
-        pathStrWithoutGroup: function() {
-            return this.path.slice(1).join('.');
+        inputName: function() {
+            return [this.path[1]].concat(this.path.slice(2).map(part => '[' + part + ']')).join('');
         },
-        nameAttr: function() {
-            var name = this.path[1];
-            for (var i = 2; i < this.path.length; i++) {
-                name += '[' + this.path[i] + ']';
-            }
-            return name;
+        nodeId: function() {
+            return this.$lcfStore.getId(this.pathStr);
         },
-        myErrors: function() {
-            return this.errors[this.pathStrWithoutGroup] || [];
+        value: function() {
+            return this.$lcfStore.getValue(this.pathStr);
         },
-        hasError: function() {
-            return !!this.myErrors.length;
+        errors: function() {
+            return this.$lcfStore.getErrors(this.pathStr);
+        },
+        childIds: function() {
+            return this.$lcfStore.getChildIds(this.pathStr);
+        },
+        childValues: function() {
+            return this.$lcfStore.getChildValues(this.pathStr);
+        },
+        childErrors: function() {
+            return this.$lcfStore.getChildErrors(this.pathStr);
+        },
+        label: function() {
+            return get(this.field, 'settings.label');
+        },
+        help: function() {
+            return get(this.field, 'settings.help');
+        },
+        inputSettings: function() {
+            return assign({name: this.inputName, key: this.path[this.path.length - 1]}, this.field.settings);
         }
     }
 };
