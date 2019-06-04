@@ -28,11 +28,9 @@ class OptionsField extends Field
 
     public function jsonSerialize()
     {
-        return [
-            'fieldComponent' => $this->fieldComponent(),
-            'inputComponent' => $this->inputComponent(),
-            'settings' => array_merge($this->options, ['keys' => array_keys($this->choices)]),
-        ];
+        $data = parent::jsonSerialize();
+        $data['settings']['keys'] = array_keys($this->choices);
+        return $data;
     }
 
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)

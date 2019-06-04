@@ -37,9 +37,32 @@ class ChoiceField extends ScalarField
         }
     }
 
+    public function jsonSerialize()
+    {
+        $data = parent::jsonSerialize();
+        // PHP arrays are ordered, whereas JSON objects are not.
+        // We want to make sure we preserve the order of choices,
+        // so convert to an array of objects with value, and label properties
+        $data['settings']['choices'] = array_map(function ($value, $label) {
+            return ['value' => $value, 'label' => $label];
+        }, array_keys($this->choices), array_values($this->choices));
+        $data['settings']['keys'] = array_keys($this->choices);
+        return $data;
+    }
+
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
-        if (! is_scalar($input) || ! array_key_exists($input, $this->choices)) {
+        if (! is_string($value) && ! is_int($value)) {
+            $messages[$path][] = "Invalid value";
+            return;
+        }
+        if ($value === '') {
+            if ($this->options['required']) {
+                $messages[$path][] = "This field is required";
+            }
+            return;
+        }
+        if (! array_key_exists($value, $this->choices)) {
             $messages[$path][] = "Invalid value";
             return;
         }
@@ -48,6 +71,10 @@ class ChoiceField extends ScalarField
     protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
         if (Coerce::toArrayKey($input, $output)) {
+            if ($output === '') {
+                $output = null;
+                return true;
+            }
             if (array_key_exists($output, $this->choices)) {
                 return true;
             }

@@ -38,7 +38,7 @@ class TextField extends ScalarField
             if ($this->options['required']) {
                 $messages[$path][] = "This field is required";
             }
-            return ;
+            return;
         }
         if (Coerce::toInt($this->options['max'], $max_int) && strlen($value) > $max_int) {
             $messages[$path][] = "Maximum length is {$max_int} characters";
