@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { get, forEach } from 'lodash-es';
+import { get, forEach, includes } from 'lodash-es';
 import FieldMixin from '../../field-mixin.js';
 export default {
     mixins: [FieldMixin],
@@ -23,7 +23,13 @@ export default {
     },
     methods: {
         updateMyValue: function(e) {
-            forEach(this.keys, key => this.$lcfStore.updateValue(this.pathStr + '.' + key, e.value[key]));
+            forEach(e.value, (key, sub_value) => {
+                if (includes(this.keys, key)) {
+                    this.$lcfStore.updateValue(this.pathStr + '.' + key, e.value[key]);
+                } else {
+                    console.log("Unexpected key "+key);
+                }
+            });
         }
     }
 };

@@ -1,6 +1,6 @@
 <template>
-    <div class="lcf-input lcf-input-text">
-        <input type="text" :name="name" :maxlength="max" :value="value" @change="change" />
+    <div class="lcf-input lcf-input-text-area">
+        <textarea :name="name" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
     </div>
 </template>
 
@@ -14,6 +14,9 @@ export default {
         },
         _key: function() {
             return get(this.settings, 'key', this.$vnode.key);
+        },
+        rows: function() {
+            return get(this.settings, 'rows', 5);
         },
         max: function() {
             return get(this.settings, 'max');
