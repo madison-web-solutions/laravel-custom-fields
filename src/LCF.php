@@ -2,28 +2,13 @@
 
 namespace MadisonSolutions\LCF;
 
-use Illuminate\Validation\ValidationException;
-use Validator;
+use Route;
 
 class LCF
 {
-    //protected $markdown_instance;
-    //protected $link_finder_instance;
+    protected $markdown_instance;
+    protected $link_finder_instance;
 
-    public static function shiftPath(&$path)
-    {
-        if (is_string($path)) {
-            $path = empty($path) ? [] : explode('.', $path);
-        }
-        return array_shift($path);
-    }
-
-    public function validate(array $data, array $rules)
-    {
-        Validator::make($data, $rules)->validate();
-    }
-
-    /*
     public function getMarkdown()
     {
         if (is_null($this->markdown_instance)) {
@@ -44,7 +29,6 @@ class LCF
         }
         return $this->link_finder_instance;
     }
-    */
 
     protected static $classmap = [
         'ChoiceField' => Fields\ChoiceField::class,
