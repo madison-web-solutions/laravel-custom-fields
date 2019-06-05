@@ -21,9 +21,6 @@ class StorageItem
         if (! preg_match('/^[-a-z0-9]+$/', $slug)) {
             throw new \Exception("Invalid slug {$slug}");
         }
-        if (! in_array($extension, ['jpg', 'png'])) {
-            throw new \Exception("Invalid extension {$extension}");
-        }
         $this->slug = $slug;
         $this->extension = $extension;
         $this->dir = trim($dir, '/');

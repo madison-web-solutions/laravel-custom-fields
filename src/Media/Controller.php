@@ -7,6 +7,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use MadisonSolutions\LCF\LCF;
 
 class Controller extends BaseController
 {
@@ -16,13 +17,15 @@ class Controller extends BaseController
     {
         $this->authorize('index', MediaItem::class);
         $query = MediaItem::query();
+        $ilike = LCF::iLikeOperator($query->getConnection());
+
         $search = $request->input('search');
         if ($search) {
             $words = preg_split('/\s+/', $search);
             foreach ($words as $word) {
-                $query->where(function ($q) use ($word) {
+                $query->where(function ($q) use ($ilike, $word) {
                     $wordLike = '%' . str_replace('%', '\\%', $word) . '%';
-                    $q->where('title', 'ILIKE', $wordLike)->orWhere('alt', 'ILIKE', $wordLike)->orWhere('extension', $word);
+                    $q->where('title', $ilike, $wordLike)->orWhere('alt', $ilike, $wordLike)->orWhere('extension', $word);
                 });
             }
         }
