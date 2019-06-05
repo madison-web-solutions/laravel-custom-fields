@@ -7,11 +7,11 @@
         <div>
             <div>
                 <label>Title</label>
-                <input type="text" name="title" :disabled="! editable" :value="vals.title" @change="change" @keyup="change" />
+                <input ref="titleInput" type="text" :disabled="! editable" :value="vals.title" @change="change" @keyup="change" />
             </div>
             <div>
                 <label>{{ isImage ? 'Alt' : 'Subtitle' }}</label>
-                <input type="text" name="alt" :disabled="! editable" :value="vals.alt" @change="change" @keyup="change" />
+                <input ref="altInput" type="text" :disabled="! editable" :value="vals.alt" @change="change" @keyup="change" />
             </div>
             <button v-if="editable && edited" data-name="save" type="button" @click.stop="saveUpdates">Save</button>
             <hr />
@@ -67,7 +67,8 @@ export default {
             this.vals.alt = this.item.alt;
         },
         change: function(e) {
-            this.vals[e.target.name] = e.target.value;
+            this.vals.title = this.$refs.titleInput.value;
+            this.vals.alt = this.$refs.altInput.value;
         },
         close: function() {
             this.$emit('close');
