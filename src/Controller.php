@@ -16,12 +16,12 @@ class Controller extends BaseController
     {
         $this->authorize('getSuggestions', LCF::class);
         $request->validate([
-            'type' => 'required|in:model,link',
-            'options' => 'required|json',
+            'type' => 'required|in:model-id,link',
+            'settings' => 'required|json',
             'search' => 'required|string|min:2',
         ]);
-        if ($request->type == 'model') {
-            $field = new Fields\ModelField(json_decode($request->options, true));
+        if ($request->type == 'model-id') {
+            $field = new Fields\ModelIdField(json_decode($request->settings, true));
             return response()->json($field->getSuggestions($request->search));
         }
         if ($request->type === 'link') {
@@ -35,12 +35,12 @@ class Controller extends BaseController
     {
         $this->authorize('getDisplayName', LCF::class);
         $request->validate([
-            'type' => 'required|in:model,link',
-            'options' => 'required|json',
+            'type' => 'required|in:model-id,link',
+            'settings' => 'required|json',
             'id' => 'required',
         ]);
-        if ($request->type == 'model') {
-            $field = new Fields\ModelField(json_decode($request->options, true));
+        if ($request->type == 'model-id') {
+            $field = new Fields\ModelIdField(json_decode($request->settings, true));
             return response()->json($field->getDisplayName($request->id));
         }
         if ($request->type === 'link') {

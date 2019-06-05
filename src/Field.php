@@ -87,7 +87,7 @@ abstract class Field implements JsonSerializable
         return [
             'fieldComponent' => $this->fieldComponent(),
             'inputComponent' => $this->inputComponent(),
-            'settings' => $this->options,
+            'settings' => array_merge($this->options, ['type' => $this->fieldTypeName()]),
         ];
     }
 

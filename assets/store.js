@@ -1,11 +1,13 @@
-import { uniqueId, isArray, isObject, isString, isInteger, map, mapValues, forEach } from 'lodash-es';
+import axios from 'axios';
+import { uniqueId, isArray, isObject, isString, isInteger, map, mapValues, forEach, cloneDeep } from 'lodash-es';
 import Vue from 'vue';
 
 var store = new Vue({
     data: function() {
         return {
             groups: {},
-            nodes: {}
+            nodes: {},
+            displayNames: {},
         };
     }
 });
@@ -249,6 +251,36 @@ var setErrors = function(groupName, errors) {
     return handledPaths;
 };
 
+var getDisplayName = function(fieldSettings, id) {
+    if (! id) {
+        return '';
+    }
+    var key = JSON.stringify([fieldSettings, id]);
+    if (! store.displayNames.hasOwnProperty(key)) {
+        Vue.set(store.displayNames, key, '');
+        var settings = cloneDeep(fieldSettings);
+        var type = settings.type;
+        delete settings.type;
+        axios.get('/lcf/display-name', {params: {type, settings, id}}).then(response => {
+            Vue.set(store.displayNames, key, response.data);
+        }, error => {
+            console.log(error);
+        });
+    }
+    return store.displayNames[key];
+};
+
+var getSuggestions = function(fieldSettings, search, callback) {
+    var settings = cloneDeep(fieldSettings);
+    var type = settings.type;
+    delete settings.type;
+    axios.get('/lcf/suggestions', {params: {type, settings, search}}).then(response => {
+        callback(search, response.data);
+    }, error => {
+        console.log(error);
+    });
+};
+
 var pathArg = function(path) {
     if (! isString(path) || path == '') {
         throw new Error("path must be a non-empty string");
@@ -331,5 +363,11 @@ export default {
                 Vue.set(node.children, key, childId);
             }
         });
+    },
+    getDisplayName: function(fieldSettings, id) {
+        return getDisplayName(fieldSettings, id);
+    },
+    getSuggestions: function(fieldSettings, search, callback) {
+        return getSuggestions(fieldSettings, search, callback);
     }
 };

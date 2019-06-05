@@ -37,7 +37,7 @@ class LCF
         'LinkField' => Fields\LinkField::class,
         'MarkdownField' => Fields\MarkdownField::class,
         'MediaField' => Fields\MediaField::class,
-        'ModelField' => Fields\ModelField::class,
+        'ModelIdField' => Fields\ModelIdField::class,
         'OptionsField' => Fields\OptionsField::class,
         'QuantityWithUnitField' => Fields\QuantityWithUnitField::class,
         'RepeaterField' => Fields\RepeaterField::class,

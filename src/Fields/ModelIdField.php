@@ -1,10 +1,20 @@
 <?php
-namespace MadisonSolutions\LCF;
+namespace MadisonSolutions\LCF\Fields;
 
 use Illuminate\Database\Eloquent\Model;
+use MadisonSolutions\Coerce\Coerce;
+use MadisonSolutions\LCF\ScalarField;
+use MadisonSolutions\LCF\LCF;
+use MadisonSolutions\LCF\Validator;
 
-class ModelField extends Field
+class ModelIdField extends ScalarField
 {
+    public function __construct(array $options)
+    {
+        parent::__construct($options);
+        $this->options['string_keys'] = ($this->newInstance()->getKeyType() == 'string');
+    }
+
     public function optionRules() : array
     {
         $rules = parent::optionRules();
@@ -22,7 +32,7 @@ class ModelField extends Field
 
     public function inputComponent() : string
     {
-        return 'search-input';
+        return 'lcf-search-input';
     }
 
     protected function newInstance() : Model
@@ -30,62 +40,52 @@ class ModelField extends Field
         return new $this->model_class;
     }
 
-    public function getValidationRules()
+    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
-        $rules = parent::getValidationRules();
-        $rules[] = function ($attribute, $value, $fail) {
-            $dummy = $this->newInstance();
-            $query = $dummy->where($dummy->getKeyName(), $value);
-            if ($this->criteria) {
-                $query->where($this->criteria);
-            }
-            if (! $query->exists()) {
-                $fail("Invalid reference for {$attribute}");
-            }
-        };
-        return $rules;
+        if (! ($this->string_keys ? is_string($value) : is_int($value))) {
+            $messages[$path][] = "Invalid value";
+            return;
+        }
+        $dummy = $this->newInstance();
+        $query = $dummy->where($dummy->getKeyName(), $value);
+        if ($this->criteria) {
+            $query->where($this->criteria);
+        }
+        if (! $query->exists()) {
+            $messages[$path][] = "Model not found with id {$value}";
+        }
     }
 
-    protected function testTypeNotNull($input) : bool
-    {
-        return ($input instanceof $this->model_class);
-    }
-
-    protected function coerceNotNull($input, &$output, int $on_fail) : bool
+    protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
         if ($input instanceof $this->model_class) {
-            $output = $input;
+            $output = $input->getKey();
             return true;
         }
-        $obj = $this->newInstance()->find($input);
-        if ($obj) {
-            $output = $obj;
-            return true;
+        if (! ($this->string_keys ? Coerce::toString($input, $output) : Coerce::toInt($input, $output))) {
+            $output = ($keep_invalid ? $input : null);
+            return false;
         }
-        $output = null;
-        return false;
-    }
-
-    protected function toPrimitiveNotNull($cast_value)
-    {
-        return $cast_value->getKey();
+        return true;
     }
 
     public function getSuggestions(string $search)
     {
         $dummy = $this->newInstance();
         $query = $dummy->query();
+        $ilike = LCF::iLikeOperator($query->getConnection());
+
         if ($this->criteria) {
             $query->where($this->criteria);
         }
-        $query->where(function ($q) use ($search) {
+        $query->where(function ($q) use ($ilike, $search) {
             // @todo scout?
             $search_esc = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $search) . '%';
             foreach (array_values($this->search_fields) as $i => $search_field) {
                 if ($i == 0) {
-                    $q->where($search_field, 'ilike', $search_esc); // @todo ilike is postgres extension - so this makes LCF postgres only!
+                    $q->where($search_field, $ilike, $search_esc);
                 } else {
-                    $q->orWhere($search_field, 'ilike', $search_esc);
+                    $q->orWhere($search_field, $ilike, $search_esc);
                 }
             }
         });
