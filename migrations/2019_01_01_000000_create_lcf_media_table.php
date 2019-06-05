@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class LcfInitial extends Migration
+class CreateLcfMediaTable extends Migration
 {
     public function up()
     {
@@ -21,6 +21,6 @@ class LcfInitial extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('media');
+        Schema::dropIfExists('lcf_media');
     }
 }

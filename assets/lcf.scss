@@ -49,3 +49,32 @@
         width: 100%;
     }
 }
+
+.lcf-media-library {
+    .lcf-ml-index {
+        .lcf-ml-preview {
+            float: left;
+        }
+    }
+}
+
+.lcf-ml-preview {
+    width: 140px;
+    .lcf-ml-thumb {
+        padding-top: 60%;
+        background-size: contain;
+        background-position: center center;
+        background-repeat: no-repeat;
+    }
+}
+
+.lcf-ml-inspect {
+    display: flex;
+    > div {
+        width: 50%;
+        padding: 10px;
+    }
+    img {
+        max-width: 100%;
+    }
+}

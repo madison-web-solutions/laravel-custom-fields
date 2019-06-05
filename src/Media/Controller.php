@@ -1,6 +1,6 @@
 <?php
 
-namespace MadisonSolutions\LCF;
+namespace MadisonSolutions\LCF\Media;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -71,8 +71,8 @@ class Controller extends BaseController
             'alt' => '',
         ]);
         $item->setUniqueSlug($basename);
+        $item->getStorageItem()->setFileFromUpload($file);
         $item->save();
-        $item->setFileFromUpload($file);
         return [
             'ok' => true,
             'item' => new MediaItemResource($item),
@@ -96,6 +96,8 @@ class Controller extends BaseController
             'item' => new MediaItemResource($item),
         ];
     }
+
+    // @todo replace file
 
     public function delete(Request $request, $id)
     {

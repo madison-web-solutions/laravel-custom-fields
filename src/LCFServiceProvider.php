@@ -18,14 +18,19 @@ class LCFServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        // publish the lcf config file
+        $lcf_root_dir = dirname(__DIR__);
+
+        // Publish the lcf config file
         $this->publishes([
-            dirname(__DIR__).'config.example.php' => config_path('lcf.php'),
+            "{$lcf_root_dir}/config.example.php" => config_path('lcf.php'),
         ]);
 
+        // Load migrations
+        $this->loadMigrationsFrom("{$lcf_root_dir}/migrations");
+
         // Define the policies for authorizing ajax actions
-        Gate::policy(LCF::class, config('lcf.auth_policy_class', AuthPolicy::class));
-        Gate::policy(Media\MediaItem::class, config('lcf.media_auth_policy_class', Media\AuthPolicy::class));
+        Gate::policy(LCF::class, config('lcf.auth_policy_class', ExampleAuthPolicy::class));
+        Gate::policy(Media\MediaItem::class, config('lcf.media_auth_policy_class', Media\ExampleAuthPolicy::class));
 
         // Add convenience method to Request object for coercing data
         Request::macro('lcfCoerce', function (array $fields) {
@@ -59,7 +64,5 @@ class LCFServiceProvider extends ServiceProvider
                     Route::post('media-library/{id}/delete', 'Media\Controller@delete');
                 });
         }
-
-        //$this->loadMigrationsFrom(dirname(__DIR__) . '/migrations');
     }
 }

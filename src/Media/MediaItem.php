@@ -2,11 +2,7 @@
 namespace MadisonSolutions\LCF\Media;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use \Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Intervention\Image\ImageManager;
-use Storage;
 
 class MediaItem extends Model
 {
@@ -15,81 +11,7 @@ class MediaItem extends Model
 
     protected $fillable = ['title', 'extension', 'alt'];
 
-    public function getTypeAttribute()
-    {
-        return new MediaType($this->extension);
-    }
-
-    public function disk()
-    {
-        return Storage::disk('public');
-    }
-
-    protected function fileName($size = null)
-    {
-        $size = (is_null($size) ? null : ImageSize::coerce($size));
-        if (empty($this->slug)) {
-            throw new \Exception("Must set MediaItem slug before accessing filename");
-        }
-        if ($size) {
-            if (! $this->type->sizable) {
-                throw new \Exception("Media of type {$this->type->label} cannot be resized");
-            }
-            return $size->fileName($this->slug);
-        } else {
-            return "{$this->slug}.{$this->extension}";
-        }
-    }
-
-    public function location($size = null)
-    {
-        return 'lcf-media/' . $this->fileName($size);
-    }
-
-    public function url($size = null)
-    {
-        return $this->disk()->url($this->location($size));
-    }
-
-    public function urlOrCreate($size = null)
-    {
-        if (config('lcf.automatically_create_webp_images', false) && $size) {
-            $this->maybeCreateWebpVersion($size);
-        }
-        if (! $this->fileExists($size)) {
-            try {
-                $this->createImageSize($size);
-            } catch (FileNotFoundException $e) {
-                return false;
-            }
-        }
-        return $this->url($size);
-    }
-
-    protected function maybeCreateWebpVersion($size)
-    {
-        $size = ImageSize::coerce($size);
-        if ($size->format == 'png' || $size->format == 'jpg') {
-            $webp_size = (clone $size)->setFormat('webp');
-            $this->urlOrCreate($webp_size);
-        }
-    }
-
-    // throws Intervention\Image\Exception\NotReadableException
-    public function createImageSize($size)
-    {
-        $size = ImageSize::coerce($size);
-        $this->deleteFile($size);
-        $location = $this->location($size);
-        $imageManager = new ImageManager(['driver' => 'imagick']);
-        $image = $imageManager->make($this->fileContents());
-        $this->disk()->put($this->location($size), $size->resize($image));
-    }
-
-    public function fileSize($size = null)
-    {
-        return $this->disk()->size($this->location($size));
-    }
+    protected $storage_item;
 
     public function setUniqueSlug()
     {
@@ -106,71 +28,32 @@ class MediaItem extends Model
         throw new \Exception("Exhausted 10000 attempts to generate a slug for {$this->title}");
     }
 
-    public function setFileFromUpload(UploadedFile $upload)
+    public function getStorageItem()
     {
-        if (!$upload->isValid()) {
-            throw new \Exception("Uploaded file not valid");
+        if (is_null($this->storage_item)) {
+            $this->storage_item = new StorageItem($this->slug, $this->extension, config('lcf.media_dir_name', 'lcf_media'), config('lcf.media_disk_name', 'public'));
         }
-        $this->setFileByPath($upload->getPathname());
+        return $this->storage_item;
     }
 
-    public function setFileByPath(string $srcPath)
+    public function getTypeAttribute()
     {
-        $this->deleteFile();
-        $fh = fopen($srcPath, 'rb');
-        $this->disk()->put($this->location(), $fh, 'public');
+        return new MediaType($this->extension);
     }
 
-    public function setFileContents(string $contents)
+    public function url($size = null)
     {
-        $this->deleteFile();
-        $this->disk()->put($this->location(), $contents, 'public');
+        return $this->getStorageItem()->url($size);
     }
 
-    public function deleteFile($size = null)
+    public function urlOrCreate($size = null)
     {
-        $size = (is_null($size) ? null : ImageSize::coerce($size));
-        // Array of locations which we will delete
-        $locations = [];
-        if ($size) {
-            // Size has been specified, so only delete this one size
-            $locations[] = $this->location($size);
-        } else {
-            // No size specified - assume we're deleting all
-            // Find all files with the right slug
-            $base = $this->slug . '.';
-            foreach ($this->disk()->files('lcf-media') as $file) {
-                if (strpos($file, $base) === 0) {
-                    $locations[] = "lcf-media/{$file}";
-                }
-            }
-        }
-        // Now we have a list of locaitons to delete, actually delete them on the disk
-        foreach ($locations as $location) {
-            if ($this->disk()->exists($location)) {
-                $this->disk()->delete($location);
-            }
-        }
-    }
-
-    public function fileExists($size = null)
-    {
-        return $this->disk()->exists($this->location($size));
-    }
-
-    public function getStream($size = null)
-    {
-        return $this->disk()->readStream($this->location($size));
-    }
-
-    public function fileContents($size = null)
-    {
-        return $this->disk()->get($this->location($size));
+        return $this->getStorageItem()->urlOrCreate($size);
     }
 
     public function delete()
     {
-        $this->deleteFile();
+        $this->getStorageItem()->deleteFile();
         parent::delete();
     }
 }

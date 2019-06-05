@@ -1,9 +1,9 @@
 <?php
+
 namespace MadisonSolutions\LCF\Media;
 
 use InvalidArgumentException;
 use Intervention\Image\Image;
-use Intervention\Image\ImageManager;
 
 class ImageSize
 {
@@ -12,6 +12,11 @@ class ImageSize
     public static function register(string $name, ImageSize $size)
     {
         ImageSize::$named_sizes[$name] = $size;
+    }
+
+    public static function getNamedSizes()
+    {
+        return ImageSize::$named_sizes;
     }
 
     public static function coerce($value)
@@ -71,7 +76,7 @@ class ImageSize
 
     public function setMethod(string $method)
     {
-        $methods = ['none', 'fit', 'heighten', 'widen'];
+        $methods = ['none', 'fit', 'heighten', 'widen', 'contain'];
         if (! in_array($method, $methods)) {
             throw new \Exception("Unexpected resize method '{$method}' - expected " . implode(', ', $methods));
         }
@@ -115,26 +120,25 @@ class ImageSize
     {
         switch ($this->method) {
             case 'fit':
-                $resized = $image->fit($this->width, $this->height, null, $this->position);
-                break;
+                return $image->fit($this->width, $this->height, null, $this->position);
             case 'heighten':
-                $resized = $image->heighten($this->height);
-                break;
+                return $image->heighten($this->height);
             case 'widen':
-                $resized = $image->widen($this->width);
-                break;
+                return $image->widen($this->width);
+            case 'contain':
+                return ($image->height() > $image->width() ? $image->heighten($this->height) : $image->widen($this->width));
             case 'none':
-                $resized = $image;
-                break;
+                return $image;
         }
+    }
 
+    public function encode(Image $image)
+    {
         switch ($this->format) {
             case 'png':
-                return $resized->encode('png');
-                break;
+                return $image->encode('png');
             case 'jpg':
-                return $resized->encode('jpg', 80);
-                break;
+                return $image->encode('jpg', 80);
             case 'webp':
                 // I couldn't get webp support working with either GD or ImageMagick
                 // so I'm resorting to saving as png to a temporary file, then converting
@@ -143,14 +147,13 @@ class ImageSize
                     throw new \Exception("The cwebp command line tool must be installed in order to save images in webp format");
                 }
                 $temp_png_path = tempnam(sys_get_temp_dir(), 'png_');
-                file_put_contents($temp_png_path, $resized->encode('png'));
+                file_put_contents($temp_png_path, $image->encode('png'));
                 $temp_webp_path = tempnam(sys_get_temp_dir(), 'web_p');
-                exec('cwebp  ' . escapeshellarg($temp_png_path) . ' -o ' . escapeshellarg($temp_webp_path));
-                $gd_image_data = file_get_contents($temp_webp_path);
+                exec('cwebp  ' . escapeshellarg($temp_png_path) . ' -o ' . escapeshellarg($temp_webp_path) . ' -quiet');
+                $webp_image_data = file_get_contents($temp_webp_path);
                 unlink($temp_png_path);
                 unlink($temp_webp_path);
-                return $gd_image_data;
-                break;
+                return $webp_image_data;
         }
     }
 

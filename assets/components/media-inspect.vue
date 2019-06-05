@@ -1,7 +1,7 @@
 <template>
     <div class="lcf-ml-inspect">
         <div>
-            <img v-if="isImage" :src="item.orig" />
+            <img v-if="isImage" :src="item.url" />
             <p v-if="! isImage"><strong>Media Type:</strong><br />{{ item.category }}</p>
         </div>
         <div>

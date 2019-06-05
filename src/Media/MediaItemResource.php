@@ -24,12 +24,11 @@ class MediaItemResource extends Resource
         $type = $this->type;
         $out = [
             'id' => $this->id,
-            'url' => $this->url(),
             'title' => $this->title,
             'alt' => $this->alt,
+            'url' => $this->url(),
             'mimeType' => ($type ? $type->mimeType : null),
             'category' => ($type ? $type->category : null),
-            'orig' => $this->url(),
             'thumb' => ($type->sizable ? $this->urlOrCreate(self::thumbSize()) : null),
         ];
         return $out;

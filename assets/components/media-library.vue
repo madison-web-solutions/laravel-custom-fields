@@ -16,7 +16,7 @@
                         <p v-if="upload.status == 'error'">Error: {{ upload.error }}</p>
                     </div>
                 </template>
-                <media-preview v-for="item in library" :key="item.id" :item="item" @select="select" />
+                <lcf-media-preview v-for="item in library" :key="item.id" :item="item" @select="select" />
             </div>
         </div>
         <div class="lcf-ml-panel" v-if="showUpload">
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="lcf-ml-panel" v-if="showInspect">
-            <media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @selectItem="selectSelectedItem" @deleteItem="deleteSelectedItem" @updated="selectedItemUpdated" />
+            <lcf-media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @selectItem="selectSelectedItem" @deleteItem="deleteSelectedItem" @updated="selectedItemUpdated" />
         </div>
     </div>
 </template>
