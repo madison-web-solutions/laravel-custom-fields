@@ -16,7 +16,7 @@
                         <p v-if="upload.status == 'error'">Error: {{ upload.error }}</p>
                     </div>
                 </template>
-                <lcf-media-preview v-for="item in library" :key="item.id" :item="item" @select="select" />
+                <lcf-media-preview v-for="item in items" :key="item.id" :item="item" @select="select" />
             </div>
         </div>
         <div class="lcf-ml-panel" v-if="showUpload">
@@ -27,45 +27,13 @@
             </div>
         </div>
         <div class="lcf-ml-panel" v-if="showInspect">
-            <lcf-media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @selectItem="selectSelectedItem" @deleteItem="deleteSelectedItem" @updated="selectedItemUpdated" />
+            <lcf-media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @selectItem="selectSelectedItem" @deleteItem="deleteSelectedItem" />
         </div>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
-import _ from 'lodash';
-
-// Helper object for fetching media info from the server
-var getter = {
-    _counter: 1,
-    _getting: false,
-};
-getter.get = function(category, search, page, callback) {
-    // Save a unique id for each call to get()
-    // The idea of this is that if get() is called while a previous get() is still running,
-    // then the second call can overrule the first one, and we'll only run the second callback
-    var id = getter._counter++;
-    console.log('get '+id, category, search, page);
-    getter._getting = id;
-    axios.get('/lcf/media-library', {params: {
-        category: category,
-        search: search,
-        page: page
-    }}).then(response => {
-        if (getter._getting == id) {
-            callback(response.data.data);
-            getter._getting = false;
-        }
-    });
-};
-// Debounced version of the get function
-getter.getDebounce = _.debounce(getter.get, 300);
-// Function for finding out whether any items are currently being fetched
-getter.isGetting = function() {
-    return (getter._getting !== false);
-};
-
+import { get, includes, debounce, forEach, filter, map } from 'lodash-es';
 export default {
     props: {
         category: {
@@ -87,9 +55,13 @@ export default {
             searchString: null,
             page: 0,
             hasMore: true,
-            library: [],
+            itemIds: [],
             selectedItemId: null,
+            searchId: null,
         }
+    },
+    created: function() {
+        this.getDebounce = debounce(this.$lcfStore.searchMediaLibrary, 300);
     },
     computed: {
         cssClass: function() {
@@ -97,8 +69,11 @@ export default {
                 'has-drag-obj': this.hasDragObj
             }
         },
+        items: function() {
+            return filter(map(this.itemIds, (itemId) => this.$lcfStore.getMediaItem(itemId)));
+        },
         selectedItem: function() {
-            return _.find(this.library, item => item.id == this.selectedItemId);
+            return this.$lcfStore.getMediaItem(this.selectedItemId);
         },
         showUpload: function() {
             return this.hasDragObj || this.mode == 'upload';
@@ -121,42 +96,48 @@ export default {
         libraryClear: function() {
             this.library = [];
         },
-        libraryAddMany: function(items, atStart) {
-            _.forEach(items, item => {
-                this.libraryAdd(item, atStart);
+        libraryAddMany: function(itemIds, atStart) {
+            forEach(itemIds, itemId => {
+                this.libraryAdd(itemId, atStart);
             });
         },
-        libraryAdd: function(item, atStart) {
-            var index = _.findIndex(this.library, existingItem => existingItem.id == item.id);
-            if (index == -1) {
-                if (atStart) {
-                    this.library.unshift(item);
-                } else {
-                    this.library.push(item);
-                }
+        libraryAdd: function(itemId, atStart) {
+            if (includes(this.itemIds, itemId)) {
+                return;
+            }
+            if (atStart) {
+                this.itemIds.unshift(itemId);
             } else {
-                this.library.splice(index, 1, item);
+                this.itemIds.push(itemId);
             }
         },
         handleSearch: function() {
             var searchString = this.$refs.searchInput.value;
-            getter.getDebounce(this.category, this.$refs.searchInput.value, 0, (items) => {
+            this.searchId = this.getDebounce(this.category, this.$refs.searchInput.value, 0, (searchedId, itemIds) => {
+                if (this.searchId != searchedId) {
+                    return;
+                }
+                this.searchId = null;
                 this.searchString = searchString;
                 this.page = 0;
-                this.hasMore = (items.length == 50);
+                this.hasMore = (itemIds.length == 50);
                 this.libraryClear();
-                this.libraryAddMany(items);
+                this.libraryAddMany(itemIds);
             });
         },
         handleScroll: function(e) {
             var ele = e.target;
             var scrollProportion = ((ele.scrollTop + ele.offsetHeight) / ele.scrollHeight);
-            if (this.hasMore && !getter.isGetting() && scrollProportion > 0.9) {
+            if (this.hasMore && !this.searchId && scrollProportion > 0.9) {
                 var page = this.page + 1;
-                getter.get(this.category, this.searchString, page, (items) => {
+                this.searchId = this.$lcfStore.searchMediaLibrary(this.category, this.searchString, page, (searchedId, itemIds) => {
+                    if (this.searchId != searchedId) {
+                        return;
+                    }
+                    this.searchId = null;
                     this.page = page;
-                    this.hasMore = (items.length == 50);
-                    this.libraryAddMany(items);
+                    this.hasMore = (itemIds.length == 50);
+                    this.libraryAddMany(itemIds);
                 });
             }
         },
@@ -211,73 +192,55 @@ export default {
             if (this.category) {
                 formData.append('category', this.category);
             }
-
-            axios.post('/lcf/media-library', formData, {
-                onUploadProgress: function(e) {
-                    nextUpload.progress = Math.round(100 * e.loaded / e.total);
-                }
-            }).then(response => {
-                console.log(response);
-                if (response.data.ok) {
-                    this.setUploadDone(nextUpload, response.data.item);
-                } else {
-                    this.setUploadError(nextUpload, response.data.error);
-                }
+            this.$lcfStore.uploadToMediaLibrary(formData, (progress) => {
+                nextUpload.progress = progress;
+            }, (itemId) => {
+                var index = this.uploads.indexOf(nextUpload);
+                this.uploads.splice(index, 1);
+                this.libraryAdd(itemId, true);
                 this.uploading = false;
                 this.next();
-            }).catch(err => {
-                var msg = 'upload error';
-                if (err.response.status == 413) {
-                    msg = 'File too large';
-                }
-                this.setUploadError(nextUpload, msg);
+            }, (errorMsg) => {
+                nextUpload.status = 'error';
+                nextUpload.error = errorMsg;
                 this.uploading = false;
                 this.next();
             });
         },
-        setUploadDone(upload, item) {
-            var index = this.uploads.indexOf(upload);
-            this.uploads.splice(index, 1);
-            this.libraryAdd(item, true);
-        },
-        setUploadError(upload, error) {
-            upload.status = 'error';
-            upload.error = error;
-        },
         select(e) {
             if (e.item != null) {
-                this.mode = 'inspect';
-                this.selectedItemId = e.item.id;
-            }
-        },
-        selectSelectedItem: function() {
-            if (this.selectedItem) {
-                this.$emit('select', {item: this.selectedItem});
+                if (this.standalone) {
+                    this.mode = 'inspect';
+                    this.selectedItemId = e.item.id;
+                } else {
+                    this.$emit('select', {item: e.item});
+                }
             }
         },
         deleteSelectedItem: function() {
             if (this.selectedItem) {
                 if (confirm("Are you sure you wish to delete this media item - this cannot be undone!")) {
-                    axios.post('/lcf/media-library/delete', {item_id: this.selectedItemId}).then(response => {
-                        var index = _.findIndex(this.library, item => item.id == this.selectedItemId);
-                        this.library.splice(index, 1);
+                    this.$lcfStore.deleteMediaItem(this.selectedItemId, () => {
+                        var index = this.itemIds.indexOf(this.selectedItemId);
+                        this.itemIds.splice(index, 1);
                         this.selectedItemId = null;
                         this.libraryMode();
                     });
                 }
             }
         },
-        selectedItemUpdated: function(newItem) {
-            this.libraryAdd(newItem);
-        },
         cancel: function() {
             this.$emit('close');
         }
     },
     created: function() {
-        getter.get(this.category, '', 0, (items) => {
-            this.libraryAddMany(items);
-            this.hasMore = (items.length == 50);
+        this.searchId = this.$lcfStore.searchMediaLibrary(this.category, '', 0, (searchedId, itemIds) => {
+            if (this.searchId != searchedId) {
+                return;
+            }
+            this.searchId = null;
+            this.hasMore = (itemIds.length == 50);
+            this.libraryAddMany(itemIds);
         });
     }
 };

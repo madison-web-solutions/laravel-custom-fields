@@ -92,7 +92,7 @@ class Controller extends BaseController
         ]);
 
         $item->title = $request->title;
-        $item->alt = $request->alt;
+        $item->alt = $request->alt ?? '';
         $item->save();
         return [
             'ok' => true,

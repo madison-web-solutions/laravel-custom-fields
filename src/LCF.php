@@ -36,7 +36,7 @@ class LCF
         'IntegerField' => Fields\IntegerField::class,
         'LinkField' => Fields\LinkField::class,
         'MarkdownField' => Fields\MarkdownField::class,
-        'MediaField' => Fields\MediaField::class,
+        'MediaIdField' => Fields\MediaIdField::class,
         'ModelIdField' => Fields\ModelIdField::class,
         'OptionsField' => Fields\OptionsField::class,
         'QuantityWithUnitField' => Fields\QuantityWithUnitField::class,

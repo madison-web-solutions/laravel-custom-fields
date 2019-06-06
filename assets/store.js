@@ -8,6 +8,7 @@ var store = new Vue({
             groups: {},
             nodes: {},
             displayNames: {},
+            mediaItems: {}
         };
     }
 });
@@ -281,6 +282,90 @@ var getSuggestions = function(fieldSettings, search, callback) {
     });
 };
 
+var getMediaItem = function(id) {
+    if (! id) {
+        return null;
+    }
+    if (! store.mediaItems.hasOwnProperty(id)) {
+        Vue.set(store.mediaItems, id, null);
+        axios.get('/lcf/media-library/' + id).then(response => {
+            Vue.set(store.mediaItems, id, response.data.item);
+        }, error => {
+            console.log(error);
+        });
+    }
+    return store.mediaItems[id];
+};
+
+var searchIdCounter = 1;
+var searchMediaLibrary = function(category, search, page, callback) {
+    var searchId = searchIdCounter++;
+    console.log('get '+searchId, category, search, page);
+    axios.get('/lcf/media-library', {params: {
+        category: category,
+        search: search,
+        page: page
+    }}).then(response => {
+        var itemIds = [];
+        forEach(response.data.data, (item) => {
+            Vue.set(store.mediaItems, item.id, item);
+            itemIds.push(item.id);
+        });
+        callback(searchId, itemIds);
+    }, error => {
+        console.log(error);
+    });
+    return searchId;
+};
+
+var uploadToMediaLibrary = function(formData, progressFn, successFn, errorFn) {
+    axios.post('/lcf/media-library', formData, {
+        onUploadProgress: function(e) {
+            progressFn(Math.round(100 * e.loaded / e.total));
+        }
+    }).then(response => {
+        console.log(response);
+        if (response.data.ok) {
+            Vue.set(store.mediaItems, response.data.item.id, response.data.item);
+            successFn(response.data.item.id);
+        } else {
+            errorFn(response.data.error);
+        }
+    }).catch(err => {
+        var msg = 'upload error';
+        if (err.response.status == 413) {
+            msg = 'File too large';
+        }
+        errorFn(msg);
+    });
+};
+
+var updateMediaItem = function(itemId, data, successFn, errorFn) {
+    axios.post('/lcf/media-library/' + itemId, data).then(response => {
+        Vue.set(store.mediaItems, response.data.item.id, response.data.item);
+        successFn();
+    }, error => {
+        if (error.response.data && error.response.data.errors) {
+            errorFn('Error: ' + JSON.stringify(error.response.data.errors));
+        } else {
+            errorFn('Server error');
+        }
+    });
+};
+
+var deleteMediaItem = function(itemId, callback) {
+    axios.post('/lcf/media-library/' + itemId + '/delete', {}).then(response => {
+        callback();
+        Vue.delete(store.mediaItems, itemId);
+    });
+};
+
+
+
+
+
+
+
 var pathArg = function(path) {
     if (! isString(path) || path == '') {
         throw new Error("path must be a non-empty string");
@@ -364,10 +449,11 @@ export default {
             }
         });
     },
-    getDisplayName: function(fieldSettings, id) {
-        return getDisplayName(fieldSettings, id);
-    },
-    getSuggestions: function(fieldSettings, search, callback) {
-        return getSuggestions(fieldSettings, search, callback);
-    }
+    getDisplayName: getDisplayName,
+    getSuggestions: getSuggestions,
+    getMediaItem: getMediaItem,
+    searchMediaLibrary: searchMediaLibrary,
+    updateMediaItem: updateMediaItem,
+    uploadToMediaLibrary: uploadToMediaLibrary,
+    deleteMediaItem: deleteMediaItem
 };

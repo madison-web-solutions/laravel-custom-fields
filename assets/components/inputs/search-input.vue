@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { get, debounce } from 'lodash-es';
+import { get, debounce, isArray } from 'lodash-es';
 export default {
     props: ['settings', 'value', 'hasError'],
     data: function() {
@@ -54,7 +54,7 @@ export default {
             return this.displayName ? this.displayName : (this.value ? ('(' + this.value + ')') : '');
         },
         searched: function() {
-            return _.isArray(this.suggestions);
+            return isArray(this.suggestions);
         },
         hasResults: function() {
             return this.searched && (this.suggestions.length > 0);
