@@ -38,6 +38,8 @@ class LCF
         'MarkdownField' => Fields\MarkdownField::class,
         'MediaIdField' => Fields\MediaIdField::class,
         'ModelIdField' => Fields\ModelIdField::class,
+        'NumberField' => Fields\NumberField::class,
+        'CurrencyField' => Fields\CurrencyField::class,
         'OptionsField' => Fields\OptionsField::class,
         'QuantityWithUnitField' => Fields\QuantityWithUnitField::class,
         'RepeaterField' => Fields\RepeaterField::class,
@@ -50,6 +52,7 @@ class LCF
 
     public static function make(string $classname, array $options)
     {
+        $classname = self::$classmap[$classname] ?? $classname;
         if (! is_a($classname, Field::class, true)) {
             throw new \Exception("No LCF Field '{$classname}'");
         }
@@ -58,10 +61,8 @@ class LCF
 
     public static function __callStatic($method, $args)
     {
-        foreach (self::$classmap as $alias => $classname) {
-            if ($method === "new{$alias}") {
-                return self::make($classname, $args[0]);
-            }
+        if (preg_match('/^new(\w+)Field$/', $method, $matches)) {
+            return self::make($matches[1].'Field', $args[0]);
         }
         throw new \Exception("Unrecognised static method '{$name}'");
     }
