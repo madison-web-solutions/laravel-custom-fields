@@ -54,10 +54,10 @@ class Controller extends BaseController
     {
         $this->authorize('linkLookup', LCF::class);
         $request->validate([
-            'spec' => 'required|string',
+            'link_id' => 'required|string',
         ]);
         $lf = app(LCF::class)->getLinkFinder();
-        return response()->json($lf->lookup($request->spec));
+        return response()->json($lf->lookup($request->link_id));
     }
 
     public function markdown(Request $request)

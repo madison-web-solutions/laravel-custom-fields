@@ -8,7 +8,8 @@ var store = new Vue({
             groups: {},
             nodes: {},
             displayNames: {},
-            mediaItems: {}
+            mediaItems: {},
+            links: {}
         };
     }
 });
@@ -370,6 +371,21 @@ var getMarkdown = function(input, callback) {
     });
 };
 
+var lookupLink = function(linkId) {
+    if (! linkId) {
+        return null;
+    }
+    if (! store.links.hasOwnProperty(linkId)) {
+        Vue.set(store.links, linkId, null);
+        axios.get('/lcf/link-lookup', {params: {link_id: linkId}}).then(response => {
+            Vue.set(store.links, linkId, response.data);
+        }, error => {
+            console.log(error);
+        });
+    }
+    return store.links[linkId];
+};
+
 var pathArg = function(path) {
     if (! isString(path) || path == '') {
         throw new Error("path must be a non-empty string");
@@ -460,5 +476,6 @@ export default {
     updateMediaItem: updateMediaItem,
     uploadToMediaLibrary: uploadToMediaLibrary,
     deleteMediaItem: deleteMediaItem,
-    getMarkdown: getMarkdown
+    getMarkdown: getMarkdown,
+    lookupLink: lookupLink
 };

@@ -8,6 +8,8 @@ use MadisonSolutions\LCF\Validator;
 
 class OptionsField extends Field
 {
+    protected $store_in_json = true;
+
     public function optionRules() : array
     {
         $rules = parent::optionRules();

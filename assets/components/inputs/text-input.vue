@@ -1,6 +1,6 @@
 <template>
     <div class="lcf-input lcf-input-text">
-        <input type="text" :name="name" :maxlength="max" :value="value" @change="change" />
+        <input type="text" :name="name" :maxlength="max" :placeholder="placeholder" :value="value" @change="change" />
     </div>
 </template>
 

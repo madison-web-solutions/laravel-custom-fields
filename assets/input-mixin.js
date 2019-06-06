@@ -11,6 +11,9 @@ export default {
         required: function() {
             return this.setting('required', false);
         },
+        placeholder: function() {
+            return this.setting('placeholder');
+        }
     },
     methods: {
         setting: function(name, defaultVal) {
