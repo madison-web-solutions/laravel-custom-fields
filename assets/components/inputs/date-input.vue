@@ -1,0 +1,58 @@
+<template>
+    <div class="lcf-input lcf-date-input">
+        <input type="hidden" :name="name" :value="value" />
+        <input ref="input" :type="inputType" :placeholder="placeholder" :value="displayValue" @change="change" />
+    </div>
+</template>
+
+<script>
+import Util from '../../util.js';
+import inputMixin from '../../input-mixin.js';
+export default {
+    mixins: [inputMixin],
+    data: function() {
+        return {
+            support: this.browserSupportsDateInput()
+        }
+    },
+    computed: {
+        inputType: function() {
+            return this.support ? 'date' : 'text';
+        },
+        placeholder: function() {
+            return this.support ? null : 'dd/mm/yyyy';
+        },
+        displayValue: function() {
+            if (this.support) {
+                return this.value;
+            } else {
+                // If it's a valid date, then convert to d/m/y for display
+                var dmyValue = Util.dateConvert(this.value, 'ymd', 'dmy');
+                return dmyValue ? dmyValue : this.value;
+            }
+        },
+    },
+    methods: {
+        browserSupportsDateInput: function() {
+            // Check whether the browser supports date inputs
+            // If it does, you won't be able to set an illegal value on an input with type="date"
+            var input = document.createElement('input');
+            var notADateValue = 'not-a-date';
+            input.setAttribute('type','date');
+            input.setAttribute('value', notADateValue);
+            return (input.value !== notADateValue);
+        },
+        change: function() {
+            if (this.support) {
+                var newValue = this.$refs.input.value;
+            } else {
+                // If it's a valid date, then convert to y-m-d to send to the server
+                var inputValue = this.$refs.input.value;
+                var ymdValue = Util.dateConvert(inputValue, 'dmy', 'ymd');
+                var newValue = ymdValue ? ymdValue : inputValue;
+            }
+            this.$emit('change', {key: this._key, value: newValue});
+        }
+    }
+};
+</script>
