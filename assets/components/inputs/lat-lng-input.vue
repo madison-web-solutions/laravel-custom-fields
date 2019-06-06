@@ -6,22 +6,17 @@
 </template>
 
 <script>
+import inputMixin from '../../input-mixin.js';
 import { get } from 'lodash-es';
 export default {
-    props: ['settings', 'value', 'hasError'],
+    mixins: [inputMixin],
     computed: {
-        name: function() {
-            return get(this.settings, 'name');
-        },
         lat: function() {
             return get(this.value, 'lat');
         },
         lng: function() {
             return get(this.value, 'lng');
         },
-        _key: function() {
-            return get(this.settings, 'key', this.$vnode.key);
-        }
     },
     methods: {
         change: function(e) {

@@ -5,27 +5,21 @@
 </template>
 
 <script>
-import { get } from 'lodash-es';
+import inputMixin from '../../input-mixin.js';
 export default {
-    props: ['settings', 'value', 'hasError'],
+    mixins: [inputMixin],
     computed: {
-        name: function() {
-            return get(this.settings, 'name');
-        },
-        _key: function() {
-            return get(this.settings, 'key', this.$vnode.key);
-        },
         integersOnly: function() {
-            return get(this.settings, 'integers_only');
+            return this.setting('integers_only');
         },
         step: function() {
-            return this.integersOnly ? 1 : get(this.settings, 'step');
+            return this.integersOnly ? 1 : this.setting('step', 1);
         },
         max: function() {
-            return get(this.settings, 'max');
+            return this.setting('max');
         },
         min: function() {
-            return get(this.settings, 'min');
+            return this.setting('min');
         }
     },
     methods: {

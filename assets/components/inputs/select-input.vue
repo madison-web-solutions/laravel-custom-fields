@@ -8,21 +8,12 @@
 </template>
 
 <script>
-import { get } from 'lodash-es';
+import inputMixin from '../../input-mixin.js';
 export default {
-    props: ['settings', 'value', 'hasError'],
+    mixins: [inputMixin],
     computed: {
-        name: function() {
-            return get(this.settings, 'name');
-        },
-        _key: function() {
-            return get(this.settings, 'key', this.$vnode.key);
-        },
-        required: function() {
-            return get(this.settings, 'required', false);
-        },
         choices: function() {
-            return get(this.settings, 'choices');
+            return this.setting('choices');
         },
         isNull: function() {
             return this.value == null || this.value == '';

@@ -5,18 +5,12 @@
 </template>
 
 <script>
-import { get } from 'lodash-es';
+import inputMixin from '../../input-mixin.js';
 export default {
-    props: ['settings', 'value', 'hasError'],
+    mixins: [inputMixin],
     computed: {
-        name: function() {
-            return get(this.settings, 'name');
-        },
-        _key: function() {
-            return get(this.settings, 'key', this.$vnode.key);
-        },
         max: function() {
-            return get(this.settings, 'max');
+            return this.setting('max');
         }
     },
     methods: {

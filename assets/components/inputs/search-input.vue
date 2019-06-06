@@ -17,9 +17,10 @@
 </template>
 
 <script>
-import { get, debounce, isArray } from 'lodash-es';
+import inputMixin from '../../input-mixin.js';
+import { debounce, isArray } from 'lodash-es';
 export default {
-    props: ['settings', 'value', 'hasError'],
+    mixins: [inputMixin],
     data: function() {
         return {
             suggestions: false, // false means not searched, an empty array means no results
@@ -41,12 +42,6 @@ export default {
         }, 300);
     },
     computed: {
-        name: function() {
-            return get(this.settings, 'name');
-        },
-        _key: function() {
-            return get(this.settings, 'key', this.$vnode.key);
-        },
         displayName: function() {
             return this.$lcfStore.getDisplayName(this.settings, this.value);
         },
