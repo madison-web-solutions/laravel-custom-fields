@@ -180,6 +180,37 @@ var dateConvert = function(input, fromFormat, toFormat) {
     return date;
 };
 
+var timeParse = function(input) {
+    var res1 = /^(\d\d)(\d\d)(\d\d)?$/.exec(input);
+    var res2 = /^(\d\d?):(\d\d?)(:(\d\d?))?$/.exec(input);
+    if (res1) {
+        var hours = parseInt(res1[1], 10);
+        var mins = parseInt(res1[2], 10);
+        var secs = (res1[3] == null ? 0 : parseInt(res[3]));
+    } else if (res2) {
+        var hours = parseInt(res2[1], 10);
+        var mins = parseInt(res2[2], 10);
+        var secs = (res2[4] == null ? 0 : parseInt(res[4]));
+    } else {
+        return null;
+    }
+    hours = clamp(hours, 0, 23);
+    mins = clamp(mins, 0, 59);
+    secs = clamp(secs, 0, 59);
+    return [hours, mins, secs];
+};
+
+var timeFormat = function(hours, mins, secs) {
+    var parts = [
+        padStart(hours, 2, '0'),
+        padStart(mins, 2, '0')
+    ];
+    if (secs != null) {
+        parts.push(padStart(secs, 2, '0'));
+    }
+    return parts.join(':');
+};
+
 var replaceAll = function(find, replace, subject) {
     return subject.split(find).join(replace);
 };
@@ -199,5 +230,7 @@ export default {
     dateFrom,
     dateTo,
     dateConvert,
+    timeParse,
+    timeFormat,
     replaceAll
 };

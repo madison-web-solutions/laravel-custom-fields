@@ -47,6 +47,7 @@ class LCF
         'SwitchField' => Fields\SwitchField::class,
         'TextAreaField' => Fields\TextAreaField::class,
         'TextField' => Fields\TextField::class,
+        'TimeField' => Fields\TimeField::class,
         'TimestampField' => Fields\TimestampField::class,
         'ToggleField' => Fields\ToggleField::class,
     ];
