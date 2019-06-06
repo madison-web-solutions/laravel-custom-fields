@@ -48,6 +48,7 @@
     input {
         width: 100%;
     }
+    background-color: white;
 }
 
 .lcf-media-library {
@@ -96,5 +97,33 @@
     }
     img {
         max-width: 100%;
+    }
+}
+
+.lcf-input-markdown {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    height: 200px;
+    > textarea, > .preview {
+        flex-basis: 48%;
+    }
+    > .preview {
+        overflow: auto;
+        background-color: white;
+    }
+    > button {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+    &.fullscreen {
+        position: fixed;
+        z-index: 100;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        padding: 10px;
     }
 }

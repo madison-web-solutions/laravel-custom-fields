@@ -360,11 +360,15 @@ var deleteMediaItem = function(itemId, callback) {
     });
 };
 
-
-
-
-
-
+var getMarkdown = function(input, callback) {
+    axios.post('/lcf/markdown', {
+        input: input
+    }).then(response => {
+        callback(response.data);
+    }, error => {
+        console.log(error);
+    });
+};
 
 var pathArg = function(path) {
     if (! isString(path) || path == '') {
@@ -455,5 +459,6 @@ export default {
     searchMediaLibrary: searchMediaLibrary,
     updateMediaItem: updateMediaItem,
     uploadToMediaLibrary: uploadToMediaLibrary,
-    deleteMediaItem: deleteMediaItem
+    deleteMediaItem: deleteMediaItem,
+    getMarkdown: getMarkdown
 };
