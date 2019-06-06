@@ -45,7 +45,7 @@ var isScalar = function(value) {
 // Return the id for the created node
 var addNode = function(value, children) {
     var id = uniqueId('v');
-    console.log("creating node " + id + " with value " + value);
+    //console.log("creating node " + id + " with value " + value);
     Vue.set(store.nodes, id, {value: value, children: children, errors: []});
     return id;
 };
@@ -97,10 +97,10 @@ var getNode = function(path) {
 };
 
 var getValue = function(path) {
-    console.log("getting value at path " + path.join('.'));
+    //console.log("getting value at path " + path.join('.'));
     var node = getNode(path);
     var value = node ? node.value : null;
-    console.log("value at path " + path.join('.')+ " is " + value);
+    //console.log("value at path " + path.join('.')+ " is " + value);
     return value;
 };
 
@@ -192,7 +192,7 @@ var objectDeleteKey = function(path, key) {
 };
 
 var updateValue = function(path, value) {
-    console.log("updating value at path " + path.join('.')+ " to " + value);
+    //console.log("updating value at path " + path.join('.')+ " to " + value);
     if (! isScalar(value)) {
         // @todo investigate js errors properly
         throw new Error("value is not a scalar");
@@ -233,7 +233,7 @@ var setErrors = function(groupName, errors) {
     var handledPaths = mapValues(errors, () => false);
     walkTree(groupName, (path, node) => {
         var pathStr = path.join('.');
-        console.log('checking path '+pathStr+' for errors');
+        //console.log('checking path '+pathStr+' for errors');
         if (errors.hasOwnProperty(pathStr)) {
             var nodeErrors = errors[pathStr];
             handledPaths[pathStr] = true;
@@ -300,7 +300,7 @@ var getMediaItem = function(id) {
 var searchIdCounter = 1;
 var searchMediaLibrary = function(category, search, page, callback) {
     var searchId = searchIdCounter++;
-    console.log('get '+searchId, category, search, page);
+    //console.log('get '+searchId, category, search, page);
     axios.get('/lcf/media-library', {params: {
         category: category,
         search: search,
@@ -444,7 +444,7 @@ export default {
             key = stringArg(key);
             if (! node.children[key]) {
                 var childId = addNode(null, null);
-                console.log('initialising key '+key+' on '+path+' with node '+childId);
+                //console.log('initialising key '+key+' on '+path+' with node '+childId);
                 Vue.set(node.children, key, childId);
             }
         });

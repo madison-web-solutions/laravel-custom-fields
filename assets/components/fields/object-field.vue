@@ -23,7 +23,7 @@ export default {
     },
     methods: {
         updateMyValue: function(e) {
-            forEach(e.value, (key, sub_value) => {
+            forEach(e.value, (sub_value, key) => {
                 if (includes(this.keys, key)) {
                     this.$lcfStore.updateValue(this.pathStr + '.' + key, e.value[key]);
                 } else {

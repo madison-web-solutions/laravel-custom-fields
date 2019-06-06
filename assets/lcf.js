@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import { forEach } from 'lodash-es';
+import fieldMixin from './field-mixin';
+import inputMixin from './input-mixin';
 
 // Load all the components from the components directory
 const componentFiles = require.context('./components', true, /\.vue$/i);
@@ -10,10 +12,10 @@ componentFiles.keys().map(key => {
 
 // Create the store which will contain lcf data, and store a reference to it in the Vue prototype
 import store from './store.js';
-window.lcfStore = store;
 Vue.prototype.$lcfStore = store;
 
 var initLcf = function() {
+
     forEach(document.querySelectorAll('lcf'), function(el) {
         var component = 'lcf-' + el.getAttribute('data-component');
         var props = JSON.parse(el.getAttribute('data-props') || '{}');
@@ -32,8 +34,14 @@ var initLcf = function() {
     });
 };
 
-if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
-    initLcf();
-} else {
-    document.addEventListener("DOMContentLoaded", initLcf);
+export default {
+    fieldMixin: fieldMixin,
+    inputMixin: inputMixin,
+    init: function() {
+        if (document.readyState === "complete" || (document.readyState !== "loading" && !document.documentElement.doScroll)) {
+            initLcf();
+        } else {
+            document.addEventListener("DOMContentLoaded", initLcf);
+        }
+    }
 }
