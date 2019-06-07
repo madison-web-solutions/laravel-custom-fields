@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-input lcf-input-search">
+    <div>
         <input type="hidden" :name="name" :value="value" />
 
         <lcf-media-library v-if="libraryOpen" :category="category" @select="select" @close="closeLibrary" />

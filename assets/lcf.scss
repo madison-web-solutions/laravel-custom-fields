@@ -3,8 +3,15 @@
     color: red;
 }
 
+.lcf-field-label {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
 .lcf-help {
     font-size: 12px;
+    margin-top: -4px;
+    margin-bottom: 6px;
 }
 
 .lcf-input-wrapper, .lcf-field, .lcf-repeater-item {
@@ -40,15 +47,17 @@
     }
 }
 
-.lcf-field-label {
-    font-weight: bold;
-}
-
 .lcf-input {
-    input {
+    input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
         width: 100%;
     }
     background-color: white;
+}
+
+.lcf-radio-group, .lcf-checkbox-group {
+    > label {
+        padding: 0 5px 5px 0;
+    }
 }
 
 .lcf-media-library {
@@ -100,7 +109,7 @@
     }
 }
 
-.lcf-input-markdown {
+[data-lcf-input=lcf-markdown-input] {
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -125,5 +134,13 @@
         width: 100vw;
         height: 100vh;
         padding: 10px;
+    }
+}
+
+[data-lcf-input-wrapper=lcf-link-input] {
+    border: 1px solid black;
+    padding: 5px;
+    > .lcf-input {
+        margin-left: 5px;
     }
 }

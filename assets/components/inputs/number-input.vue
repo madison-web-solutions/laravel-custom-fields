@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-input lcf-input-number">
+    <div>
         <input type="number" :name="name" novalidate :step="step" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
     </div>
 </template>

@@ -1,18 +1,14 @@
 <template>
-    <div class="lcf-input lcf-input-search">
-
+    <div>
         <input type="hidden" :name="name" :value="value" />
         <input type="text" disabled :value="displayString" />
-
         <input ref="input" type="search" value="" placeholder="Search" @input="search" @keydown.enter.prevent="search" />
-
         <ul v-if="hasResults">
             <li v-for="suggestion in suggestions">
                 <button type="button" @click="change(suggestion)">{{ suggestion.label }}</button>
             </li>
         </ul>
         <p v-if="noResults">No results</p>
-
     </div>
 </template>
 

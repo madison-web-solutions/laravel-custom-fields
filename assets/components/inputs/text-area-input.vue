@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-input lcf-input-text-area">
+    <div>
         <textarea :name="name" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
     </div>
 </template>

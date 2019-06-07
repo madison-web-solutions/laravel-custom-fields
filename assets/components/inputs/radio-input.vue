@@ -1,13 +1,14 @@
 <template>
-    <div class="lcf-input lcf-input-radio">
+    <div class="lcf-radio-group">
         <label v-for="choice in choices">
-            <input :name="name" type="radio" :value="choice.value" :checked="value == choice.value" />
+            <input :name="name" type="radio" :value="choice.value" :checked="value == choice.value" @change="change" />
             <span>{{ choice.label }}</span>
         </label>
     </div>
 </template>
 
 <script>
+import { find } from 'lodash-es';
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],

@@ -1,8 +1,8 @@
 <template>
-    <div class="lcf-input-wrapper">
+    <div class="lcf-input-wrapper" :data-lcf-input-wrapper="inputComponent">
         <label class="lcf-field-label" v-if="label">{{ label }}</label>
         <p v-if="help" class="lcf-help">{{ help }}</p>
-        <component :key="_key" :is="inputComponent" :settings="settings" :value="value" :hasError="hasError" @change="change" />
+        <component class="lcf-input" :data-lcf-input="inputComponent" :key="_key" :is="inputComponent" :settings="settings" :value="value" :hasError="hasError" @change="change" />
         <lcf-error-messages :errors="errors" />
     </div>
 </template>

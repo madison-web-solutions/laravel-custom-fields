@@ -1,6 +1,6 @@
 <template>
-    <div class="lcf-input lcf-input-link">
-        <lcf-input-wrapper key="manual" inputComponent="lcf-toggle-input" :settings="manualField" :value="manual" @change="change" />
+    <div>
+        <lcf-input-wrapper key="manual" inputComponent="lcf-radio-input" :settings="manualField" :value="manual ? 'true' : 'false'" @change="change" />
         <lcf-input-wrapper v-if="! manual" key="link_id" inputComponent="lcf-search-input" :settings="linkIdField" :value="linkId" @change="change" />
         <lcf-input-wrapper v-if="manual" key="url" inputComponent="lcf-text-input" :settings="urlField" :value="url" @change="change" />
         <lcf-input-wrapper v-if="withLabel" key="label" inputComponent="lcf-text-input" :settings="labelField" :value="label" @change="change" />
@@ -42,8 +42,10 @@ export default {
             return {
                 default: false,
                 name: this.name + '[manual]',
-                false_label: 'Search for page to link to',
-                true_label: 'Enter URL manually',
+                choices: [
+                    {value: 'false', label: 'Search for page to link to'},
+                    {value: 'true', label: 'Enter URL manually'}
+                ]
             };
         },
         linkIdField: function() {
@@ -56,7 +58,7 @@ export default {
         },
         urlField: function() {
             return {
-                label: 'Link to',
+                label: 'Link URL',
                 name: this.name + '[url]',
                 required: this.required,
                 placeholder: 'https://'
@@ -64,7 +66,7 @@ export default {
         },
         labelField: function() {
             return {
-                label: 'Label',
+                label: 'Link label',
                 name: this.name + '[label]',
                 placeholder: this.defaultLabel
             };
@@ -73,7 +75,11 @@ export default {
     methods: {
         change: function(e) {
             var payload = {key: this._key, value: {}};
-            payload.value[e.key] = e.value;
+            if (e.key == 'manual') {
+                payload.value.manual = (e.value == 'true');
+            } else {
+                payload.value[e.key] = e.value;
+            }
             this.$emit('change', payload);
         }
     }
