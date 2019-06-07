@@ -70,7 +70,7 @@ class DateField extends ScalarField
             $output = JustDate::fromDateTime($input);
             return true;
         }
-        if (is_numeric($input) && Coerce::toInt($input, $int_val)) {
+        if (Coerce::toInt($input, $int_val, Coerce::REJECT_BOOL)) {
             $output = JustDate::fromTimestamp($int_val);
             return true;
         }

@@ -62,7 +62,7 @@ class TimestampField extends ScalarField
             $output = Carbon::make($input);
             return true;
         }
-        if (is_numeric($input) && Coerce::toInt($input, $timestamp)) {
+        if (Coerce::toInt($input, $timestamp, Coerce::REJECT_BOOL)) {
             $output = Carbon::createFromTimestamp($timestamp);
             return true;
         }

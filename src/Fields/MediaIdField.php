@@ -50,10 +50,10 @@ class MediaIdField extends ScalarField
             $output = $input->id;
             return true;
         }
-        if (! Coerce::toInt($input, $output)) {
-            $output = ($keep_invalid ? $input : null);
-            return false;
+        if (Coerce::toInt($input, $output, Coerce::REJECT_BOOL)) {
+            return true;
         }
-        return true;
+        $output = ($keep_invalid ? $input : null);
+        return false;
     }
 }

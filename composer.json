@@ -13,7 +13,7 @@
         "laravel/framework": ">=5.7.27",
         "erusev/parsedown": "^1.7",
         "intervention/image": "^2.4",
-        "madison-solutions/coerce": "^1.0",
+        "madison-solutions/coerce": "^1.2",
         "madison-solutions/just-date": "^1.1"
     },
     "require-dev": {

@@ -68,7 +68,7 @@ class ModelIdField extends ScalarField
                 return true;
             }
         } else {
-            if (is_numeric($input) && Coerce::toInt($input, $output)) {
+            if (Coerce::toInt($input, $output, Coerce::REJECT_BOOL)) {
                 return true;
             }
         }
