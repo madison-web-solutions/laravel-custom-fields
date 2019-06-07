@@ -1,7 +1,9 @@
 <?php
-namespace MadisonSolutions\LCFTest;
+
+namespace MadisonSolutions\LCFTest\Test;
 
 use MadisonSolutions\LCF\LCF;
+use MadisonSolutions\LCFTest\TestCase;
 
 class ChoiceFieldTest extends TestCase
 {
@@ -23,9 +25,9 @@ class ChoiceFieldTest extends TestCase
             'choices' => ['red' => 'Red', 'blue' => 'Blue']
         ]);
 
+        $this->assertCoerceFails($field, false);
         $this->assertCoerceFails($field, 'green');
         $this->assertCoerceFails($field, 'Red');
-        $this->assertCoerceFails($field, false);
         $this->assertCoerceFails($field, []);
     }
 
@@ -34,7 +36,7 @@ class ChoiceFieldTest extends TestCase
         $field = LCF::newChoiceField([
             'choices' => ['red' => 'Red', 'blue' => 'Blue']
         ]);
-        
+
         $this->assertValidationPasses($field, 'red');
         $this->assertValidationPasses($field, null);
         $this->assertValidationPasses($field, '');

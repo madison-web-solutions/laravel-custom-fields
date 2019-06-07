@@ -21,7 +21,8 @@
     },
     "autoload": {
         "psr-4": {
-            "MadisonSolutions\\LCF\\": "src/"
+            "MadisonSolutions\\LCF\\": "src/",
+            "MadisonSolutions\\LCFTest\\": "test/"
         }
     }
 }

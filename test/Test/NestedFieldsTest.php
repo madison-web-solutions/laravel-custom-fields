@@ -1,8 +1,10 @@
 <?php
-namespace MadisonSolutions\LCFTest;
+
+namespace MadisonSolutions\LCFTest\Test;
 
 use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCF\SwitchValue;
+use MadisonSolutions\LCFTest\TestCase;
 
 class NestedFieldsTest extends TestCase
 {

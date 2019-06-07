@@ -37,8 +37,10 @@ class TextAreaField extends ScalarField
             $messages[$path][] = "Invalid value";
             return;
         }
-        if ($this->options['required'] && $value === '') {
-            $messages[$path][] = "This field is required";
+        if ($value === '') {
+            if ($this->options['required']) {
+                $messages[$path][] = "This field is required";
+            }
             return;
         }
         if (Coerce::toInt($this->options['max'], $max_int) && strlen($value) > $max_int) {

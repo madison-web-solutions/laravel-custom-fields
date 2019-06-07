@@ -1,7 +1,9 @@
 <?php
-namespace MadisonSolutions\LCFTest;
+
+namespace MadisonSolutions\LCFTest\Test;
 
 use MadisonSolutions\LCF\LCF;
+use MadisonSolutions\LCFTest\TestCase;
 
 class RepeaterFieldTest extends TestCase
 {

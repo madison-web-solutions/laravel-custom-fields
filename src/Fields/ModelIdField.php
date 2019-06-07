@@ -52,7 +52,7 @@ class ModelIdField extends ScalarField
             $query->where($this->criteria);
         }
         if (! $query->exists()) {
-            $messages[$path][] = "Model not found with id {$value}";
+            $messages[$path][] = "Model not found " . ($this->criteria ? 'matching the criteria' : '') . " with id {$value}";
         }
     }
 
@@ -62,11 +62,18 @@ class ModelIdField extends ScalarField
             $output = $input->getKey();
             return true;
         }
-        if (! ($this->string_keys ? Coerce::toString($input, $output) : Coerce::toInt($input, $output))) {
-            $output = ($keep_invalid ? $input : null);
-            return false;
+        if ($this->string_keys) {
+            if (is_string($input) || is_int($input)) {
+                $output = (string) $input;
+                return true;
+            }
+        } else {
+            if (is_numeric($input) && Coerce::toInt($input, $output)) {
+                return true;
+            }
         }
-        return true;
+        $output = ($keep_invalid ? $input : null);
+        return false;
     }
 
     public function getSuggestions(string $search)

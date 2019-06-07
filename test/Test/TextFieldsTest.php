@@ -1,60 +1,71 @@
 <?php
-namespace MadisonSolutions\LCFTest;
+
+namespace MadisonSolutions\LCFTest\Test;
 
 use MadisonSolutions\LCF\LCF;
+use MadisonSolutions\LCFTest\TestCase;
 
-class TextFieldTest extends TestCase
+class TextFieldsTest extends TestCase
 {
     public function testCanConvertValidValuesToText()
     {
-        $field = LCF::newTextField([]);
+        $fields = [LCF::newTextField([]), LCF::newTextAreaField([])];
 
-        $this->assertCoerceOk($field, null, null);
-        $this->assertCoerceOk($field, 'foo', 'foo');
-        $this->assertCoerceOk($field, false, 'false');
-        $this->assertCoerceOk($field, true, 'true');
-        $this->assertCoerceOk($field, 10, '10');
-        $this->assertCoerceOk($field, 0.5, '0.5');
-        $this->assertCoerceOk($field, '', null);
+        foreach ($fields as $field) {
+            $this->assertCoerceOk($field, null, null);
+            $this->assertCoerceOk($field, 'foo', 'foo');
+            $this->assertCoerceOk($field, false, 'false');
+            $this->assertCoerceOk($field, true, 'true');
+            $this->assertCoerceOk($field, 10, '10');
+            $this->assertCoerceOk($field, 0.5, '0.5');
+            $this->assertCoerceOk($field, '', null);
 
-        // Create an object with a __toString() method
-        $fooObj = new class {
-            public function __toString()
-            {
-                return 'foo';
-            }
-        };
-        $this->assertCoerceOk($field, $fooObj, 'foo');
+            // Create an object with a __toString() method
+            $fooObj = new class {
+                public function __toString()
+                {
+                    return 'foo';
+                }
+            };
+            $this->assertCoerceOk($field, $fooObj, 'foo');
+        }
     }
 
     public function testCannotConvertInvalidValuesToText()
     {
-        $field = LCF::newTextField([]);
-        $this->assertCoerceFails($field, []);
-        $this->assertCoerceFails($field, new \stdClass());
+        $fields = [LCF::newTextField([]), LCF::newTextAreaField([])];
+
+        foreach ($fields as $field) {
+            $this->assertCoerceFails($field, []);
+            $this->assertCoerceFails($field, new \stdClass());
+        }
     }
 
     public function testBasicValidationWorks()
     {
-        $field = LCF::newTextField([]);
+        $fields = [LCF::newTextField([]), LCF::newTextAreaField([])];
 
-        $this->assertValidationPasses($field, 'cheese');
-        $this->assertValidationPasses($field, null);
-        $this->assertValidationPasses($field, '');
-        $this->assertValidationPassesWhenValueOmitted($field);
+        foreach ($fields as $field) {
+            $this->assertValidationPasses($field, 'cheese');
+            $this->assertValidationPasses($field, null);
+            $this->assertValidationPasses($field, '');
+            $this->assertValidationPassesWhenValueOmitted($field);
 
-        $this->assertValidationFails($field, 10);
-        $this->assertValidationFails($field, ['cheese']);
+            $this->assertValidationFails($field, 10);
+            $this->assertValidationFails($field, ['cheese']);
+        }
     }
 
     public function testRequiredAttributeWorks()
     {
-        $field = LCF::newTextField(['required' => true]);
+        $fields = [LCF::newTextField(['required' => true]), LCF::newTextAreaField(['required' => true])];
 
-        $this->assertValidationPasses($field, 'cheese');
-        $this->assertValidationFails($field, null);
-        $this->assertValidationFails($field, '');
-        $this->assertValidationFailsWhenValueOmitted($field);
+        foreach ($fields as $field) {
+            $this->assertValidationPasses($field, 'cheese');
+            $this->assertValidationFails($field, null);
+            $this->assertValidationFails($field, '');
+            $this->assertValidationFailsWhenValueOmitted($field);
+        }
     }
 
     public function testOTherValidationRulesWork()
@@ -65,7 +76,19 @@ class TextFieldTest extends TestCase
         $this->assertValidationPasses($field, '12345');
         $this->assertValidationFails($field, '1234');
 
+        $field = LCF::newTextAreaField([
+            'min' => 5,
+        ]);
+        $this->assertValidationPasses($field, '12345');
+        $this->assertValidationFails($field, '1234');
+
         $field = LCF::newTextField([
+            'max' => 5,
+        ]);
+        $this->assertValidationPasses($field, '12345');
+        $this->assertValidationFails($field, '123456');
+
+        $field = LCF::newTextAreaField([
             'max' => 5,
         ]);
         $this->assertValidationPasses($field, '12345');
@@ -131,6 +154,19 @@ class TextFieldTest extends TestCase
         $this->assertValidationPasses($field, null);
 
         $field = LCF::newTextField([
+            'required' => true,
+            'min' => 5,
+        ]);
+        $this->assertValidationFails($field, '');
+        $this->assertValidationFails($field, null);
+
+        $field = LCF::newTextAreaField([
+            'min' => 5,
+        ]);
+        $this->assertValidationPasses($field, '');
+        $this->assertValidationPasses($field, null);
+
+        $field = LCF::newTextAreaField([
             'required' => true,
             'min' => 5,
         ]);

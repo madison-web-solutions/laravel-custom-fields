@@ -1,8 +1,10 @@
 <?php
-namespace MadisonSolutions\LCFTest;
+
+namespace MadisonSolutions\LCFTest\Test;
 
 use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCF\SwitchValue;
+use MadisonSolutions\LCFTest\TestCase;
 use Illuminate\Validation\ValidationException;
 
 class SwitchFieldTest extends TestCase
@@ -39,6 +41,7 @@ class SwitchFieldTest extends TestCase
             ],
         ]);
 
+        $this->assertCoerceFails($field, false);
         $this->assertCoerceFails($field, 10);
         $this->assertCoerceFails($field, ['num' => 10]);
         $this->assertCoerceFails($field, ['switch' => 'num', 'num' => 'foo'], ['switch' => 'num', 'num' => null]);

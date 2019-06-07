@@ -66,7 +66,7 @@ class OptionsField extends Field
             if (Coerce::toBool($input[$key] ?? false, $sub_output)) {
                 $output[$key] = $sub_output;
             } else {
-                $output[$key] = ($keep_invalid ? ($input[$key] ?? null) : null);
+                $output[$key] = ($keep_invalid ? $input[$key] : false);
                 $ok = false;
             }
         }

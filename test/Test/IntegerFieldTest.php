@@ -1,7 +1,9 @@
 <?php
-namespace MadisonSolutions\LCFTest;
+
+namespace MadisonSolutions\LCFTest\Test;
 
 use MadisonSolutions\LCF\LCF;
+use MadisonSolutions\LCFTest\TestCase;
 
 class IntegerFieldTest extends TestCase
 {
@@ -44,7 +46,7 @@ class IntegerFieldTest extends TestCase
         // strings '' and '10' fail because coercion should be done before validation
         $this->assertValidationFails($field, '');
         $this->assertValidationFails($field, '10');
-        $this->assertCoerceFails($field, 2.5);
+        $this->assertValidationFails($field, 2.5);
         $this->assertValidationFails($field, 'cheese');
         $this->assertValidationFails($field, ['cheese']);
     }
@@ -90,12 +92,12 @@ class IntegerFieldTest extends TestCase
 
     public function testOtherValidationRulesInteractionWithRequiredAttriute()
     {
-        $field = LCF::newTextField([
+        $field = LCF::newIntegerField([
             'min' => 5,
         ]);
         $this->assertValidationPasses($field, null);
 
-        $field = LCF::newTextField([
+        $field = LCF::newIntegerField([
             'required' => true,
             'min' => 5,
         ]);

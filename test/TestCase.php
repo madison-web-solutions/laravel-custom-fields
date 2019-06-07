@@ -1,4 +1,5 @@
 <?php
+
 namespace MadisonSolutions\LCFTest;
 
 use MadisonSolutions\LCF\Field;
