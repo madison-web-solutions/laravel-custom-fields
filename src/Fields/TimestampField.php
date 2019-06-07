@@ -2,22 +2,24 @@
 
 namespace MadisonSolutions\LCF\Fields;
 
+use DateTime;
+use Carbon\Carbon;
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
 use MadisonSolutions\LCF\Validator;
-use DateTime;
 
 class TimestampField extends ScalarField
 {
-    public function inputComponent() : string
+    public function __construct(array $options)
     {
-        return 'lcf-timestamp-input';
+        parent::__construct($options);
+        $this->options['max'] = ($this->options['max'] ? Carbon::parse($this->options['max']) : null);
+        $this->options['min'] = ($this->options['min'] ? Carbon::parse($this->options['min']) : null);
     }
 
     public function optionDefaults() : array
     {
         $defaults = parent::optionDefaults();
-        $defaults['type'] = 'date';
         $defaults['max'] = null;
         $defaults['min'] = null;
         return $defaults;
@@ -26,70 +28,58 @@ class TimestampField extends ScalarField
     public function optionRules() : array
     {
         $rules = parent::optionRules();
-        $rules['type'] = 'in:date,datetime,time';
-        $rules['max'] = 'nullable|integer';
-        $rules['min'] = 'nullable|integer';
+        $rules['max'] = 'nullable|date';
+        $rules['min'] = 'nullable|date';
         return $rules;
+    }
+
+    public function inputComponent() : string
+    {
+        return 'lcf-timestamp-input';
     }
 
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
-        if (! is_int($value)) {
+        if (! ($value instanceof Carbon)) {
             $messages[$path][] = "Invalid value";
             return;
         }
-        if (Coerce::toInt($this->options['max'], $max_int) && $value > $max_int) {
-            $messages[$path][] = "Maximum value is {$max}";
+        if ($this->max && $value > $this->max) {
+            $messages[$path][] = "Maximum value is {$this->max}";
         }
-        if (Coerce::toInt($this->options['min'], $min_int) && $value < $min_int) {
-            $messages[$path][] = "Minumum value is {$min}";
+        if ($this->min && $value < $this->min) {
+            $messages[$path][] = "Minimum value is {$this->min}";
         }
-    }
-
-    protected function truncate(int $timestamp) : int
-    {
-        $year = 1970;
-        $month = 1;
-        $day = 1;
-        $hour = 0;
-        $minute = 0;
-        $second = 0;
-        if ($this->type == 'date' || $this->type == 'datetime') {
-            $year = (int) gmdate("Y", $timestamp);
-            $month = (int) gmdate("m", $timestamp);
-            $day = (int) gmdate("d", $timestamp);
-        }
-        if ($this->type == 'time' || $this->type == 'datetime') {
-            $hour = (int) gmdate("G", $timestamp);
-            $minute = (int) gmdate("i", $timestamp);
-            $second = (int) gmdate("s", $timestamp);
-        }
-        return gmmktime($hour, $minute, $second, $month, $day, $year);
     }
 
     protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
-        if (is_int($input)) {
-            $output = $this->truncate($input);
+        if ($input instanceof Carbon) {
+            $output = $input;
             return true;
         }
         if ($input instanceof DateTime) {
-            $output = $this->truncate($input->getTimestamp());
+            $output = Carbon::make($input);
+            return true;
+        }
+        if (is_numeric($input) && Coerce::toInt($input, $timestamp)) {
+            $output = Carbon::createFromTimestamp($timestamp);
             return true;
         }
         if (is_string($input)) {
-            $timestamp = strtotime($input);
-            if ($timestamp === false) {
-                $output = ($keep_invalid ? $input : null);
-                return false;
-            } else {
-                $output = $this->truncate($timestamp);
+            if ($input == '') {
+                $output = null;
                 return true;
             }
-        }
-        if (Coerce::toInt($input, $timestamp)) {
-            $output = $this->truncate($timestamp);
-            return true;
+            // Accept only the format that is output by Carbon when json_encoded
+            // eg 2019-06-07T13:19:04.202649Z
+            if (preg_match('/^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z$/', $input)) {
+                $timestamp = strtotime($input);
+                if ($timestamp !== false) {
+                    $output = Carbon::createFromTimestamp($timestamp);
+                    return true;
+                }
+            }
         }
         $output = ($keep_invalid ? $input : null);
         return false;

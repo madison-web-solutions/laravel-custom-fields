@@ -102,7 +102,7 @@ var dateFrom = {
         return (date instanceof Date) ? new Date(date.getTime()) : null;
     },
     ymd: function(ymd) {
-        var match = /(\d\d\d\d)-(\d\d)-(\d\d)/.exec(ymd);
+        var match = /^(\d\d\d\d)-(\d\d)-(\d\d)$/.exec(ymd);
         if (match) {
             return new Date(Date.UTC(match[1] * 1, (match[2] * 1) - 1, match[3] * 1, 0, 0, 0, 0));
         } else {
@@ -110,7 +110,7 @@ var dateFrom = {
         }
     },
     dmy: function(dmy) {
-        var match = /(\d\d)\/(\d\d)\/(\d\d\d\d)/.exec(dmy);
+        var match = /^(\d\d)\/(\d\d)\/(\d\d\d\d)$/.exec(dmy);
         if (match) {
             return new Date(Date.UTC(match[3], (match[2] * 1) - 1, match[1] * 1, 0, 0, 0, 0));
         } else {
