@@ -53,13 +53,10 @@ class TextAreaField extends ScalarField
 
     protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
-        if (! Coerce::toString($input, $output)) {
-            $output = ($keep_invalid ? $input : null);
-            return false;
+        if (Coerce::toString($input, $output)) {
+            return true;
         }
-        if ($output === '') {
-            $output = null;
-        }
-        return true;
+        $output = ($keep_invalid ? $input : null);
+        return false;
     }
 }

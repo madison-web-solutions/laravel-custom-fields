@@ -75,10 +75,6 @@ class DateField extends ScalarField
             return true;
         }
         if (is_string($input)) {
-            if ($input == '') {
-                $output = null;
-                return true;
-            }
             try {
                 $output = JustDate::fromYmd($input);
                 return true;

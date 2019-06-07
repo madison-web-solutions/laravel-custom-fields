@@ -109,8 +109,8 @@ abstract class Field implements JsonSerializable
         // not whatever it happened to be set to outside of this function
         // So start by erasing any previous value of $output
         $output = null;
-        // All fields should accept a null value
-        if (is_null($input)) {
+        // All fields should accept a null value, and the empty string is always converted to null
+        if (is_null($input) || $input === '') {
             return true;
         }
         return $this->coerceNotNull($input, $output, $keep_invalid);

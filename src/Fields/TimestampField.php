@@ -67,10 +67,6 @@ class TimestampField extends ScalarField
             return true;
         }
         if (is_string($input)) {
-            if ($input == '') {
-                $output = null;
-                return true;
-            }
             // Accept only the format that is output by Carbon when json_encoded
             // eg 2019-06-07T13:19:04.202649Z
             if (preg_match('/^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z$/', $input)) {

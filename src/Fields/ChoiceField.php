@@ -71,10 +71,6 @@ class ChoiceField extends ScalarField
     protected function coerceNotNull($input, &$output, bool $keep_invalid = false) : bool
     {
         if (Coerce::toArrayKey($input, $output)) {
-            if ($output === '') {
-                $output = null;
-                return true;
-            }
             if (array_key_exists($output, $this->choices)) {
                 return true;
             }

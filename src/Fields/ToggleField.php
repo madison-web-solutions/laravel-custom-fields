@@ -43,9 +43,6 @@ class ToggleField extends ScalarField
     {
         if (Coerce::toBool($input, $output)) {
             return true;
-        } elseif ($input === '') {
-            $output = null;
-            return true;
         } elseif ($input === $this->true_label) {
             $output = true;
             return true;
