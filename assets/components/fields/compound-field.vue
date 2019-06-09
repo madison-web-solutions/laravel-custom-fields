@@ -1,9 +1,10 @@
 <template>
     <div class="lcf-field lcf-compound-field">
-        <label class="lcf-field-label" v-if="label">{{ label }}</label>
-        <p v-if="help" class="lcf-help">{{ help }}</p>
-        <component v-for="subField, fieldName in subFields" :is="subField.fieldComponent" :key="childIds[fieldName]" :path="path.concat(fieldName)" :field="subField" />
-        <lcf-error-messages :errors="errors" />
+        <lcf-input-wrapper :label="label" :help="help" :errors="errors">
+            <div class="lcf-compound-input">
+                <component v-for="subField, fieldName in subFields" :is="subField.fieldComponent" :key="childIds[fieldName]" :path="path.concat(fieldName)" :field="subField" />
+            </div>
+        </lcf-input-wrapper>
     </div>
 </template>
 

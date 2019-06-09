@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lcf-input lcf-input-currency">
         <input type="hidden" :name="name" :value="value" />
         <input :class="inputClasses" ref="input" type="text" :value="displayValue" @change="change" @keydown.enter.prevent="change" />
     </div>

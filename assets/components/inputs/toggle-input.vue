@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lcf-input lcf-input-toggle">
         <input type="hidden" :name="name" :value="value ? 'true' : 'false'" />
         <button type="button" :class="inputClasses" @click="toggle">
             <i v-if="value" class="fas fa-toggle-on"></i>

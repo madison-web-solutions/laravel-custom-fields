@@ -1,5 +1,12 @@
 @import "sass/variables";
 
+@mixin lcf-panel {
+    //&:not(.lcf-unpanel) {
+    padding: $lcf-spacer;
+    border: $lcf-border-width solid $lcf-border-color;
+    //}
+}
+
 .lcf-field {
     font-size: $lcf-font-size;
     background-color: white;
@@ -20,38 +27,41 @@
     margin-bottom: $lcf-spacer;
 }
 
-.lcf-input-wrapper, .lcf-field, .lcf-repeater-item {
+.lcf-input-wrapper, .lcf-field {
     margin-bottom: $lcf-spacer;
 }
 
-:not(.lcf-repeater-item) > .lcf-compound-field {
-    padding: $lcf-spacer;
-    border: $lcf-border-width solid $lcf-border-color;
-    > .lcf-field {
-        margin-left: $lcf-spacer;
-    }
+.lcf-switch-select {
+    width: 100%;
+    margin-bottom: $lcf-spacer;
 }
 
-.lcf-repeater-field {
-    padding: $lcf-spacer;
-    border: $lcf-border-width solid $lcf-border-color;
+.lcf-compound-input {
+    @include lcf-panel;
 }
 
 .lcf-repeater-item {
+    @include lcf-panel;
     display: flex;
     > .lcf-repeater-item-controls {
         width: 120px;
+        margin-right: $lcf-spacer;
     }
     > .lcf-field {
         flex-grow: 1;
     }
-    padding: $lcf-spacer 0;
-    border-bottom: $lcf-border-width solid $lcf-border-color;
-    &:last-child {
-        padding-bottom: 0;
-        border-bottom: none;
-    }
+    //padding: $lcf-spacer 0;
+    //border-bottom: $lcf-border-width solid $lcf-border-color;
+    //&:last-child {
+    //    padding-bottom: 0;
+    //    border-bottom: none;
+    //}
 }
+
+.lcf-repeater-item + .lcf-repeater-item {
+    border-top: none;
+}
+
 
 .lcf-input {
     input[type=text], input[type=search], input[type=number], input[type=date] {
@@ -75,8 +85,7 @@
 }
 
 .lcf-media-library {
-    border: $lcf-border-width solid $lcf-border-color;
-    padding: $lcf-spacer;
+    @include lcf-panel;
     .lcf-ml-index {
         display: flex;
         flex-wrap: wrap;;
@@ -89,9 +98,8 @@
 }
 
 .lcf-ml-preview {
+    @include lcf-panel;
     width: 140px;
-    border: $lcf-border-width solid $lcf-border-color;
-    padding: $lcf-spacer;
     text-align: center;
     .lcf-ml-thumb {
         padding-top: 60%;
@@ -123,7 +131,7 @@
     }
 }
 
-[data-lcf-input=lcf-markdown-input] {
+.lcf-input-markdown{
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -131,9 +139,8 @@
     > textarea, > .preview {
         flex-basis: 48%;
     }
-    > .preview {
+    > .lcf-markdown-preview {
         overflow: auto;
-        background-color: white;
     }
     > button {
         position: absolute;
@@ -151,12 +158,8 @@
     }
 }
 
-[data-lcf-input-wrapper=lcf-link-input] {
-    border: $lcf-border-width solid $lcf-border-color;
-    padding: $lcf-spacer;
-    > .lcf-input {
-        margin-left: $lcf-spacer;
-    }
+.lcf-input-link {
+    @include lcf-panel;
     &.lcf-has-error {
         border-color: $lcf-border-error-color;
     }

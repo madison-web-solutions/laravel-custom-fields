@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lcf-input lcf-input-time">
         <input type="text" :class="inputClasses" :name="name" :placeholder="placeholder" :value="value" @change="change" />
     </div>
 </template>

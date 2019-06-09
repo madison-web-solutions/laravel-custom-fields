@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lcf-input lcf-input-select">
         <select ref="input" :class="inputClasses" :name="name" @change="change">
             <option ref="placeholder" :disabled="required" value="" :selected="isNull">{{ required ? 'Select' : '' }}</option>
             <option v-for="choice in choices" :value="choice.value" :selected="value == choice.value">{{ choice.label }}</option>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lcf-input lcf-input-timestamp">
         <input type="hidden" :name="name" :value="value" />
         <input type="text" :class="inputClasses" :value="displayValue" placeholder="dd/mm/yyyy hh:mm:ss" @change="change" />
     </div>

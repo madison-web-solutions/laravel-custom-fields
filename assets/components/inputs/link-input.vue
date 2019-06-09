@@ -1,9 +1,17 @@
 <template>
-    <div>
-        <lcf-input-wrapper key="manual" inputComponent="lcf-radio-input" :settings="manualField" :value="manual ? 'true' : 'false'" @change="change" />
-        <lcf-input-wrapper v-if="! manual" key="link_id" inputComponent="lcf-search-input" :settings="linkIdField" :value="linkId" @change="change" />
-        <lcf-input-wrapper v-if="manual" key="url" inputComponent="lcf-text-input" :settings="urlField" :value="url" @change="change" />
-        <lcf-input-wrapper v-if="withLabel" key="label" inputComponent="lcf-text-input" :settings="labelField" :value="label" @change="change" />
+    <div class="lcf-input lcf-input-link">
+        <lcf-input-wrapper label="" help="" errors="">
+            <lcf-radio-input key="manual" :settings="manualField" :value="manual ? 'true' : 'false'" :hasError="false" @change="change" />
+        </lcf-input-wrapper>
+        <lcf-input-wrapper  v-if="! manual" label="Link to" help="" errors="">
+            <lcf-search-input key="link_id" :settings="linkIdField" :value="linkId" :hasError="false" @change="change" />
+        </lcf-input-wrapper>
+        <lcf-input-wrapper  v-if="manual" label="Link URL" help="" errors="">
+            <lcf-text-input key="url" :settings="urlField" :value="url" :hasError="false" @change="change" />
+        </lcf-input-wrapper>
+        <lcf-input-wrapper  v-if="withLabel" label="Link label" help="" errors="">
+            <lcf-text-input key="label" :settings="labelField" :value="label" :hasError="false" @change="change" />
+        </lcf-input-wrapper>
     </div>
 </template>
 
@@ -50,7 +58,6 @@ export default {
         },
         linkIdField: function() {
             return {
-                label: 'Link to',
                 name: this.name + '[link_id]',
                 type: 'link',
                 required: this.required
@@ -58,7 +65,6 @@ export default {
         },
         urlField: function() {
             return {
-                label: 'Link URL',
                 name: this.name + '[url]',
                 required: this.required,
                 placeholder: 'https://'
@@ -66,7 +72,6 @@ export default {
         },
         labelField: function() {
             return {
-                label: 'Link label',
                 name: this.name + '[label]',
                 placeholder: this.defaultLabel
             };

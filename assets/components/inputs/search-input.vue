@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lcf-input lcf-input-search">
         <input type="hidden" :name="name" :value="value" />
         <input type="text" :class="inputClasses" disabled :value="displayString" />
         <input ref="input" type="search" value="" placeholder="Search" @input="search" @keydown.enter.prevent="search" />

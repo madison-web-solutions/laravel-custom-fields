@@ -1,18 +1,17 @@
 <template>
     <div class="lcf-field lcf-repeater-field">
-        <label class="lcf-field-label" v-if="label">{{ label }}</label>
-        <p v-if="help" class="lcf-help">{{ help }}</p>
-        <div class="lcf-repeater-item" v-for="id, index in childIds">
-            <div class="lcf-repeater-item-controls">
-                <button type="button" @click="insert(index)" class="lcf-btn-icon">add</button>
-                <button type="button" @click="remove(index)" class="lcf-btn-icon">remove</button>
-                <button type="button" @click="moveUp(index)" class="lcf-btn-icon">up</button>
-                <button type="button" @click="moveDown(index)" class="lcf-btn-icon">down</button>
+        <lcf-input-wrapper :label="label" :help="help" :errors="errors">
+            <div class="lcf-repeater-item" v-for="nodeId, index in childIds">
+                <div class="lcf-repeater-item-controls">
+                    <button type="button" @click="insert(index)" class="lcf-btn-icon">add</button>
+                    <button type="button" @click="remove(index)" class="lcf-btn-icon">remove</button>
+                    <button type="button" @click="moveUp(index)" class="lcf-btn-icon">up</button>
+                    <button type="button" @click="moveDown(index)" class="lcf-btn-icon">down</button>
+                </div>
+                <component :is="subField.fieldComponent" :key="nodeId" :path="path.concat(index)" :field="subField" />
             </div>
-            <component :is="subField.fieldComponent" :key="id" :path="path.concat(index)" :field="subField" />
-        </div>
-        <button type="button" @click="insert(length)" class="lcf-btn-icon">add</button>
-        <lcf-error-messages :errors="errors" />
+            <button type="button" @click="insert(length)" class="lcf-btn-icon">add</button>
+        </lcf-input-wrapper>
     </div>
 </template>
 
