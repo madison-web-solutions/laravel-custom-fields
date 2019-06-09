@@ -1,7 +1,7 @@
 <template>
     <div>
         <input type="hidden" :name="name" :value="value ? 'true' : 'false'" />
-        <button @click="toggle" type="button">
+        <button type="button" :class="inputClasses" @click="toggle">
             <i v-if="value" class="fas fa-toggle-on"></i>
             <i v-if="! value" class="fas fa-toggle-off"></i>
             <span>{{ value ? trueLabel : falseLabel }}</span>

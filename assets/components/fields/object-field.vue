@@ -1,6 +1,6 @@
 <template>
     <div class="lcf-field lcf-object-field">
-        <lcf-input-wrapper :key="nodeId" :inputComponent="inputComponent" :settings="inputSettings" :value="childValues" :errors="childErrors" @change="updateMyValue" />
+        <lcf-input-wrapper :key="nodeId" :class="wrapperClasses" :inputComponent="inputComponent" :settings="inputSettings" :value="childValues" :errors="childErrors" @change="updateMyValue" />
         <lcf-error-messages :errors="errors" />
     </div>
 </template>
@@ -19,6 +19,14 @@ export default {
         },
         keys: function() {
             return get(this.field, 'settings.keys');
+        },
+        hasError: function() {
+            return this.errors && this.errors.length;
+        },
+        wrapperClasses: function() {
+            return {
+                'lcf-has-error': this.hasError
+            };
         }
     },
     methods: {

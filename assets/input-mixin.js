@@ -13,6 +13,11 @@ export default {
         },
         placeholder: function() {
             return this.setting('placeholder');
+        },
+        inputClasses: function() {
+            return {
+                'lcf-has-error': this.hasError
+            };
         }
     },
     methods: {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <textarea :name="name" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
+        <textarea :name="name" :class="inputClasses" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
     </div>
 </template>
 

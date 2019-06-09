@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-checkbox-group">
+    <div class="lcf-checkbox-group" :class="inputClasses">
         <label v-for="choice in choices">
             <input :name="name + '[' + choice.key +']'" type="checkbox" :data-key="choice.key" :checked="value[choice.key]" @change="change" />
             <span>{{ choice.label }}</span>

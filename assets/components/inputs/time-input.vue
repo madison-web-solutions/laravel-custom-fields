@@ -1,6 +1,6 @@
 <template>
     <div>
-        <input type="text" :name="name" :placeholder="placeholder" :value="value" @change="change" />
+        <input type="text" :class="inputClasses" :name="name" :placeholder="placeholder" :value="value" @change="change" />
     </div>
 </template>
 

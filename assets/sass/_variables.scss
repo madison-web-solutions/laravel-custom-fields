@@ -1,0 +1,14 @@
+// Colors
+$lcf-grey: #cccccc !default;
+$lcf-red: #ff0000 !default;
+
+$lcf-error-msg-color: $lcf-red !default;
+
+$lcf-border-width: 1px !default;
+$lcf-border-color: $lcf-grey !default;
+$lcf-border-error-color: $lcf-red !default;
+
+$lcf-spacer: 6px !default;
+
+$lcf-font-size: 16px !default;
+$lcf-small-font-size: ($lcf-font-size * 0.75) !default;

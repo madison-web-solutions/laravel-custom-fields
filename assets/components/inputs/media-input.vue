@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div :class="inputClasses">
         <input type="hidden" :name="name" :value="value" />
 
         <lcf-media-library v-if="libraryOpen" :category="category" @select="select" @close="closeLibrary" />

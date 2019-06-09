@@ -1,7 +1,7 @@
 <template>
     <div>
         <input type="hidden" :name="name" :value="value" />
-        <input ref="input" :type="inputType" :placeholder="placeholder" :value="displayValue" @change="change" />
+        <input :class="inputClasses" ref="input" :type="inputType" :placeholder="placeholder" :value="displayValue" @change="change" />
     </div>
 </template>
 

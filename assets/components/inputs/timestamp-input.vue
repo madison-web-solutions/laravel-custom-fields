@@ -1,7 +1,7 @@
 <template>
     <div>
         <input type="hidden" :name="name" :value="value" />
-        <input type="text" :value="displayValue" placeholder="dd/mm/yyyy hh:mm:ss" @change="change" />
+        <input type="text" :class="inputClasses" :value="displayValue" placeholder="dd/mm/yyyy hh:mm:ss" @change="change" />
     </div>
 </template>
 

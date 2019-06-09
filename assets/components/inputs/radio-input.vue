@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-radio-group">
+    <div class="lcf-radio-group" :class="inputClasses">
         <label v-for="choice in choices">
             <input :name="name" type="radio" :value="choice.value" :checked="value == choice.value" @change="change" />
             <span>{{ choice.label }}</span>

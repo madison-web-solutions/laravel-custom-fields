@@ -1,7 +1,7 @@
 <template>
     <div>
         <input type="hidden" :name="name" :value="value" />
-        <input type="text" disabled :value="displayString" />
+        <input type="text" :class="inputClasses" disabled :value="displayString" />
         <input ref="input" type="search" value="" placeholder="Search" @input="search" @keydown.enter.prevent="search" />
         <ul v-if="hasResults">
             <li v-for="suggestion in suggestions">

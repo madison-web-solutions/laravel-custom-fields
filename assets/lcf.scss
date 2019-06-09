@@ -1,34 +1,40 @@
+@import "sass/variables";
+
+.lcf-field {
+    font-size: $lcf-font-size;
+    background-color: white;
+}
 
 .lcf-error-msg {
-    color: red;
+    color: $lcf-error-msg-color;
 }
 
 .lcf-field-label {
     font-weight: bold;
-    margin-bottom: 4px;
+    margin-bottom: $lcf-spacer;
 }
 
 .lcf-help {
-    font-size: 12px;
-    margin-top: -4px;
-    margin-bottom: 6px;
+    font-size: $lcf-small-font-size;
+    margin-top: -$lcf-spacer;
+    margin-bottom: $lcf-spacer;
 }
 
 .lcf-input-wrapper, .lcf-field, .lcf-repeater-item {
-    margin-bottom: 5px;
+    margin-bottom: $lcf-spacer;
 }
 
 :not(.lcf-repeater-item) > .lcf-compound-field {
-    padding: 5px;
-    border: 1px solid black;
+    padding: $lcf-spacer;
+    border: $lcf-border-width solid $lcf-border-color;
     > .lcf-field {
-        margin-left: 5px;
+        margin-left: $lcf-spacer;
     }
 }
 
 .lcf-repeater-field {
-    padding: 5px;
-    border: 1px solid black;
+    padding: $lcf-spacer;
+    border: $lcf-border-width solid $lcf-border-color;
 }
 
 .lcf-repeater-item {
@@ -39,8 +45,8 @@
     > .lcf-field {
         flex-grow: 1;
     }
-    padding: 5px 0;
-    border-bottom: 1px solid black;
+    padding: $lcf-spacer 0;
+    border-bottom: $lcf-border-width solid $lcf-border-color;
     &:last-child {
         padding-bottom: 0;
         border-bottom: none;
@@ -48,26 +54,34 @@
 }
 
 .lcf-input {
-    input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
-        width: 100%;
+    input[type=text], input[type=search], input[type=number], input[type=date] {
+        appearance: none;
+        border: $lcf-border-width solid $lcf-border-color;
+        padding: ($lcf-spacer * 0.5);
     }
-    background-color: white;
+    input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
+        font-size: $lcf-font-size;
+        width: 100%;
+        &.lcf-has-error {
+            border-color: $lcf-border-error-color;
+        }
+    }
 }
 
 .lcf-radio-group, .lcf-checkbox-group {
     > label {
-        padding: 0 5px 5px 0;
+        padding: 0 $lcf-spacer $lcf-spacer 0;
     }
 }
 
 .lcf-media-library {
-    border: 1px solid black;
-    padding: 5px;
+    border: $lcf-border-width solid $lcf-border-color;
+    padding: $lcf-spacer;
     .lcf-ml-index {
         display: flex;
         flex-wrap: wrap;;
         .lcf-ml-preview {
-            margin: 5px;
+            margin: $lcf-spacer;
         }
         max-height: 400px;
         overflow-y: auto;
@@ -76,8 +90,8 @@
 
 .lcf-ml-preview {
     width: 140px;
-    border: 1px solid black;
-    padding: 5px;
+    border: $lcf-border-width solid $lcf-border-color;
+    padding: $lcf-spacer;
     text-align: center;
     .lcf-ml-thumb {
         padding-top: 60%;
@@ -102,7 +116,7 @@
     display: flex;
     > div {
         width: 50%;
-        padding: 10px;
+        padding: $lcf-spacer;
     }
     img {
         max-width: 100%;
@@ -138,9 +152,12 @@
 }
 
 [data-lcf-input-wrapper=lcf-link-input] {
-    border: 1px solid black;
-    padding: 5px;
+    border: $lcf-border-width solid $lcf-border-color;
+    padding: $lcf-spacer;
     > .lcf-input {
-        margin-left: 5px;
+        margin-left: $lcf-spacer;
+    }
+    &.lcf-has-error {
+        border-color: $lcf-border-error-color;
     }
 }

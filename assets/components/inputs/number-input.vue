@@ -1,6 +1,6 @@
 <template>
     <div>
-        <input type="number" :name="name" novalidate :step="step" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
+        <input :class="inputClasses" type="number" :name="name" novalidate :step="step" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
     </div>
 </template>
 
