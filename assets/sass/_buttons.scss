@@ -1,4 +1,5 @@
-.lcf-btn, .lcf-btn-icon {
+
+%lcf-btn-base {
     font-size: $lcf-button-font-size;
     border: 1px solid $lcf-border-color;
     border-radius: 2px;
@@ -6,14 +7,21 @@
 }
 
 .lcf-btn {
+    @extend %lcf-btn-base;
     line-height: 1.4;
 }
 
 .lcf-btn-icon {
+    @extend %lcf-btn-base;
     &:hover {
         color: $lcf-primary-button-color;
     }
     &.lcf-danger:hover {
         color: $lcf-danger-button-color;
     }
+}
+
+.lcf-combo-button {
+    @extend %lcf-btn-base;
+    border-left: none;
 }

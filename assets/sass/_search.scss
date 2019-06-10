@@ -1,0 +1,14 @@
+.lcf-search-interface {
+    @include lcf-panel;
+    max-height: 12rem;
+    overflow-y: auto;
+    input {
+        margin-bottom: $lcf-spacer;
+    }
+}
+.lcf-search-suggestion {
+    cursor: pointer;
+    &:hover {
+        background-color: $lcf-light-grey;
+    }
+}

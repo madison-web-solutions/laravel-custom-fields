@@ -31,6 +31,10 @@
     margin-bottom: $lcf-spacer * 0.5;
 }
 
+.lcf-combo {
+    display: flex;
+}
+
 .lcf-input-wrapper, .lcf-field {
     margin-bottom: $lcf-spacer;
     &:last-child {
@@ -124,3 +128,4 @@
 
 @import "sass/repeater";
 @import "sass/markdown";
+@import "sass/search";
