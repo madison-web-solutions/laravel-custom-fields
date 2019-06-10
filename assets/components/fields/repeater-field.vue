@@ -1,6 +1,6 @@
 <template>
     <div class="lcf-field lcf-repeater-field">
-        <lcf-input-wrapper :label="label" :help="help" :errors="errors">
+        <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
             <div class="lcf-repeater-item" v-for="nodeId, index in childIds">
                 <div class="lcf-repeater-index">
                     <span>{{ index + 1 }}</span>

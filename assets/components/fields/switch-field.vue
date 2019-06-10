@@ -1,6 +1,6 @@
 <template>
     <div class="lcf-field lcf-switch-field">
-        <lcf-input-wrapper :label="label" :help="help" :errors="errors">
+        <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
             <select ref="switchSelect" class="lcf-switch-select" :name="inputName + '[switch]'" @change="changeSwitch">
                 <option v-for="key in switchKeys" :value="key" :selected="key == switchKey">{{ switchLabel(key) }}</option>
             </select>

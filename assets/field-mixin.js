@@ -32,6 +32,9 @@ export default {
         label: function() {
             return get(this.field, 'settings.label');
         },
+        required: function() {
+            return get(this.field, 'settings.required');
+        },
         help: function() {
             return get(this.field, 'settings.help');
         },

@@ -1,6 +1,6 @@
 <template>
     <div class="lcf-field lcf-compound-field">
-        <lcf-input-wrapper :label="label" :help="help" :errors="errors">
+        <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
             <div class="lcf-compound-input" :class="label ? 'lcf-compound-with-label' : ''">
                 <component v-for="subField, fieldName in subFields" :is="subField.fieldComponent" :key="childIds[fieldName]" :path="path.concat(fieldName)" :field="subField" />
             </div>

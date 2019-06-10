@@ -21,6 +21,10 @@
     margin-bottom: $lcf-spacer * 0.5;
 }
 
+.lcf-required-asterisk {
+    color: $lcf-required-asterisk-color;
+}
+
 .lcf-help {
     font-size: $lcf-small-font-size;
     margin-top: -$lcf-spacer * 0.5;

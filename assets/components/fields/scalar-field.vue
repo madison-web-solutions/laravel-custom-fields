@@ -1,6 +1,6 @@
 <template>
     <div class="lcf-field lcf-scalar-field">
-        <lcf-input-wrapper :label="label" :help="help" :errors="errors">
+        <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
             <component :key="nodeId" :is="inputComponent" :settings="inputSettings" :value="value" :hasError="hasError" @change="updateMyValue" />
         </lcf-input-wrapper>
     </div>
