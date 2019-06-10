@@ -1,8 +1,12 @@
 // Colors
+$lcf-very-light-grey: #fdfdfd !default;
 $lcf-light-grey: #eeeeee !default;
 $lcf-grey: #cccccc !default;
 $lcf-red: #ff0000 !default;
 $lcf-blue: #0000ff !default;
+
+$lcf-background-color: $lcf-very-light-grey !default;
+$lcf-input-background-color: white !default;
 
 $lcf-error-msg-color: $lcf-red !default;
 $lcf-button-background-color: $lcf-light-grey !default;
@@ -15,8 +19,14 @@ $lcf-border-error-color: $lcf-red !default;
 
 $lcf-required-asterisk-color: $lcf-red !default;
 
+$lcf-input-padding-y: 1px !default;
+$lcf-input-padding-x: 6px !default;
 $lcf-spacer: 8px !default;
 
 $lcf-font-size: 16px !default;
 $lcf-button-font-size: 14px !default;
 $lcf-small-font-size: ($lcf-font-size * 0.75) !default;
+
+$lcf-field-label-font-weight: 700 !default;
+
+$lcf-button-radius: 4px !default;

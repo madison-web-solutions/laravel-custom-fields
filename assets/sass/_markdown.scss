@@ -7,9 +7,12 @@
         flex-basis: 50%;
     }
     .lcf-markdown-preview {
+        @include lcf-panel;
+        background-color: $lcf-input-background-color;
         margin-left: $lcf-spacer;
         flex-basis: 50%;
         overflow: auto;
+        cursor: not-allowed;
     }
     [data-name=fullscreen] {
         position: absolute;

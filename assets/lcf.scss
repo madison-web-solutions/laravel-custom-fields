@@ -3,22 +3,26 @@
 @mixin lcf-panel {
     padding: $lcf-spacer;
     border: $lcf-border-width solid $lcf-border-color;
+    background-color: $lcf-background-color;
 }
 
 @import "sass/buttons";
 
-.lcf-field, .lcf-input {
-    font-size: $lcf-font-size;
-    background-color: white;
+.lcf-form {
+    @include lcf-panel;
 }
 
-.lcf-error-msg {
+.lcf-form, .lcf-field, .lcf-input {
+    font-size: $lcf-font-size;
+}
+
+.lcf-error {
     color: $lcf-error-msg-color;
 }
 
 .lcf-field-label {
-    font-weight: bold;
-    margin-bottom: $lcf-spacer * 0.5;
+    font-weight: $lcf-field-label-font-weight;
+    margin-bottom: $lcf-spacer * 0.25;
 }
 
 .lcf-required-asterisk {
@@ -33,6 +37,9 @@
 
 .lcf-combo {
     display: flex;
+    .lcf-combo-button {
+        border-left: none;
+    }
 }
 
 .lcf-input-wrapper, .lcf-field {
@@ -43,7 +50,6 @@
 }
 
 .lcf-switch-select {
-    width: 100%;
     margin-bottom: $lcf-spacer;
 }
 
@@ -52,13 +58,13 @@
 }
 
 .lcf-input {
-    input[type=text], input[type=search], input[type=number], input[type=date] {
-        appearance: none;
-        border: $lcf-border-width solid $lcf-border-color;
-        padding: ($lcf-spacer * 0.5);
-    }
     input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
         font-size: $lcf-font-size;
+        appearance: none;
+        border: $lcf-border-width solid $lcf-border-color;
+        border-radius: 0;
+        background-color: $lcf-input-background-color;
+        padding: $lcf-input-padding-y $lcf-input-padding-x;
         width: 100%;
         &.lcf-has-error {
             border-color: $lcf-border-error-color;
@@ -66,56 +72,32 @@
     }
 }
 
+.lcf-input-select {
+    position: relative;
+    select {
+        border-top-right-radius: $lcf-button-radius;
+        border-bottom-right-radius: $lcf-button-radius;
+    }
+    .lcf-combo-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        pointer-events: none;
+    }
+    &:hover .lcf-combo-button {
+        background-color: darken($lcf-button-background-color, 10%);
+    }
+}
+
 .lcf-radio-group, .lcf-checkbox-group {
     > label {
-        padding: 0 $lcf-spacer $lcf-spacer 0;
-    }
-}
-
-.lcf-media-library {
-    @include lcf-panel;
-    .lcf-ml-index {
-        display: flex;
-        flex-wrap: wrap;;
-        .lcf-ml-preview {
-            margin: $lcf-spacer;
+        margin: 0;
+        margin-right: $lcf-spacer * 2;
+        input, span {
+            display: inline-block;
+            vertical-align: middle;
         }
-        max-height: 400px;
-        overflow-y: auto;
-    }
-}
-
-.lcf-ml-preview {
-    @include lcf-panel;
-    width: 140px;
-    text-align: center;
-    .lcf-ml-thumb {
-        padding-top: 60%;
-        background-size: contain;
-        background-position: center center;
-        background-repeat: no-repeat;
-        position: relative;
-        i {
-            font-size: 42px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            &.warning {
-                color: red;
-            }
-        }
-    }
-}
-
-.lcf-ml-inspect {
-    display: flex;
-    > div {
-        width: 50%;
-        padding: $lcf-spacer;
-    }
-    img {
-        max-width: 100%;
     }
 }
 
@@ -126,6 +108,7 @@
     }
 }
 
+@import "sass/media";
 @import "sass/repeater";
 @import "sass/markdown";
 @import "sass/search";

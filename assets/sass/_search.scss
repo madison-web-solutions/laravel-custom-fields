@@ -1,3 +1,9 @@
+.lcf-input-search {
+    .lcf-combo:hover .lcf-combo-button {
+        background-color: darken($lcf-button-background-color, 10%);
+    }
+}
+
 .lcf-search-interface {
     @include lcf-panel;
     max-height: 12rem;

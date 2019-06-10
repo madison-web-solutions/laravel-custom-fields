@@ -3,7 +3,7 @@
         <div class="lcf-ml-thumb" :style="style">
             <i v-if="iconClass" :class="iconClass"></i>
         </div>
-        <span>{{ item.title }}</span>
+        <div class="lcf-ml-preview-title">{{ item.title }}</div>
     </div>
 </template>
 

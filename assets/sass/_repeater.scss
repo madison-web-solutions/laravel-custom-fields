@@ -1,6 +1,7 @@
 .lcf-repeater-item {
-    border: $lcf-border-width solid $lcf-border-color;
+    @include lcf-panel;
     border-bottom: none;
+    padding: 0;
     display: flex;
     .lcf-repeater-item-controls, .lcf-repeater-index {
         position: relative;
@@ -36,6 +37,5 @@
 }
 
 .lcf-repeater-append {
-    border: 1px solid $lcf-border-color;
-    padding: $lcf-spacer;
+    @include lcf-panel;
 }

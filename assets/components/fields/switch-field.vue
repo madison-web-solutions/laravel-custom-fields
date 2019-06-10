@@ -1,16 +1,14 @@
 <template>
     <div class="lcf-field lcf-switch-field">
         <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
-            <select ref="switchSelect" class="lcf-switch-select" :name="inputName + '[switch]'" @change="changeSwitch">
-                <option v-for="key in switchKeys" :value="key" :selected="key == switchKey">{{ switchLabel(key) }}</option>
-            </select>
+            <lcf-select-input key="switch" class="lcf-switch-select" :settings="switchSelectSettings" :value="switchKey" @change="changeSwitch" />
             <component :is="switchField.fieldComponent" :key="switchId" :path="path.concat(switchKey)" :field="switchField" />
         </lcf-input-wrapper>
     </div>
 </template>
 
 <script>
-import { get, keys } from 'lodash-es';
+import { get, keys, forEach } from 'lodash-es';
 import FieldMixin from '../../field-mixin.js';
 export default {
     mixins: [FieldMixin],
@@ -23,6 +21,16 @@ export default {
         },
         switchKeys: function() {
             return keys(this.switchFields);
+        },
+        switchSelectSettings: function() {
+            var settings = {
+                name: this.inputName + '[switch]',
+                choices: []
+            };
+            forEach(this.switchKeys, (key) => {
+                settings.choices.push({value: key, label: this.switchLabel(key)});
+            });
+            return settings;
         },
         switchKey: function() {
             return this.childValues.switch || this.getValidSwitchKey();
@@ -51,8 +59,7 @@ export default {
             }
         },
         changeSwitch: function(e) {
-            var selectedOption = this.$refs.switchSelect.options[this.$refs.switchSelect.selectedIndex];
-            this.$lcfStore.updateValue(this.pathStr + '.switch', selectedOption.value);
+            this.$lcfStore.updateValue(this.pathStr + '.switch', e.value);
         }
     }
 };

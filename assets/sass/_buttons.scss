@@ -2,8 +2,11 @@
 %lcf-btn-base {
     font-size: $lcf-button-font-size;
     border: 1px solid $lcf-border-color;
-    border-radius: 2px;
+    border-radius: $lcf-button-radius;
     background-color: $lcf-button-background-color;
+    &:hover {
+        background-color: darken($lcf-button-background-color, 10%);
+    }
 }
 
 .lcf-btn {
@@ -23,5 +26,6 @@
 
 .lcf-combo-button {
     @extend %lcf-btn-base;
-    border-left: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }

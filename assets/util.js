@@ -32,7 +32,7 @@ var iconClassForMediaItem = function(item) {
         return null;
     }
     if (! item.url) {
-        return 'warning fas fa-exclamation-triangle';
+        return 'lcf-error fas fa-exclamation-triangle';
     }
     if (item.thumb || item.extension == 'svg') {
         return null;
