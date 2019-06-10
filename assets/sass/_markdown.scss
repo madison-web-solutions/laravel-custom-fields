@@ -1,0 +1,28 @@
+.lcf-input-markdown{
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    height: 200px;
+    > textarea {
+        flex-basis: 50%;
+    }
+    .lcf-markdown-preview {
+        margin-left: $lcf-spacer;
+        flex-basis: 50%;
+        overflow: auto;
+    }
+    [data-name=fullscreen] {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+    &.lcf-fullscreen {
+        position: fixed;
+        z-index: 100;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        padding: 10px;
+    }
+}

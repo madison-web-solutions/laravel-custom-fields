@@ -1,14 +1,20 @@
 // Colors
+$lcf-light-grey: #eeeeee !default;
 $lcf-grey: #cccccc !default;
 $lcf-red: #ff0000 !default;
+$lcf-blue: #0000ff !default;
 
 $lcf-error-msg-color: $lcf-red !default;
+$lcf-button-background-color: $lcf-light-grey !default;
+$lcf-primary-button-color: $lcf-blue !default;
+$lcf-danger-button-color: $lcf-red !default;
 
 $lcf-border-width: 1px !default;
 $lcf-border-color: $lcf-grey !default;
 $lcf-border-error-color: $lcf-red !default;
 
-$lcf-spacer: 6px !default;
+$lcf-spacer: 8px !default;
 
 $lcf-font-size: 16px !default;
+$lcf-button-font-size: 14px !default;
 $lcf-small-font-size: ($lcf-font-size * 0.75) !default;

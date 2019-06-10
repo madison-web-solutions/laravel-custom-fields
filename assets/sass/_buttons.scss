@@ -1,0 +1,19 @@
+.lcf-btn, .lcf-btn-icon {
+    font-size: $lcf-button-font-size;
+    border: 1px solid $lcf-border-color;
+    border-radius: 2px;
+    background-color: $lcf-button-background-color;
+}
+
+.lcf-btn {
+    line-height: 1.4;
+}
+
+.lcf-btn-icon {
+    &:hover {
+        color: $lcf-primary-button-color;
+    }
+    &.lcf-danger:hover {
+        color: $lcf-danger-button-color;
+    }
+}

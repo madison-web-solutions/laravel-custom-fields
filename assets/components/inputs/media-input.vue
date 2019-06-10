@@ -9,8 +9,8 @@
             <div v-if="value && !item" class="lcf-ml-preview lcf-ml-active">
                 <p>Loading</p>
             </div>
-            <button type="button" @click="openLibrary">{{ value ? 'Change' : 'Select' }}</button>
-            <button type="button" v-if="value" @click="remove" data-action="remove-image">Remove</button>
+            <button type="button" class="lcf-btn" @click="openLibrary">{{ value ? 'Change' : 'Select' }}</button>
+            <button type="button" class="lcf-btn" v-if="value" @click="remove" data-action="remove-image">Remove</button>
         </template>
     </div>
 </template>

@@ -1,0 +1,41 @@
+.lcf-repeater-item {
+    border: $lcf-border-width solid $lcf-border-color;
+    border-bottom: none;
+    display: flex;
+    .lcf-repeater-item-controls, .lcf-repeater-index {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        .lcf-btn-icon {
+            width: 24px;
+            padding: 2px 0;
+            margin: 1px 4px;
+            &[data-name=btn-insert] {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                margin: 0;
+            }
+        }
+    }
+    .lcf-repeater-index {
+        flex: 0 0 2rem;
+        cursor: move;
+        span {
+            text-align: center;
+        }
+    }
+    .lcf-repeater-subfield {
+        flex-grow: 1;
+        padding: $lcf-spacer;
+        border-left: $lcf-border-width solid $lcf-border-color;
+        border-right: $lcf-border-width solid $lcf-border-color;
+    }
+}
+
+.lcf-repeater-append {
+    border: 1px solid $lcf-border-color;
+    padding: $lcf-spacer;
+}

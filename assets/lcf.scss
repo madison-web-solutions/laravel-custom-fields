@@ -1,13 +1,13 @@
 @import "sass/variables";
 
 @mixin lcf-panel {
-    //&:not(.lcf-unpanel) {
     padding: $lcf-spacer;
     border: $lcf-border-width solid $lcf-border-color;
-    //}
 }
 
-.lcf-field {
+@import "sass/buttons";
+
+.lcf-field, .lcf-input {
     font-size: $lcf-font-size;
     background-color: white;
 }
@@ -18,17 +18,20 @@
 
 .lcf-field-label {
     font-weight: bold;
-    margin-bottom: $lcf-spacer;
+    margin-bottom: $lcf-spacer * 0.5;
 }
 
 .lcf-help {
     font-size: $lcf-small-font-size;
-    margin-top: -$lcf-spacer;
-    margin-bottom: $lcf-spacer;
+    margin-top: -$lcf-spacer * 0.5;
+    margin-bottom: $lcf-spacer * 0.5;
 }
 
 .lcf-input-wrapper, .lcf-field {
     margin-bottom: $lcf-spacer;
+    &:last-child {
+        margin-bottom: 0;
+    }
 }
 
 .lcf-switch-select {
@@ -36,32 +39,9 @@
     margin-bottom: $lcf-spacer;
 }
 
-.lcf-compound-input {
+.lcf-compound-with-label {
     @include lcf-panel;
 }
-
-.lcf-repeater-item {
-    @include lcf-panel;
-    display: flex;
-    > .lcf-repeater-item-controls {
-        width: 120px;
-        margin-right: $lcf-spacer;
-    }
-    > .lcf-field {
-        flex-grow: 1;
-    }
-    //padding: $lcf-spacer 0;
-    //border-bottom: $lcf-border-width solid $lcf-border-color;
-    //&:last-child {
-    //    padding-bottom: 0;
-    //    border-bottom: none;
-    //}
-}
-
-.lcf-repeater-item + .lcf-repeater-item {
-    border-top: none;
-}
-
 
 .lcf-input {
     input[type=text], input[type=search], input[type=number], input[type=date] {
@@ -131,36 +111,12 @@
     }
 }
 
-.lcf-input-markdown{
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    height: 200px;
-    > textarea, > .preview {
-        flex-basis: 48%;
-    }
-    > .lcf-markdown-preview {
-        overflow: auto;
-    }
-    > button {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-    &.fullscreen {
-        position: fixed;
-        z-index: 100;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        padding: 10px;
-    }
-}
-
 .lcf-input-link {
     @include lcf-panel;
     &.lcf-has-error {
         border-color: $lcf-border-error-color;
     }
 }
+
+@import "sass/repeater";
+@import "sass/markdown";

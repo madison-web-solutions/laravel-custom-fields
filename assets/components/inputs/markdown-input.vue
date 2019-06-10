@@ -2,7 +2,7 @@
     <div class="lcf-input lcf-input-markdown" :class="isFullScreen ? 'lcf-fullscreen' : ''">
         <textarea :class="inputClasses" ref="input" :name="name" @change="change" @input="updatePreview">{{ value }}</textarea>
         <div class="lcf-markdown-preview" v-html="html"></div>
-        <button type="button" @click="toggleFullScreen" aria-label="Enter fullscreen mode"><i class="fas fa-expand"></i></button>
+        <button type="button" data-name="fullscreen" class="lcf-btn-icon" @click="toggleFullScreen" aria-label="Enter fullscreen mode"><i class="fas fa-expand"></i></button>
     </div>
 </template>
 
