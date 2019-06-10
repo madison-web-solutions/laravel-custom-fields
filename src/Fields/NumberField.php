@@ -22,7 +22,7 @@ class NumberField extends ScalarField
         $rules = parent::optionRules();
         $rules['max'] = 'nullable|numeric';
         $rules['min'] = 'nullable|numeric';
-        $rules['decimals'] = 'nullable|integer|min:1';
+        $rules['decimals'] = 'nullable|integer';
         return $rules;
     }
 
@@ -55,5 +55,16 @@ class NumberField extends ScalarField
             $output = ($keep_invalid ? $input : null);
             return false;
         }
+    }
+
+    protected function applyInputTransformationsNotNull($cast_value)
+    {
+        if (Coerce::toInt($this->options['decimals'], $decimals)) {
+            $cast_value = round($cast_value, $decimals);
+            if ($decimals <= 0) {
+                $cast_value = (int) $cast_value;
+            }
+        }
+        return $cast_value;
     }
 }

@@ -186,11 +186,11 @@ var timeParse = function(input) {
     if (res1) {
         var hours = parseInt(res1[1], 10);
         var mins = parseInt(res1[2], 10);
-        var secs = (res1[3] == null ? 0 : parseInt(res[3]));
+        var secs = (res1[3] == null ? 0 : parseInt(res1[3]));
     } else if (res2) {
         var hours = parseInt(res2[1], 10);
         var mins = parseInt(res2[2], 10);
-        var secs = (res2[4] == null ? 0 : parseInt(res[4]));
+        var secs = (res2[4] == null ? 0 : parseInt(res2[4]));
     } else {
         return null;
     }

@@ -116,7 +116,12 @@ abstract class Field implements JsonSerializable
         if (is_null($input) || $input === '') {
             return true;
         }
-        return $this->coerceNotNull($input, $output, $keep_invalid);
+        if ($this->coerceNotNull($input, $output, $keep_invalid)) {
+            $output = $this->applyInputTransformationsNotNull($output);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -129,6 +134,11 @@ abstract class Field implements JsonSerializable
      * were valid.
      */
     abstract protected function coerceNotNull($input, &$output, bool $keep_invalid) : bool;
+
+    protected function applyInputTransformationsNotNull($cast_value)
+    {
+        return $cast_value;
+    }
 
     /**
      * Take a raw value from the database and try to convert it to the right type for this field

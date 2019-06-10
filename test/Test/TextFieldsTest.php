@@ -173,4 +173,27 @@ class TextFieldsTest extends TestCase
         $this->assertValidationFails($field, '');
         $this->assertValidationFails($field, null);
     }
+
+    public function testInputTransformations()
+    {
+        $field = LCF::newTextField([
+            'case' => 'lower',
+        ]);
+        $this->assertCoerceOk($field, 'FöoBÁR deRP', 'föobár derp');
+
+        $field = LCF::newTextField([
+            'case' => 'upper',
+        ]);
+        $this->assertCoerceOk($field, 'FöoBÁR deRP', 'FÖOBÁR DERP');
+
+        $field = LCF::newTextField([
+            'case' => 'title',
+        ]);
+        $this->assertCoerceOk($field, 'FöoBÁR deRP', 'Föobár Derp');
+
+        $field = LCF::newTextField([
+            'case' => 'slug',
+        ]);
+        $this->assertCoerceOk($field, 'FöoBÁR deRP', 'foobar-derp');
+    }
 }

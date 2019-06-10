@@ -6,13 +6,16 @@
 
 <script>
 import Util from '../../util.js';
-import { trim } from 'lodash-es';
+import { get, trim } from 'lodash-es';
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
     computed: {
+        withSeconds: function() {
+            return get(this.settings, 'with_seconds', false);
+        },
         placeholder: function() {
-            return 'hh:mm:ss';
+            return this.withSeconds ? 'hh:mm:ss' : 'hh:mm';
         }
     },
     methods: {
@@ -24,7 +27,7 @@ export default {
             }
             var time = Util.timeParse(inputValue);
             if (time) {
-                this.$emit('change', {key: this._key, value: Util.timeFormat(time[0], time[1], time[2])});
+                this.$emit('change', {key: this._key, value: Util.timeFormat(time[0], time[1], this.withSeconds ? time[2] : null)});
             } else {
                 this.$emit('change', {key: this._key, value: null});
             }

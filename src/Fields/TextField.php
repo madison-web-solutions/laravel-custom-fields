@@ -2,6 +2,7 @@
 
 namespace MadisonSolutions\LCF\Fields;
 
+use Illuminate\Support\Str;
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
 use MadisonSolutions\LCF\Validator;
@@ -15,6 +16,7 @@ class TextField extends ScalarField
         $defaults['min'] = null;
         $defaults['regex'] = null;
         $defaults['content'] = null;
+        $defaults['case'] = null;
         return $defaults;
     }
 
@@ -25,6 +27,7 @@ class TextField extends ScalarField
         $rules['min'] = 'nullable|integer';
         $rules['regex'] = 'nullable|string';
         $rules['content'] = 'nullable|in:email,ip,ipv4,ipv6,url,uuid';
+        $rules['case'] = 'nullable|in:lower,upper,title,slug';
         return $rules;
     }
 
@@ -92,5 +95,24 @@ class TextField extends ScalarField
         }
         $output = ($keep_invalid ? $input : null);
         return false;
+    }
+
+    protected function applyInputTransformationsNotNull($cast_value)
+    {
+        switch ($this->options['case']) {
+            case 'lower':
+                $cast_value = mb_convert_case($cast_value, MB_CASE_LOWER);
+                break;
+            case 'upper':
+                $cast_value = mb_convert_case($cast_value, MB_CASE_UPPER);
+                break;
+            case 'title':
+                $cast_value = mb_convert_case($cast_value, MB_CASE_TITLE);
+                break;
+            case 'slug':
+                $cast_value = Str::slug($cast_value);
+                break;
+        }
+        return $cast_value;
     }
 }

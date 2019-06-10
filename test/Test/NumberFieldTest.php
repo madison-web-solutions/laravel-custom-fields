@@ -107,4 +107,25 @@ class NumberFieldTest extends TestCase
         ]);
         $this->assertValidationFails($field, null);
     }
+
+    public function testInputTransformations()
+    {
+        $field = LCF::newNumberField([
+            'decimals' => 2,
+        ]);
+        $this->assertCoerceOk($field, 383.549, 383.55);
+        $this->assertCoerceOk($field, -103.777, -103.78);
+
+        $field = LCF::newNumberField([
+            'decimals' => 0,
+        ]);
+        $this->assertCoerceOk($field, 383.549, 384);
+        $this->assertCoerceOk($field, -103.777, -104);
+
+        $field = LCF::newNumberField([
+            'decimals' => -2,
+        ]);
+        $this->assertCoerceOk($field, 383.549, 400);
+        $this->assertCoerceOk($field, -103.777, -100);
+    }
 }

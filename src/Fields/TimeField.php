@@ -22,6 +22,7 @@ class TimeField extends ScalarField
         $defaults = parent::optionDefaults();
         $defaults['max'] = null;
         $defaults['min'] = null;
+        $defaults['with_seconds'] = false;
         return $defaults;
     }
 
@@ -37,6 +38,7 @@ class TimeField extends ScalarField
         $rules = parent::optionRules();
         $rules['max'] = ['nullable', 'string', $time_rule];
         $rules['min'] = ['nullable', 'string', $time_rule];
+        $rules['with_seconds'] = 'boolean';
         return $rules;
     }
 
