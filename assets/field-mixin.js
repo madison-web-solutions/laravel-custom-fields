@@ -18,7 +18,7 @@ export default {
             return this.$lcfStore.getErrors(this.pathStr);
         },
         hasError: function() {
-            return this.errors && this.errors.length;
+            return !!this.errors.length;
         },
         childIds: function() {
             return this.$lcfStore.getChildIds(this.pathStr);

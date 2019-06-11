@@ -8,9 +8,9 @@
         <div ref="searchInterface" v-if="searchOpen" class="lcf-search-interface">
             <input ref="input" type="search" value="" placeholder="Search" @input="search" @keydown.enter.prevent="search" />
             <p v-if="statusMessage" class="lcf-help">{{ statusMessage }}</p>
-            <template v-if="hasResults">
-                <div v-for="suggestion in suggestions" class="lcf-search-suggestion" @click="change(suggestion)">{{ suggestion.label }}</div>
-            </template>
+            <div v-if="hasResults" aria-role="listbox">
+                <div v-for="suggestion in suggestions" class="lcf-search-suggestion" aria-role="option" @click="change(suggestion)">{{ suggestion.label }}</div>
+            </div>
         </div>
     </div>
 </template>

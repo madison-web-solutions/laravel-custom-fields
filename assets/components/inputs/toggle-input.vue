@@ -1,11 +1,11 @@
 <template>
     <div class="lcf-input lcf-input-toggle">
         <input type="hidden" :name="name" :value="value ? 'true' : 'false'" />
-        <button type="button" :class="inputClasses" @click="toggle">
+        <div aria-role="checkbox" :aria-checked="value ? 'true' : 'false'" class="lcf-toggle-switch" :class="inputClasses" @click="toggle">
             <i v-if="value" class="fas fa-toggle-on"></i>
             <i v-if="! value" class="fas fa-toggle-off"></i>
             <span>{{ value ? trueLabel : falseLabel }}</span>
-        </button>
+        </div>
     </div>
 </template>
 

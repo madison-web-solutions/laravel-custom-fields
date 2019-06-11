@@ -4,6 +4,7 @@ $lcf-light-grey: #eeeeee !default;
 $lcf-grey: #cccccc !default;
 $lcf-red: #ff0000 !default;
 $lcf-blue: #0000ff !default;
+$lcf-green: #00963e !default;
 
 $lcf-background-color: $lcf-very-light-grey !default;
 $lcf-input-background-color: white !default;
@@ -12,6 +13,8 @@ $lcf-error-msg-color: $lcf-red !default;
 $lcf-button-background-color: $lcf-light-grey !default;
 $lcf-primary-button-color: $lcf-blue !default;
 $lcf-danger-button-color: $lcf-red !default;
+$lcf-toggle-on-color: $lcf-green !default;
+$lcf-toggle-off-color: $lcf-red !default;
 
 $lcf-border-width: 1px !default;
 $lcf-border-color: $lcf-grey !default;
