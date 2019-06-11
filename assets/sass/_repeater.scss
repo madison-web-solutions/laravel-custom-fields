@@ -1,7 +1,15 @@
+.lcf-repeater-input {
+    border: $lcf-border-width solid $lcf-border-color;
+    &.lcf-has-error {
+        border-color: $lcf-border-error-color;
+    }
+}
+
 .lcf-repeater-item {
-    @include lcf-panel;
-    border-bottom: none;
-    padding: 0;
+    border-top: $lcf-border-width solid $lcf-border-color;
+    &:first-child {
+        border-top: none;
+    }
     display: flex;
     .lcf-repeater-item-controls, .lcf-repeater-index {
         position: relative;
@@ -21,6 +29,10 @@
             }
         }
     }
+    .lcf-repeater-item-controls {
+        // leave room for the (+) button between repeater items
+        padding: $lcf-button-font-size 0;
+    }
     .lcf-repeater-index {
         flex: 0 0 2rem;
         cursor: move;
@@ -37,5 +49,6 @@
 }
 
 .lcf-repeater-append {
-    @include lcf-panel;
+    padding: $lcf-spacer;
+    border-top: $lcf-border-width solid $lcf-border-color;
 }
