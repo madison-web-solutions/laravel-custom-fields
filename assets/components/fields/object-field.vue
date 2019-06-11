@@ -13,6 +13,9 @@ export default {
     mixins: [FieldMixin],
     created: function() {
         this.$lcfStore.objectInitKeys(this.pathStr, this.keys);
+        if (this.value == null && this.defaultValue != null) {
+            this.updateMyValue({value: this.defaultValue});
+        }
     },
     computed: {
         inputComponent: function() {

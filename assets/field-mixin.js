@@ -46,6 +46,9 @@ export default {
         },
         shouldShow: function() {
             return this.$lcfStore.testCondition(this.pathStr, this.condition);
+        },
+        defaultValue: function() {
+            return get(this.field, 'settings.default');
         }
     }
 };
