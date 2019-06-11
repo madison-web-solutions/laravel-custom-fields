@@ -1,5 +1,22 @@
 
+.lcf-btn-group {
+    margin-bottom: $lcf-spacer;
+    .lcf-btn, .lcf-btn-primary, .lcf-btn-danger {
+        margin-right: ($lcf-spacer * 0.5);
+    }
+}
+
+.lcf-btn-group-right {
+    @extend .lcf-btn-group;
+    text-align: right;
+    .lcf-btn, .lcf-btn-primary, .lcf-btn-danger {
+        margin-right: 0;
+        margin-left: ($lcf-spacer * 0.5);
+    }
+}
+
 %lcf-btn-base {
+    line-height: 1.4;
     font-size: $lcf-button-font-size;
     border: 1px solid $lcf-border-color;
     border-radius: $lcf-button-radius;
@@ -11,7 +28,26 @@
 
 .lcf-btn {
     @extend %lcf-btn-base;
-    line-height: 1.4;
+}
+
+.lcf-btn-primary {
+    @extend .lcf-btn;
+    color: white;
+    background-color: $lcf-primary-button-color;
+    border-color: darken($lcf-primary-button-color, 10%);
+    &:hover {
+        background-color: darken($lcf-primary-button-color, 5%);
+    }
+}
+
+.lcf-btn-danger {
+    @extend .lcf-btn;
+    color: white;
+    background-color: $lcf-danger-button-color;
+    border-color: darken($lcf-danger-button-color, 10%);
+    &:hover {
+        background-color: darken($lcf-danger-button-color, 5%);
+    }
 }
 
 .lcf-btn-icon {

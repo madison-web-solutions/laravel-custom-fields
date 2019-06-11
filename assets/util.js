@@ -37,7 +37,7 @@ var iconClassForMediaItem = function(item) {
     if (item.thumb || item.extension == 'svg') {
         return null;
     }
-    switch (this.item.extension) {
+    switch (item.extension) {
         case 'pdf':
             return 'fas fa-file-pdf';
         case 'doc':
@@ -52,7 +52,7 @@ var iconClassForMediaItem = function(item) {
         case 'pptx':
             return 'fas fa-file-powerpoint';
         default:
-            switch (this.item.Category) {
+            switch (item.Category) {
                 case 'Document':
                     return 'fas fa-file-alt';
                 case 'Image':

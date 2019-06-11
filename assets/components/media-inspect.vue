@@ -1,25 +1,28 @@
 <template>
-    <div class="lcf-ml-inspect">
-        <div>
+    <div class="lcf-ml-inspect" :data-extension="extension" :data-category="category">
+        <div data-name="back">
+            <a href="#" @click.stop="close"><i class="fas fa-long-arrow-alt-left"></i> Back</a>
+        </div>
+        <div data-name="preview">
             <img v-if="hasImage" :src="item.url" />
-            <p v-if="iconClass"><i :class="iconClass"></i></p>
-            <p v-if="! hasImage">Media Type: {{ item.category }}</p>
-            <p>URL: {{ item.url }}</p>
+            <p v-if="iconClass" class="lcf-ml-preview-icon"><i :class="iconClass"></i></p>
+            <p v-if="! hasImage">Media Type: {{ category }}</p>
         </div>
-        <div>
-            <div>
-                <label>Title</label>
-                <input ref="titleInput" type="text" :disabled="! editable" :value="displayTitle" @change="changeTitle" @keyup="changeTitle" />
+        <div data-name="details">
+            <lcf-input-wrapper label="Title">
+                <lcf-text-input key="title" :settings="{}" :value="displayVals.title" @input="change" />
+            </lcf-input-wrapper>
+            <lcf-input-wrapper :label="isImage ? 'Alt' : 'Subtitle'">
+                <lcf-text-input key="alt" :settings="{}" :value="displayVals.alt" @input="change" />
+            </lcf-input-wrapper>
+            <p v-if="imgWidth && imgHeight">{{ imgWidth }}px x {{ imgHeight }}px</p>
+            <div class="lcf-btn-group-right">
+                <button v-if="editable && edited" type="button" class="lcf-btn-primary" @click.stop="saveUpdates">Save Changes</button>
+                <button type="button" class="lcf-btn" @click.stop="close"><i class="fas fa-long-arrow-alt-left"></i> Back</button>
+                <button v-if="deletable" type="button" class="lcf-btn-danger" @click.stop="deleteItem">Delete</button>
             </div>
-            <div>
-                <label>{{ isImage ? 'Alt' : 'Subtitle' }}</label>
-                <input ref="altInput" type="text" :disabled="! editable" :value="displayAlt" @change="changeAlt" @keyup="changeAlt" />
-            </div>
-            <button v-if="editable && edited" type="button" @click.stop="saveUpdates">Save</button>
-            <hr />
-            <button type="button" @click.stop="close">Close</button>
-            <button v-if="deletable" type="button" @click.stop="deleteItem">Delete</button>
         </div>
+        <div data-name="url">URL: <a :href="item.url" target="_blank">{{ item.url }}</a></div>
     </div>
 </template>
 
@@ -42,9 +45,16 @@ export default {
     },
     data: function() {
         return {
-            editedTitle: null,
-            editedAlt: null
+            editedVals: {
+                title: null,
+                alt: null
+            },
+            imgWidth: null,
+            imgHeight: null,
         };
+    },
+    created: function() {
+        this.getDimensions();
     },
     computed: {
         title: function() {
@@ -53,31 +63,54 @@ export default {
         alt: function() {
             return get(this.item, 'alt');
         },
-        displayTitle: function() {
-            return (this.editedTitle == null ? this.title : this.editedTitle);
-        },
-        displayAlt: function() {
-            return (this.editedAlt == null ? this.alt : this.editedAlt);
+        displayVals: function() {
+            return {
+                title: this.editedVals.title == null ? this.title : this.editedVals.title,
+                alt: this.editedVals.alt == null ? this.alt : this.editedVals.alt
+            };
         },
         edited: function() {
-            return (this.editedTitle != this.title) || (this.editedAlt != this.alt);
+            return (this.displayVals.title != this.title) || (this.displayVals.alt != this.alt);
+        },
+        category: function() {
+            return get(this.item, 'category')
+        },
+        extension: function() {
+            return get(this.item, 'extension');
         },
         isImage: function() {
-            return this.item.category == 'Image';
+            return get(this.item, 'category') == 'Image';
         },
         hasImage: function() {
             return this.isImage && this.item.url;
         },
         iconClass: function() {
             return Util.iconClassForMediaItem(this.item);
+        },
+        imageWithDimensionsUrl: function() {
+            return (this.hasImage && this.extension != 'svg') ? this.item.url : null;
+        }
+    },
+    watch: {
+        imageWithDimensionsUrl: function() {
+            this.getDimensions();
         }
     },
     methods: {
-        changeTitle: function() {
-            this.editedTitle = this.$refs.titleInput.value;
+        getDimensions: function() {
+            this.imgWidth = null;
+            this.imgHeight = null;
+            if (this.imageWithDimensionsUrl) {
+                var img = new Image();
+                img.onload = () => {
+                    this.imgWidth = img.width;
+                    this.imgHeight = img.height;
+                };
+                img.src = this.imageWithDimensionsUrl;
+            }
         },
-        changeAlt: function() {
-            this.editedAlt = this.$refs.altInput.value;
+        change: function(e) {
+            this.editedVals[e.key] = e.value;
         },
         close: function() {
             this.$emit('close');
@@ -86,12 +119,14 @@ export default {
             this.$emit('deleteItem');
         },
         saveUpdates: function() {
-            this.$lcfStore.updateMediaItem(this.item.id, {title: this.displayTitle, alt: this.displayAlt}, () => {
-                this.editedTitle = null;
-                this.editedAlt = null;
-            }, (errorMsg) => {
-                alert(errorMsg);
-            });
+            if (this.edited) {
+                this.$lcfStore.updateMediaItem(this.item.id, this.displayVals, () => {
+                    this.editedVals.title = null;
+                    this.editedVals.alt = null;
+                }, (errorMsg) => {
+                    alert(errorMsg);
+                });
+            }
         }
     }
 };

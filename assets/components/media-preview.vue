@@ -1,7 +1,7 @@
 <template>
     <div class="lcf-ml-preview" @click="click">
         <div class="lcf-ml-thumb" :style="style">
-            <i v-if="iconClass" :class="iconClass"></i>
+            <i class="lcf-ml-preview-icon" v-if="iconClass" :class="iconClass"></i>
         </div>
         <div class="lcf-ml-preview-title">{{ item.title }}</div>
     </div>

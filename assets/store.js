@@ -340,7 +340,6 @@ var getMediaItem = function(id) {
 var searchIdCounter = 1;
 var searchMediaLibrary = function(category, search, page, callback) {
     var searchId = searchIdCounter++;
-    //console.log('get '+searchId, category, search, page);
     axios.get('/lcf/media-library', {params: {
         category: category,
         search: search,
@@ -351,7 +350,7 @@ var searchMediaLibrary = function(category, search, page, callback) {
             Vue.set(store.mediaItems, item.id, item);
             itemIds.push(item.id);
         });
-        callback(searchId, itemIds);
+        callback(searchId, itemIds, response.data.meta.last_page > response.data.meta.current_page);
     }, error => {
         console.log(error);
     });

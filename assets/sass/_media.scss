@@ -1,0 +1,108 @@
+.lcf-media-library {
+    .lcf-ml-index {
+        display: flex;
+        flex-wrap: wrap;
+        margin: -($lcf-spacer * 0.5);
+        .lcf-ml-preview {
+            margin: ($lcf-spacer * 0.5);
+            flex-basis: 140px;
+        }
+        max-height: 400px;
+        overflow-y: auto;
+    }
+}
+
+.lcf-ml-tab {
+    position: relative;
+    top: 1px;
+    background-color: $lcf-button-background-color;
+    border: $lcf-border-width solid $lcf-border-color;
+    border-top-left-radius: $lcf-button-radius;
+    border-top-right-radius: $lcf-button-radius;
+    &.active {
+        background-color: $lcf-background-color;
+        border-bottom-color: $lcf-background-color;
+    }
+}
+
+.lcf-ml-upload-form {
+    padding: 20px;
+    text-align: center;
+    label {
+        padding: 10px;
+        margin-bottom: 20px
+    }
+    .lcf-ml-has-drag-obj & {
+        outline: 2px dashed $lcf-primary-button-color;
+    }
+}
+
+.lcf-upload-file-input {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.lcf-ml-preview {
+    @include lcf-panel;
+    padding: 0;
+    width: 140px;
+    text-align: center;
+    margin-bottom: ($lcf-spacer * 0.5);
+    .lcf-ml-thumb {
+        padding-top: 75%;
+        background-size: contain;
+        background-position: center center;
+        background-repeat: no-repeat;
+        position: relative;
+        .lcf-ml-preview-icon {
+            font-size: 42px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+    .lcf-ml-preview-title {
+        font-size: $lcf-small-font-size;
+        line-height: 1.2;
+        padding: ($lcf-spacer * 0.5);
+    }
+}
+
+.lcf-ml-inspect {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -($lcf-spacer * 0.5);
+    > div {
+        padding: ($lcf-spacer * 0.5);
+    }
+    [data-name=back] {
+        flex-basis: 100%;
+    }
+    [data-name=preview] {
+        flex-basis: 50%;
+        text-align: center;
+    }
+    [data-name=details] {
+        flex-basis: 50%;
+    }
+    [data-name=url] {
+        flex-basis: 100%;
+        font-size: $lcf-small-font-size;
+    }
+    .lcf-ml-preview-icon {
+        font-size: 60px;
+        margin: 20px;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    &[data-extension=svg] img {
+        width: 100%;
+    }
+}

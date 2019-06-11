@@ -1,14 +1,17 @@
 <template>
     <div class="lcf-media-library" :class="cssClass" @dragover.prevent="dragIn" @dragenter.prevent="dragIn" @dragleave.prevent="dragOut" @dragend.prevent="dragOut" @drop.prevent="dragDrop">
-        <div v-if="! showInspect" class="lcf-ml-tabs">
-            <button type="button" :class="{active: mode == 'library'}" @click.prevent="libraryMode">Library</button>
-            <button type="button" :class="{active: mode == 'upload'}" @click.prevent="uploadMode">Upload</button>
-            <button v-if="! standalone" type="button" @click="cancel">Cancel</button>
+        <div v-if="! showInspect">
+            <button type="button" class="lcf-ml-tab" :class="{active: mode == 'library'}" @click.prevent="libraryMode">Library</button>
+            <button type="button" class="lcf-ml-tab" :class="{active: mode == 'upload'}" @click.prevent="uploadMode">Upload</button>
+            <button v-if="! standalone" type="button" class="lcf-ml-tab" @click="cancel">Cancel</button>
         </div>
-        <div class="lcf-ml-panel" v-if="showLibrary" @scroll="handleScroll">
-            <p><input type="search" placeholder="search" ref="searchInput" @input="handleSearch" @keydown.enter.prevent="handleSearch" /></p>
+        <div class="lcf-panel" :style="{display: showLibrary ? 'block' : 'none'}">
+            <lcf-input-wrapper class="lcf-input">
+                <input ref="searchInput" type="search" placeholder="search" @input="handleSearch" @keydown.enter.prevent="handleSearch" />
+            </lcf-input-wrapper>
+
             <p v-if="! standalone" >Click to select:</p>
-            <div class="lcf-ml-index">
+            <div class="lcf-ml-index" @scroll="handleScroll">
                 <template v-for="upload in uploads">
                     <div class="lcf-ml-preview" :class="'lcf-ml-'+upload.status" v-if="upload.status != 'done'">
                         <p v-if="upload.status == 'new'">Queued</p>
@@ -19,15 +22,15 @@
                 <lcf-media-preview v-for="item in items" :key="item.id" :item="item" @select="select" />
             </div>
         </div>
-        <div class="lcf-ml-panel" v-if="showUpload">
+        <div class="lcf-panel" v-if="showUpload">
             <div class="lcf-ml-upload-form">
-                <label :for="fileInputId">Choose a file</label>
-                <input ref="fileInput" type="file" :id="fileInputId" class="file-input" multiple @change="filesSelected" />
+                <label class="lcf-btn" :for="fileInputId">Choose a file</label>
+                <input ref="fileInput" type="file" :id="fileInputId" class="lcf-upload-file-input" multiple @change="filesSelected" />
                 <p>... or drag and drop into this box</p>
             </div>
         </div>
-        <div class="lcf-ml-panel" v-if="showInspect">
-            <lcf-media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @selectItem="selectSelectedItem" @deleteItem="deleteSelectedItem" />
+        <div class="lcf-panel" v-if="showInspect">
+            <lcf-media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @deleteItem="deleteSelectedItem" />
         </div>
     </div>
 </template>
@@ -53,7 +56,7 @@ export default {
             uploads: [],
             uploading: false,
             searchString: null,
-            page: 0,
+            page: 1,
             hasMore: true,
             itemIds: [],
             selectedItemId: null,
@@ -61,12 +64,23 @@ export default {
         }
     },
     created: function() {
-        this.getDebounce = debounce(this.$lcfStore.searchMediaLibrary, 300);
+        this.getDebounce = debounce((category, searchString, page, callback) => {
+            this.searchId = this.$lcfStore.searchMediaLibrary(category, searchString, page, callback);
+        }, 300);
+
+        this.searchId = this.$lcfStore.searchMediaLibrary(this.category, '', 1, (searchedId, itemIds, hasMore) => {
+            if (this.searchId != searchedId) {
+                return;
+            }
+            this.searchId = null;
+            this.hasMore = hasMore;
+            this.libraryAddMany(itemIds);
+        });
     },
     computed: {
         cssClass: function() {
             return {
-                'has-drag-obj': this.hasDragObj
+                'lcf-ml-has-drag-obj': this.hasDragObj
             }
         },
         items: function() {
@@ -94,7 +108,7 @@ export default {
             this.mode = 'upload';
         },
         libraryClear: function() {
-            this.library = [];
+            this.itemIds = [];
         },
         libraryAddMany: function(itemIds, atStart) {
             forEach(itemIds, itemId => {
@@ -113,14 +127,14 @@ export default {
         },
         handleSearch: function() {
             var searchString = this.$refs.searchInput.value;
-            this.searchId = this.getDebounce(this.category, this.$refs.searchInput.value, 0, (searchedId, itemIds) => {
+            this.getDebounce(this.category, searchString, 1, (searchedId, itemIds, hasMore) => {
                 if (this.searchId != searchedId) {
                     return;
                 }
                 this.searchId = null;
                 this.searchString = searchString;
-                this.page = 0;
-                this.hasMore = (itemIds.length == 50);
+                this.page = 1;
+                this.hasMore = hasMore;
                 this.libraryClear();
                 this.libraryAddMany(itemIds);
             });
@@ -130,13 +144,13 @@ export default {
             var scrollProportion = ((ele.scrollTop + ele.offsetHeight) / ele.scrollHeight);
             if (this.hasMore && !this.searchId && scrollProportion > 0.9) {
                 var page = this.page + 1;
-                this.searchId = this.$lcfStore.searchMediaLibrary(this.category, this.searchString, page, (searchedId, itemIds) => {
+                this.searchId = this.$lcfStore.searchMediaLibrary(this.category, this.searchString, page, (searchedId, itemIds, hasMore) => {
                     if (this.searchId != searchedId) {
                         return;
                     }
                     this.searchId = null;
                     this.page = page;
-                    this.hasMore = (itemIds.length == 50);
+                    this.hasMore = hasMore;
                     this.libraryAddMany(itemIds);
                 });
             }
@@ -232,16 +246,6 @@ export default {
         cancel: function() {
             this.$emit('close');
         }
-    },
-    created: function() {
-        this.searchId = this.$lcfStore.searchMediaLibrary(this.category, '', 0, (searchedId, itemIds) => {
-            if (this.searchId != searchedId) {
-                return;
-            }
-            this.searchId = null;
-            this.hasMore = (itemIds.length == 50);
-            this.libraryAddMany(itemIds);
-        });
     }
 };
 </script>

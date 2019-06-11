@@ -8,7 +8,7 @@
 
 @import "sass/buttons";
 
-.lcf-form {
+.lcf-form, .lcf-panel {
     @include lcf-panel;
 }
 
