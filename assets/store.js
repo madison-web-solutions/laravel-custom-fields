@@ -257,12 +257,14 @@ var getDisplayName = function(fieldSettings, id) {
     if (! id) {
         return '';
     }
-    var key = JSON.stringify([fieldSettings, id]);
+    var settings = cloneDeep(fieldSettings);
+    var type = settings.type;
+    delete settings.name;
+    delete settings.key;
+    delete settings.type;
+    var key = JSON.stringify([settings, id]);
     if (! store.displayNames.hasOwnProperty(key)) {
         Vue.set(store.displayNames, key, '');
-        var settings = cloneDeep(fieldSettings);
-        var type = settings.type;
-        delete settings.type;
         axios.get('/lcf/display-name', {params: {type, settings, id}}).then(response => {
             Vue.set(store.displayNames, key, response.data);
         }, error => {
@@ -275,8 +277,14 @@ var getDisplayName = function(fieldSettings, id) {
 var getSuggestions = function(fieldSettings, search, callback) {
     var settings = cloneDeep(fieldSettings);
     var type = settings.type;
+    delete settings.name;
+    delete settings.key;
     delete settings.type;
     axios.get('/lcf/suggestions', {params: {type, settings, search}}).then(response => {
+        forEach(response.data, suggestion => {
+            var key = JSON.stringify([settings, suggestion.id]);
+            Vue.set(store.displayNames, key, suggestion.label);
+        });
         callback(search, response.data);
     }, error => {
         console.log(error);
