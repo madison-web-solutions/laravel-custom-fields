@@ -17,12 +17,14 @@ class Controller extends BaseController
         $this->authorize('getSuggestions', LCF::class);
         $request->validate([
             'search_type' => 'required|string',
+            'search_settings' => 'required|json',
             'search' => 'required|string|min:2',
         ]);
         $type = explode(':', $request->search_type)[0];
+        $settings = json_decode($request->search_settings);
 
         if ($type == 'model') {
-            $mf = app(LCF::class)->makeModelFinder($request->model_class, $request->criteria, $request->search_fields, $request->label_attribute);
+            $mf = app(LCF::class)->makeModelFinder($settings->model_class, $settings->criteria, $settings->search_fields, $settings->label_attribute);
             return response()->json($mf->getSuggestions($request->search));
         }
         if ($type === 'link') {
@@ -37,12 +39,14 @@ class Controller extends BaseController
         $this->authorize('lookup', LCF::class);
         $request->validate([
             'search_type' => 'required|string',
+            'search_settings' => 'required|json',
             'id' => 'required',
         ]);
         $type = explode(':', $request->search_type)[0];
+        $settings = json_decode($request->search_settings);
 
         if ($type == 'model') {
-            $mf = app(LCF::class)->makeModelFinder($request->model_class, $request->criteria, $request->search_fields, $request->label_attribute);
+            $mf = app(LCF::class)->makeModelFinder($settings->model_class, $settings->criteria, $settings->search_fields, $settings->label_attribute);
             return response()->json($mf->lookup($request->id));
         }
         if ($type === 'link') {

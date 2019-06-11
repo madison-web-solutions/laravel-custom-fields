@@ -61,6 +61,7 @@ abstract class Field implements JsonSerializable
             'required' => false,
             'help' => null,
             'default' => null,
+            'condition' => null,
         ];
     }
 
@@ -70,6 +71,9 @@ abstract class Field implements JsonSerializable
             'required' => 'required|boolean',
             'help' => 'nullable|string',
             'default' => 'nullable',
+            'condition' => 'nullable|array',
+            'condition.0' => 'required_with:condition|in:eq,in',
+            'condition.1' => 'required_with:condition|string',
         ];
     }
 
@@ -217,6 +221,9 @@ abstract class Field implements JsonSerializable
         if (is_null($messages)) {
             $messages = [];
         }
+        if ($this->testCondition($path, $validator->getData()) === false) {
+            return;
+        }
         if (is_null($value)) {
             if ($this->options['required']) {
                 $messages[$path][] = "This field is required";
@@ -229,6 +236,40 @@ abstract class Field implements JsonSerializable
     public function validateNotNull(string $path, $cast_value, &$messages, ?Validator $validator = null)
     {
         //
+    }
+
+    // Given a relative path in 'dot notation', which is relative to the supplied absolute base path,
+    // Calculate the resulting absolute path.
+    // Caret characters (^) at the start of the relative path mean 'go up one level'
+    protected function resolveRelativePath(string $basePath, string $relativePath)
+    {
+        $basePath = explode('.', $basePath);
+        while ($relativePath[0] === '^') {
+            array_pop($basePath);
+            $relativePath = substr($relativePath, 1);
+        }
+        return implode($basePath, '.') . ($relativePath ? '.' . $relativePath : '');
+    }
+
+    protected function testCondition(string $path, array $data)
+    {
+        if (! $this->condition) {
+            return true;
+        }
+
+        $conditionType = $this->condition[0];
+        $relativePath = $this->condition[1];
+        $testValue = $this->condition[2] ?? null;
+        $otherFieldPath = $this->resolveRelativePath($path, $relativePath);
+        $otherFieldValue = data_get($data, $otherFieldPath);
+
+        switch ($conditionType) {
+            case 'eq':
+                return $otherFieldValue === $testValue;
+            case 'in':
+                return in_array($otherFieldValue, $testValue);
+        }
+        return true;
     }
 
     public function getSubField(string $key)

@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-field lcf-object-field">
+    <div class="lcf-field lcf-object-field" v-if="shouldShow">
         <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="combinedErrors">
             <component :key="nodeId" :is="inputComponent" :settings="inputSettings" :value="childValues" :hasError="hasError" :hasChildError="hasChildError" @change="updateMyValue" />
         </lcf-input-wrapper>

@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-field lcf-compound-field">
+    <div class="lcf-field lcf-compound-field" v-if="shouldShow">
         <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
             <div class="lcf-compound-input" :class="{'lcf-compound-with-label': !!label, 'lcf-has-error': hasError}">
                 <component v-for="subField, fieldName in subFields" :is="subField.fieldComponent" :key="childIds[fieldName]" :path="path.concat(fieldName)" :field="subField" />
@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { get, keys } from 'lodash-es';
+import { get, keys, mapValues } from 'lodash-es';
 import FieldMixin from '../../field-mixin.js';
 export default {
     mixins: [FieldMixin],

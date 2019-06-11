@@ -40,6 +40,12 @@ export default {
         },
         inputSettings: function() {
             return assign({name: this.inputName, key: this.path[this.path.length - 1]}, this.field.settings);
+        },
+        condition: function() {
+            return get(this.field, 'settings.condition');
+        },
+        shouldShow: function() {
+            return this.$lcfStore.testCondition(this.pathStr, this.condition);
         }
     }
 };

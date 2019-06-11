@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-field lcf-switch-field">
+    <div class="lcf-field lcf-switch-field" v-if="shouldShow">
         <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
             <lcf-select-input key="switch" class="lcf-switch-select" :settings="switchSelectSettings" :value="switchKey" @change="changeSwitch" />
             <component :is="switchField.fieldComponent" :key="switchId" :path="path.concat(switchKey)" :field="switchField" />

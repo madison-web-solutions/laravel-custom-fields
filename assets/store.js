@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { uniqueId, isArray, isObject, isString, isInteger, map, mapValues, forEach, cloneDeep } from 'lodash-es';
+import { uniqueId, isArray, isObject, isString, isInteger, map, mapValues, includes, forEach, cloneDeep } from 'lodash-es';
 import Vue from 'vue';
 
 var store = new Vue({
@@ -252,27 +252,31 @@ var setErrors = function(groupName, errors) {
     return handledPaths;
 };
 
-var toFormData = function(data, method) {
-    if (method == 'get') {
-        var fd = new URLSearchParams();
-    } else {
-        var fd = new FormData();
+var resolveRelativePath = function(pathStr, relativePathStr) {
+    var absolutePath = pathArg(pathStr);
+    while (relativePathStr[0] == '^') {
+        absolutePath.pop();
+        relativePathStr = relativePathStr.substr(1);
     }
-    var recurse = function(path, value) {
-        if (isArray(value) || isObject(value)) {
-            forEach(value, (sub_value, key) => {
-                recurse(path + '[' + key + ']', sub_value);
-            });
-        } else if (value == null) {
-            fd.append(path, '');
-        } else {
-            fd.append(path, value);
-        }
-    };
-    forEach(data, (value, key) => {
-        recurse(key, value);
-    });
-    return fd;
+    return absolutePath.join('.') + (relativePathStr ? '.' + relativePathStr : '');
+};
+
+var testCondition = function(pathStr, condition) {
+    if (! condition) {
+        return true;
+    }
+    var testNodePath = pathArg(resolveRelativePath(pathStr, condition[1]));
+    var testNode = getNode(testNodePath);
+    if (! testNode) {
+        return true;
+    }
+    switch (condition[0]) {
+        case 'eq':
+            return condition[2] == testNode.value;
+        case 'in':
+            return includes(condition[2], testNode.value);
+    }
+    return true;
 };
 
 var lookupSearchObj = function(searchType, searchSettings, id) {
@@ -282,10 +286,12 @@ var lookupSearchObj = function(searchType, searchSettings, id) {
     var key = searchType + ':' + id;
     if (! store.searchObjs.hasOwnProperty(key)) {
         Vue.set(store.searchObjs, key, '');
-        var fd = toFormData(searchSettings, 'get');
-        fd.append('search_type', searchType);
-        fd.append('id', id);
-        axios.get('/lcf/lookup', {params: fd}).then(response => {
+        var params = {
+            search_type: searchType,
+            search_settings: JSON.stringify(searchSettings),
+            id: id
+        };
+        axios.get('/lcf/lookup', {params: params}).then(response => {
             Vue.set(store.searchObjs, key, response.data);
         }, error => {
             console.log(error);
@@ -300,10 +306,12 @@ var getDisplayName = function(searchType, searchSettings, id) {
 };
 
 var getSuggestions = function(searchType, searchSettings, search, callback) {
-    var fd = toFormData(searchSettings, 'get');
-    fd.append('search_type', searchType);
-    fd.append('search', search);
-    axios.get('/lcf/suggestions', {params: fd}).then(response => {
+    var params = {
+        search_type: searchType,
+        search_settings: JSON.stringify(searchSettings),
+        search: search
+    };
+    axios.get('/lcf/suggestions', {params: params}).then(response => {
         forEach(response.data, suggestion => {
             var key = searchType + ':' + suggestion.id;
             Vue.set(store.searchObjs, key, suggestion);
@@ -485,6 +493,7 @@ export default {
             }
         });
     },
+    testCondition: testCondition,
     lookupSearchObj: lookupSearchObj,
     getDisplayName: getDisplayName,
     getSuggestions: getSuggestions,

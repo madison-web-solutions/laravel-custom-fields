@@ -53,45 +53,8 @@ class CompoundField extends Field
             return;
         }
         foreach ($this->sub_fields as $key => $field) {
-            if ($validator && $this->testCondition($key, $validator->getData(), $path) === false) {
-                continue;
-            }
             $field->validate("{$path}.{$key}", $value[$key] ?? null, $messages, $validator);
         }
-    }
-
-    // Given a relative path in 'dot notation', which is relative to the supplied absolute base path,
-    // Calculate the resulting absolute path.
-    // Caret characters (^) at the start of the relative path mean 'go up one level'
-    protected function resolveRelativePath(string $basePath, string $relativePath)
-    {
-        $basePath = explode('.', $basePath);
-        while ($relativePath[0] === '^') {
-            array_pop($basePath);
-            $relativePath = substr($relativePath, 1);
-        }
-        return implode($basePath, '.') . '.' . $relativePath;
-    }
-
-    protected function testCondition(string $key, array $data, string $path)
-    {
-        $conditionDefn = $this->conditions ? ($this->conditions[$key] ?? null) : null;
-        if (! $conditionDefn) {
-            return true;
-        }
-
-        $conditionType = $conditionDefn[0];
-        $otherFieldPath = $this->resolveRelativePath($path, $conditionDefn[1]);
-        $otherFieldValue = data_get($data, $otherFieldPath);
-        $conditionValue = $conditionDefn[2];
-
-        switch ($conditionType) {
-            case 'eq':
-                return $otherFieldValue === $conditionValue;
-            case 'in':
-                return in_array($otherFieldValue, $conditionValue);
-        }
-        return true;
     }
 
     public function getSubField(string $key)
