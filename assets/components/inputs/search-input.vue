@@ -9,7 +9,7 @@
             <input ref="input" type="search" value="" placeholder="Search" @input="search" @keydown.enter.prevent="search" />
             <p v-if="statusMessage" class="lcf-help">{{ statusMessage }}</p>
             <div v-if="hasResults" aria-role="listbox">
-                <div v-for="suggestion in suggestions" class="lcf-search-suggestion" aria-role="option" @click="change(suggestion)">{{ suggestion.label }}</div>
+                <div v-for="suggestion in suggestions" class="lcf-search-suggestion" aria-role="option" @click="change(suggestion)">{{ suggestion.display_name }}</div>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@ export default {
             this.suggestions = null;
             this.searchingFor = this.$refs.input.value;
             if (this.searchingFor.length >= 2) {
-                this.$lcfStore.getSuggestions(this.settings, this.searchingFor, (searched, suggestions) => {
+                this.$lcfStore.getSuggestions(this.searchType, this.searchSettings, this.searchingFor, (searched, suggestions) => {
                     if (this.searchingFor == searched) {
                         this.searchingFor = null;
                         this.suggestions = suggestions;
@@ -59,8 +59,14 @@ export default {
         document.removeEventListener('click', this.handleDocumentClick);
     },
     computed: {
+        searchType: function() {
+            return this.setting('search_type');
+        },
+        searchSettings: function() {
+            return this.setting('search_settings');
+        },
         displayName: function() {
-            return this.$lcfStore.getDisplayName(this.settings, this.value);
+            return this.$lcfStore.getDisplayName(this.searchType, this.searchSettings, this.value);
         },
         displayString: function() {
             return this.displayName ? this.displayName : (this.value ? ('(' + this.value + ')') : '');

@@ -16,48 +16,40 @@ class Controller extends BaseController
     {
         $this->authorize('getSuggestions', LCF::class);
         $request->validate([
-            'type' => 'required|in:model-id,link',
-            'settings' => 'required|json',
+            'search_type' => 'required|string',
             'search' => 'required|string|min:2',
         ]);
-        if ($request->type == 'model-id') {
-            $field = new Fields\ModelIdField(json_decode($request->settings, true));
-            return response()->json($field->getSuggestions($request->search));
+        $type = explode(':', $request->search_type)[0];
+
+        if ($type == 'model') {
+            $mf = app(LCF::class)->makeModelFinder($request->model_class, $request->criteria, $request->search_fields, $request->label_attribute);
+            return response()->json($mf->getSuggestions($request->search));
         }
-        if ($request->type === 'link') {
+        if ($type === 'link') {
             $lf = app(LCF::class)->getLinkFinder();
             return response()->json($lf->getSuggestions($request->search));
         }
-        throw new \Exception("Unexpected type {$request->type}");
+        throw new \Exception("Unexpected type {$type}");
     }
 
-    public function getDisplayName(Request $request)
+    public function lookup(Request $request)
     {
-        $this->authorize('getDisplayName', LCF::class);
+        $this->authorize('lookup', LCF::class);
         $request->validate([
-            'type' => 'required|in:model-id,link',
-            'settings' => 'required|json',
+            'search_type' => 'required|string',
             'id' => 'required',
         ]);
-        if ($request->type == 'model-id') {
-            $field = new Fields\ModelIdField(json_decode($request->settings, true));
-            return response()->json($field->getDisplayName($request->id));
-        }
-        if ($request->type === 'link') {
-            $lf = app(LCF::class)->getLinkFinder();
-            return response()->json($lf->getDisplayName($request->id));
-        }
-        throw new \Exception("Unexpected type {$request->type}");
-    }
+        $type = explode(':', $request->search_type)[0];
 
-    public function linkLookup(Request $request)
-    {
-        $this->authorize('linkLookup', LCF::class);
-        $request->validate([
-            'link_id' => 'required|string',
-        ]);
-        $lf = app(LCF::class)->getLinkFinder();
-        return response()->json($lf->lookup($request->link_id));
+        if ($type == 'model') {
+            $mf = app(LCF::class)->makeModelFinder($request->model_class, $request->criteria, $request->search_fields, $request->label_attribute);
+            return response()->json($mf->lookup($request->id));
+        }
+        if ($type === 'link') {
+            $lf = app(LCF::class)->getLinkFinder();
+            return response()->json($lf->lookup($request->id));
+        }
+        throw new \Exception("Unexpected type {$type}");
     }
 
     public function markdown(Request $request)

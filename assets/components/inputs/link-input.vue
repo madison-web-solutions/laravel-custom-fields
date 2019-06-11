@@ -24,6 +24,12 @@ export default {
         withLabel: function() {
             return this.setting('with_label', true);
         },
+        searchType: function() {
+            return this.setting('search_type');
+        },
+        searchSettings: function() {
+            return this.setting('search_settings');
+        },
         manual: function() {
             return get(this.value, 'manual', false);
         },
@@ -38,7 +44,7 @@ export default {
         },
         linkInfo: function() {
             if (this.linkId && ! this.manual) {
-                return this.$lcfStore.lookupLink(this.linkId);
+                return this.$lcfStore.lookupSearchObj(this.searchType, this.searchSettings, this.linkId);
             } else {
                 return {url: this.url, label: this.url};
             }
@@ -59,8 +65,9 @@ export default {
         linkIdField: function() {
             return {
                 name: this.name + '[link_id]',
-                type: 'link',
-                required: this.required
+                required: this.required,
+                search_type: this.searchType,
+                search_settings: this.searchSettings
             };
         },
         urlField: function() {

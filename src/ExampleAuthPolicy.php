@@ -12,15 +12,9 @@ class ExampleAuthPolicy
         return false;
     }
 
-    public function getDisplayName($user)
+    public function lookup($user)
     {
-        \Log::warning("Access to LCF.getDisplayName denied by ExampleAuthPolicy - You probably need to define a Policy for LCF routes.");
-        return false;
-    }
-
-    public function linkLookup($user)
-    {
-        \Log::warning("Access to LCF.linkLookup denied by ExampleAuthPolicy - You probably need to define a Policy for LCF routes.");
+        \Log::warning("Access to LCF.lookup denied by ExampleAuthPolicy - You probably need to define a Policy for LCF routes.");
         return false;
     }
 

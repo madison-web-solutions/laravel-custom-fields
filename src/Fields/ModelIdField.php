@@ -2,6 +2,7 @@
 namespace MadisonSolutions\LCF\Fields;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
 use MadisonSolutions\LCF\LCF;
@@ -28,6 +29,19 @@ class ModelIdField extends ScalarField
         $rules['search_fields.*'] = 'required|string';
         $rules['label_attribute'] = 'required|string';
         return $rules;
+    }
+
+    public function jsonSerialize()
+    {
+        $data = parent::jsonSerialize();
+        $data['settings']['search_type'] = 'model:' . $this->model_class;
+        $data['settings']['search_settings'] = [
+            'model_class' => Arr::pull($data['settings'], 'model_class'),
+            'criteria' => Arr::pull($data['settings'], 'criteria', null),
+            'search_fields' => Arr::pull($data['settings'], 'search_fields'),
+            'label_attribute' => Arr::pull($data['settings'], 'label_attribute'),
+        ];
+        return $data;
     }
 
     public function inputComponent() : string
@@ -74,47 +88,5 @@ class ModelIdField extends ScalarField
         }
         $output = ($keep_invalid ? $input : null);
         return false;
-    }
-
-    public function getSuggestions(string $search)
-    {
-        $dummy = $this->newInstance();
-        $query = $dummy->query();
-        $ilike = LCF::iLikeOperator($query->getConnection());
-
-        if ($this->criteria) {
-            $query->where($this->criteria);
-        }
-        $query->where(function ($q) use ($ilike, $search) {
-            // @todo scout?
-            $search_esc = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $search) . '%';
-            foreach (array_values($this->search_fields) as $i => $search_field) {
-                if ($i == 0) {
-                    $q->where($search_field, $ilike, $search_esc);
-                } else {
-                    $q->orWhere($search_field, $ilike, $search_esc);
-                }
-            }
-        });
-        $suggestions = [];
-        foreach ($query->take(10)->get() as $model) {
-            $suggestions[] = [
-                'id' => $model->getKey(),
-                'label' => $model->getAttribute($this->label_attribute),
-            ];
-        }
-        return $suggestions;
-    }
-
-    public function getDisplayName($id)
-    {
-        $dummy = $this->newInstance();
-        $query = $dummy->query();
-        if ($this->criteria) {
-            $query->where($this->criteria);
-        }
-        $query->where($dummy->getKeyName(), $id);
-        $model = $query->first();
-        return $model ? $model->getAttribute($this->label_attribute) : '';
     }
 }

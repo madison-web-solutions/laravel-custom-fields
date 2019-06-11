@@ -7,9 +7,8 @@ var store = new Vue({
         return {
             groups: {},
             nodes: {},
-            displayNames: {},
             mediaItems: {},
-            links: {}
+            searchObjs: {}
         };
     }
 });
@@ -253,37 +252,61 @@ var setErrors = function(groupName, errors) {
     return handledPaths;
 };
 
-var getDisplayName = function(fieldSettings, id) {
-    if (! id) {
-        return '';
+var toFormData = function(data, method) {
+    if (method == 'get') {
+        var fd = new URLSearchParams();
+    } else {
+        var fd = new FormData();
     }
-    var settings = cloneDeep(fieldSettings);
-    var type = settings.type;
-    delete settings.name;
-    delete settings.key;
-    delete settings.type;
-    var key = JSON.stringify([settings, id]);
-    if (! store.displayNames.hasOwnProperty(key)) {
-        Vue.set(store.displayNames, key, '');
-        axios.get('/lcf/display-name', {params: {type, settings, id}}).then(response => {
-            Vue.set(store.displayNames, key, response.data);
+    var recurse = function(path, value) {
+        if (isArray(value) || isObject(value)) {
+            forEach(value, (sub_value, key) => {
+                recurse(path + '[' + key + ']', sub_value);
+            });
+        } else if (value == null) {
+            fd.append(path, '');
+        } else {
+            fd.append(path, value);
+        }
+    };
+    forEach(data, (value, key) => {
+        recurse(key, value);
+    });
+    return fd;
+};
+
+var lookupSearchObj = function(searchType, searchSettings, id) {
+    if (! id) {
+        return null;
+    }
+    var key = searchType + ':' + id;
+    if (! store.searchObjs.hasOwnProperty(key)) {
+        Vue.set(store.searchObjs, key, '');
+        var fd = toFormData(searchSettings, 'get');
+        fd.append('search_type', searchType);
+        fd.append('id', id);
+        axios.get('/lcf/lookup', {params: fd}).then(response => {
+            Vue.set(store.searchObjs, key, response.data);
         }, error => {
             console.log(error);
         });
     }
-    return store.displayNames[key];
+    return store.searchObjs[key];
 };
 
-var getSuggestions = function(fieldSettings, search, callback) {
-    var settings = cloneDeep(fieldSettings);
-    var type = settings.type;
-    delete settings.name;
-    delete settings.key;
-    delete settings.type;
-    axios.get('/lcf/suggestions', {params: {type, settings, search}}).then(response => {
+var getDisplayName = function(searchType, searchSettings, id) {
+    var obj = lookupSearchObj(searchType, searchSettings, id);
+    return obj ? obj.display_name : '';
+};
+
+var getSuggestions = function(searchType, searchSettings, search, callback) {
+    var fd = toFormData(searchSettings, 'get');
+    fd.append('search_type', searchType);
+    fd.append('search', search);
+    axios.get('/lcf/suggestions', {params: fd}).then(response => {
         forEach(response.data, suggestion => {
-            var key = JSON.stringify([settings, suggestion.id]);
-            Vue.set(store.displayNames, key, suggestion.label);
+            var key = searchType + ':' + suggestion.id;
+            Vue.set(store.searchObjs, key, suggestion);
         });
         callback(search, response.data);
     }, error => {
@@ -379,21 +402,6 @@ var getMarkdown = function(input, callback) {
     });
 };
 
-var lookupLink = function(linkId) {
-    if (! linkId) {
-        return null;
-    }
-    if (! store.links.hasOwnProperty(linkId)) {
-        Vue.set(store.links, linkId, null);
-        axios.get('/lcf/link-lookup', {params: {link_id: linkId}}).then(response => {
-            Vue.set(store.links, linkId, response.data);
-        }, error => {
-            console.log(error);
-        });
-    }
-    return store.links[linkId];
-};
-
 var pathArg = function(path) {
     if (! isString(path) || path == '') {
         throw new Error("path must be a non-empty string");
@@ -477,6 +485,7 @@ export default {
             }
         });
     },
+    lookupSearchObj: lookupSearchObj,
     getDisplayName: getDisplayName,
     getSuggestions: getSuggestions,
     getMediaItem: getMediaItem,
@@ -484,6 +493,5 @@ export default {
     updateMediaItem: updateMediaItem,
     uploadToMediaLibrary: uploadToMediaLibrary,
     deleteMediaItem: deleteMediaItem,
-    getMarkdown: getMarkdown,
-    lookupLink: lookupLink
+    getMarkdown: getMarkdown
 };
