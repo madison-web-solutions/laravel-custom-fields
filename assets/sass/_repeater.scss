@@ -1,4 +1,5 @@
 .lcf-repeater-input {
+    position: relative;
     border: $lcf-border-width solid $lcf-border-color;
     &.lcf-has-error {
         border-color: $lcf-border-error-color;
@@ -11,6 +12,10 @@
         border-top: none;
     }
     display: flex;
+    &.lcf-drag-hide {
+        height: 0;
+        overflow: hidden;
+    }
     .lcf-repeater-item-controls, .lcf-repeater-index {
         position: relative;
         display: flex;
@@ -51,4 +56,12 @@
 .lcf-repeater-append {
     padding: $lcf-spacer;
     border-top: $lcf-border-width solid $lcf-border-color;
+}
+
+.lcf-repeater-insert-marker {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: $lcf-primary-button-color;
 }
