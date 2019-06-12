@@ -60,13 +60,13 @@ class ImageSize
             case 'format':
                 return $this->$name;
             case 'width':
-                if ($this->method == 'fit' || $this->method == 'widen') {
+                if (in_array($this->method, ['fit', 'widen', 'contain'])) {
                     return $this->width;
                 } else {
                     return 'auto';
                 }
             case 'height':
-                if ($this->method == 'fit' || $this->method == 'heighten') {
+                if (in_array($this->method, ['fit', 'heighten', 'contain'])) {
                     return $this->height;
                 } else {
                     return 'auto';
@@ -169,6 +169,9 @@ class ImageSize
                 break;
             case 'widen':
                 $parts[] = "w{$this->height}";
+                break;
+            case 'contain':
+                $parts[] = "contain-w{$this->width}-h{$this->height}";
                 break;
             case 'none':
                 $parts[] = "none";
