@@ -64,7 +64,7 @@ class Validator extends LaravelValidator
         foreach ($field_messages as $path => $path_messages) {
             $this->failedRules[$path]['LCFField'] = [];
             foreach ($path_messages as $message) {
-                $this->messages->add($path, $this->makeReplacements($message, $path, 'LCFField', []));
+                $this->messages->add($path, $message);
             }
         }
     }

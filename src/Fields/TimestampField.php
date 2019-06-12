@@ -41,14 +41,14 @@ class TimestampField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! ($value instanceof Carbon)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if ($this->max && $value > $this->max) {
-            $messages[$path][] = "Maximum value is {$this->max}";
+            $messages[$path][] = $this->trans('max', ['max' => $this->max->format('d/m/Y H:i:s')]);
         }
         if ($this->min && $value < $this->min) {
-            $messages[$path][] = "Minimum value is {$this->min}";
+            $messages[$path][] = $this->trans('min', ['min' => $this->min->format('d/m/Y H:i:s')]);
         }
     }
 

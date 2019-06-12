@@ -226,7 +226,7 @@ abstract class Field implements JsonSerializable
         }
         if (is_null($value)) {
             if ($this->options['required']) {
-                $messages[$path][] = "This field is required";
+                $messages[$path][] = $this->trans('invalid');
             }
             return;
         }
@@ -236,6 +236,12 @@ abstract class Field implements JsonSerializable
     public function validateNotNull(string $path, $cast_value, &$messages, ?Validator $validator = null)
     {
         //
+    }
+
+    public function trans(string $msg_code, array $params = [])
+    {
+        $field_code = $this->fieldTypeName();
+        return __("lcf::validation.{$field_code}.{$msg_code}", $params);
     }
 
     // Given a relative path in 'dot notation', which is relative to the supplied absolute base path,

@@ -44,12 +44,12 @@ class OptionsField extends Field
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_array($value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         foreach ($this->choices as $key => $label) {
             if (! is_bool($value[$key] ?? null)) {
-                $messages["{$path}.{$key}"][] = "Invalid value";
+                $messages["{$path}.{$key}"][] = $this->trans('invalid');
             }
         }
     }

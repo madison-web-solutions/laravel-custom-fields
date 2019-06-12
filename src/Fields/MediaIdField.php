@@ -32,7 +32,7 @@ class MediaIdField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_int($value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         $query = MediaItem::where('id', $value);
@@ -40,7 +40,11 @@ class MediaIdField extends ScalarField
             $query->whereIn('extension', MediaType::allExtensionsForCategory($this->category));
         }
         if (! $query->exists()) {
-            $messages[$path][] = "Model not found with id {$value}";
+            if ($this->category) {
+                $messages[$path][] = $this->trans('missing-category', ['id' => $value, 'category' => mb_strtolower($this->category)]);
+            } else {
+                $messages[$path][] = $this->trans('missing', ['id' => $value]);
+            }
         }
     }
 

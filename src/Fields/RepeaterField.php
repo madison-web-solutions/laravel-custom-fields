@@ -57,22 +57,22 @@ class RepeaterField extends Field
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_array($value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if (count($value) == 0) {
             if ($this->options['required']) {
-                $messages[$path][] = "This field is required";
+                $messages[$path][] = $this->trans('required');
             }
             return;
         }
         $max = $this->options['max'];
         if (is_int($max) && count($value) > $max) {
-            $messages[$path][] = "Maximum of {$max} entries";
+            $messages[$path][] = $this->trans('max', ['max' => $max]);
         }
         $min = $this->options['min'];
         if (is_int($min) && count($value) < $min) {
-            $messages[$path][] = "Minumum of {$min} entries";
+            $messages[$path][] = $this->trans('min', ['min' => $min]);
         }
         foreach ($value as $i => $sub_value) {
             $this->sub_field->validate("{$path}.{$i}", $sub_value, $messages, $validator);

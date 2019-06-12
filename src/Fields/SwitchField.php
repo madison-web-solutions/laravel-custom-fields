@@ -60,11 +60,11 @@ class SwitchField extends Field
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! ($value instanceof SwitchValue)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if (! isset($this->switch_fields[$value->switch])) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return false;
         }
         $switch_field = $this->switch_fields[$value->switch];

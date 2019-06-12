@@ -34,20 +34,20 @@ class TextAreaField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_string($value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if ($value === '') {
             if ($this->options['required']) {
-                $messages[$path][] = "This field is required";
+                $messages[$path][] = $this->trans('required');
             }
             return;
         }
         if (Coerce::toInt($this->options['max'], $max_int) && strlen($value) > $max_int) {
-            $messages[$path][] = "Maximum length is {$max_int} characters";
+            $messages[$path][] = $this->trans('max', ['max' => $max_int]);
         }
         if (Coerce::toInt($this->options['min'], $min_int) && strlen($value) < $min_int) {
-            $messages[$path][] = "Minumum length is {$min_int} characters";
+            $messages[$path][] = $this->trans('min', ['min' => $min_int]);
         }
     }
 

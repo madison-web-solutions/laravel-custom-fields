@@ -53,17 +53,17 @@ class ChoiceField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_string($value) && ! is_int($value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if ($value === '') {
             if ($this->options['required']) {
-                $messages[$path][] = "This field is required";
+                $messages[$path][] = $this->trans('required');
             }
             return;
         }
         if (! array_key_exists($value, $this->choices)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('not-in-choices');
             return;
         }
     }

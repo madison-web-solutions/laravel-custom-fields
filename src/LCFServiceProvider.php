@@ -25,6 +25,9 @@ class LCFServiceProvider extends ServiceProvider
             "{$lcf_root_dir}/config.example.php" => config_path('lcf.php'),
         ]);
 
+        // Load translations
+        $this->loadTranslationsFrom("{$lcf_root_dir}/lang", 'lcf');
+
         // Load migrations
         $this->loadMigrationsFrom("{$lcf_root_dir}/migrations");
 

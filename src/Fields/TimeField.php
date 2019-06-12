@@ -50,14 +50,14 @@ class TimeField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! ($value instanceof JustTime)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if ($this->max && $value->isAfter($this->max)) {
-            $messages[$path][] = "Maximum value is {$this->max}";
+            $messages[$path][] = $this->trans('max', ['max' => $this->max->format('H:i:s')]);
         }
         if ($this->min && $value->isBefore($this->min)) {
-            $messages[$path][] = "Minimum value is {$this->min}";
+            $messages[$path][] = $this->trans('min', ['min' => $this->min->format('H:i:s')]);
         }
     }
 

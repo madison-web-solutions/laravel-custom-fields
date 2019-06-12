@@ -39,14 +39,14 @@ class IntegerField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_int($value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if (Coerce::toInt($this->options['max'], $max_int) && $value > $max_int) {
-            $messages[$path][] = "Maximum value is {$max_int}";
+            $messages[$path][] = $this->trans('max', ['max' => $max_int]);
         }
         if (Coerce::toInt($this->options['min'], $min_int) && $value < $min_int) {
-            $messages[$path][] = "Minumum value is {$min_int}";
+            $messages[$path][] = $this->trans('min', ['min' => $min_int]);
         }
     }
 

@@ -34,55 +34,55 @@ class TextField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! is_string($value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if ($value === '') {
             if ($this->options['required']) {
-                $messages[$path][] = "This field is required";
+                $messages[$path][] = $this->trans('required');
             }
             return;
         }
         if (Coerce::toInt($this->options['max'], $max_int) && strlen($value) > $max_int) {
-            $messages[$path][] = "Maximum length is {$max_int} characters";
+            $messages[$path][] = $this->trans('max', ['max' => $max_int]);
         }
         if (Coerce::toInt($this->options['min'], $min_int) && strlen($value) < $min_int) {
-            $messages[$path][] = "Minumum length is {$min_int} characters";
+            $messages[$path][] = $this->trans('min', ['min' => $min_int]);
         }
         $regex = $this->options['regex'];
         if ($regex && ! preg_match($regex, $value)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
         }
         $content_rule = $this->options['content'];
         switch ($content_rule) {
             case 'url':
                 if (! $validator->validateUrl('', $value)) {
-                    $messages[$path][] = "Invalid url";
+                    $messages[$path][] = $this->trans('invalid-url');
                 }
                 break;
             case 'uuid':
                 if (! $validator->validateUuid('', $value)) {
-                    $messages[$path][] = "Invalid uuid";
+                    $messages[$path][] = $this->trans('invalid-uuid');
                 }
                 break;
             case 'email':
                 if (! $validator->validateEmail('', $value)) {
-                    $messages[$path][] = "Invalid email";
+                    $messages[$path][] = $this->trans('invalid-email');
                 }
                 break;
             case 'ip':
                 if (! $validator->validateIp('', $value)) {
-                    $messages[$path][] = "Invalid ip address";
+                    $messages[$path][] = $this->trans('invalid-ip');
                 }
                 break;
             case 'ipv4':
                 if (! $validator->validateIpv4('', $value)) {
-                    $messages[$path][] = "Invalid ipv4 address";
+                    $messages[$path][] = $this->trans('invalid-ipv4');
                 }
                 break;
             case 'ipv6':
                 if (! $validator->validateIpv6('', $value)) {
-                    $messages[$path][] = "Invalid ipv6 address";
+                    $messages[$path][] = $this->trans('invalid-ipv6');
                 }
                 break;
         }

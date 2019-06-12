@@ -48,7 +48,7 @@ class LinkField extends Field
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! ($value instanceof LinkValue)) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
     }

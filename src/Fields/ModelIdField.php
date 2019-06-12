@@ -57,7 +57,7 @@ class ModelIdField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! ($this->string_keys ? is_string($value) : is_int($value))) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         $dummy = $this->newInstance();
@@ -66,7 +66,8 @@ class ModelIdField extends ScalarField
             $query->where($this->criteria);
         }
         if (! $query->exists()) {
-            $messages[$path][] = "Model not found " . ($this->criteria ? 'matching the criteria' : '') . " with id {$value}";
+            $model_name = class_basename($this->model_class);
+            $messages[$path][] = $this->trans('missing', ['id' => $value, 'model' => $model_name]);
         }
     }
 

@@ -34,14 +34,14 @@ class NumberField extends ScalarField
     public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
     {
         if (! (is_int($value) || (is_float($value) && is_finite($value)))) {
-            $messages[$path][] = "Invalid value";
+            $messages[$path][] = $this->trans('invalid');
             return;
         }
         if (Coerce::toFloat($this->options['max'], $max_float) && $value > $max_float) {
-            $messages[$path][] = "Maximum value is {$max_float}";
+            $messages[$path][] = $this->trans('max', ['max' => $max_float]);
         }
         if (Coerce::toFloat($this->options['min'], $min_float) && $value < $min_float) {
-            $messages[$path][] = "Minumum value is {$min_float}";
+            $messages[$path][] = $this->trans('min', ['min' => $min_float]);
         }
     }
 
