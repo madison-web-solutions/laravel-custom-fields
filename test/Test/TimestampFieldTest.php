@@ -18,6 +18,9 @@ class TimestampFieldTest extends TestCase
         $this->assertCoerceOk($field, '', null);
         $this->assertCoerceOk($field, '1970-01-01T00:00:00.000000Z', '1970-01-01T00:00:00.000000Z');
         $this->assertCoerceOk($field, '2019-06-07T14:32:56.000000Z', '2019-06-07T14:32:56.000000Z');
+        $this->assertCoerceOk($field, '2019-06-07 14:32:56', Carbon::createFromTimestamp(strtotime('2019-06-07 14:32:56')));
+        $this->assertCoerceOk($field, '2019-06-07 13:32:56-01', '2019-06-07T14:32:56.000000Z');
+        $this->assertCoerceOk($field, '2019-06-07 15:32:56+01:00', '2019-06-07T14:32:56.000000Z');
         $this->assertCoerceOk($field, gmmktime(14, 32, 56, 6, 7, 2019), '2019-06-07T14:32:56.000000Z');
         $this->assertCoerceOk($field, new DateTime('2019-06-07 14:32:56', new DateTimeZone('UTC')), '2019-06-07T14:32:56.000000Z');
         $this->assertCoerceOk($field, Carbon::parse('2019-06-07 14:32:56', 'UTC'), '2019-06-07T14:32:56.000000Z');
@@ -28,9 +31,8 @@ class TimestampFieldTest extends TestCase
         $field = LCF::newTimestampField([]);
         $this->assertCoerceFails($field, 'foo');
         $this->assertCoerceFails($field, false);
-        $this->assertCoerceFails($field, '2019-06-07 14:32:56');
-        $this->assertCoerceFails($field, '2019-06-32T14:32:56.000000Z');
-        $this->assertCoerceFails($field, '2019-06-32T14:32:66.000000Z');
+        $this->assertCoerceFails($field, '2019-06-32T14:32:56.000000Z'); // there is no 32nd June
+        $this->assertCoerceFails($field, '2019-06-07T14:32:66.000000Z'); // minutes can't have 66 seconds
     }
 
     public function testBasicValidationWorks()

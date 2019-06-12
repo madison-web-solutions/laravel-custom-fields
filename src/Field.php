@@ -44,7 +44,7 @@ abstract class Field implements JsonSerializable
         $this->options = $options + $this->optionDefaults();
         $validator = LaravelValidator::make($this->options, $this->optionRules());
         if (! $validator->passes()) {
-            throw new \Exception("Failed to create LCF " . get_class($this) . " - invalid definition - " . json_encode($validator->errors()));
+            throw new FieldOptionsValidationException("Failed to create LCF " . get_class($this) . " - invalid definition - " . json_encode($validator->errors()));
         }
     }
 

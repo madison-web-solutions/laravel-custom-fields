@@ -123,24 +123,25 @@ class ModelIdFieldTest extends TestCase
 
     public function testFetchingSuggestions()
     {
+        $guest_field = $this->guestIdField();
+        $mf = app(LCF::class)->makeModelFinder($guest_field->model_class, $guest_field->criteria, $guest_field->search_fields, $guest_field->label_attribute);
+
         $g1 = factory(Guest::class)->create(['first_name' => 'Daniel', 'last_name' => 'Howard']);
         $g2 = factory(Guest::class)->create(['first_name' => 'Hank', 'last_name' => 'Grantham']);
         $g3 = factory(Guest::class)->create(['first_name' => 'Pierre', 'last_name' => 'Chang']);
 
-        $guest_field = $this->guestIdField();
-
-        $sugg = $guest_field->getSuggestions('howar');
+        $sugg = $mf->getSuggestions('howar');
         $this->assertIsArray($sugg);
         $this->assertCount(1, $sugg);
-        $this->assertContains(['id' => $g1->id, 'label' => 'Daniel Howard'], $sugg);
+        $this->assertContains(['id' => $g1->id, 'display_name' => 'Daniel Howard'], $sugg);
 
-        $sugg = $guest_field->getSuggestions('HAN');
+        $sugg = $mf->getSuggestions('HAN');
         $this->assertIsArray($sugg);
         $this->assertCount(2, $sugg);
-        $this->assertContains(['id' => $g2->id, 'label' => 'Hank Grantham'], $sugg);
-        $this->assertContains(['id' => $g3->id, 'label' => 'Pierre Chang'], $sugg);
+        $this->assertContains(['id' => $g2->id, 'display_name' => 'Hank Grantham'], $sugg);
+        $this->assertContains(['id' => $g3->id, 'display_name' => 'Pierre Chang'], $sugg);
 
-        $sugg = $guest_field->getSuggestions('foo');
+        $sugg = $mf->getSuggestions('foo');
         $this->assertIsArray($sugg);
         $this->assertCount(0, $sugg);
     }

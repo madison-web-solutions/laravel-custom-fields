@@ -2,10 +2,10 @@
 
 namespace MadisonSolutions\LCFTest\Test;
 
+use MadisonSolutions\LCF\FieldOptionsValidationException;
 use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCF\SwitchValue;
 use MadisonSolutions\LCFTest\TestCase;
-use Illuminate\Validation\ValidationException;
 
 class SwitchFieldTest extends TestCase
 {
@@ -139,7 +139,7 @@ class SwitchFieldTest extends TestCase
             'switch' // Cannot use 'switch' as the name of a switch field
         ];
         foreach ($invalid_keys as $invalid_key) {
-            $this->assertExceptionThrown(ValidationException::class, function () use ($invalid_key) {
+            $this->assertExceptionThrown(FieldOptionsValidationException::class, function () use ($invalid_key) {
                 $field = LCF::newSwitchField([
                     'switch_fields' => [
                         $invalid_key => LCF::newIntegerField([]),
@@ -157,7 +157,7 @@ class SwitchFieldTest extends TestCase
             [],
         ];
         foreach ($invalid_options as $options) {
-            $this->assertExceptionThrown(ValidationException::class, function () use ($options) {
+            $this->assertExceptionThrown(FieldOptionsValidationException::class, function () use ($options) {
                 $field = LCF::newSwitchField($options);
             });
         }

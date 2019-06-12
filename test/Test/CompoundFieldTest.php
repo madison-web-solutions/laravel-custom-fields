@@ -2,9 +2,9 @@
 
 namespace MadisonSolutions\LCFTest\Test;
 
+use MadisonSolutions\LCF\FieldOptionsValidationException;
 use MadisonSolutions\LCF\LCF;
 use MadisonSolutions\LCFTest\TestCase;
-use Illuminate\Validation\ValidationException;
 
 class CompoundFieldTest extends TestCase
 {
@@ -117,7 +117,7 @@ class CompoundFieldTest extends TestCase
             'h.w',
         ];
         foreach ($invalid_keys as $invalid_key) {
-            $this->assertExceptionThrown(ValidationException::class, function () use ($invalid_key) {
+            $this->assertExceptionThrown(FieldOptionsValidationException::class, function () use ($invalid_key) {
                 $field = LCF::newCompoundField([
                     'sub_fields' => [
                         $invalid_key => LCF::newIntegerField([]),
@@ -135,7 +135,7 @@ class CompoundFieldTest extends TestCase
             [],
         ];
         foreach ($invalid_options as $options) {
-            $this->assertExceptionThrown(ValidationException::class, function () use ($options) {
+            $this->assertExceptionThrown(FieldOptionsValidationException::class, function () use ($options) {
                 $field = LCF::newCompoundField($options);
             });
         }

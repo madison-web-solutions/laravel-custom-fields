@@ -17,6 +17,9 @@ class TestCase extends LaravelTestCase
         } catch (\Exception $e) {
             $actual_exception = $e;
         }
+        if (!($actual_exception instanceof $expected_exception_class)) {
+            error_log($actual_exception->getMessage());
+        }
         $this->assertInstanceOf($expected_exception_class, $actual_exception);
         return $actual_exception;
     }

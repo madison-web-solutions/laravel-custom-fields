@@ -67,9 +67,14 @@ class TimestampField extends ScalarField
             return true;
         }
         if (is_string($input)) {
-            // Accept only the format that is output by Carbon when json_encoded
+            // Accept only ISO_8601 formats
+            // IE the Y-m-d H:i:s format that you get from mysql
+            // or the format that is output by Carbon when json_encoded
             // eg 2019-06-07T13:19:04.202649Z
-            if (preg_match('/^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z$/', $input)) {
+            // Note in the regex: [+-−] that's not a duplicate character
+            // It's actually 2 different characters - a hyphen and a minus sign
+            $regex = '/^\d\d\d\d-\d\d-\d\d( |T)\d\d:\d\d:\d\d(\.\d+)?(Z|[+-−]\d\d(:?\d\d)?)?$/';
+            if (preg_match($regex, $input)) {
                 $timestamp = strtotime($input);
                 if ($timestamp !== false) {
                     $output = Carbon::createFromTimestamp($timestamp);

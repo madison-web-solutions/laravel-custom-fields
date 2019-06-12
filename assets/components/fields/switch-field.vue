@@ -14,7 +14,7 @@ export default {
     mixins: [FieldMixin],
     created: function() {
         this.$lcfStore.objectInitKeys(this.pathStr, ['switch'].concat(this.switchKeys));
-        if (this.switchValue == null && this.defaultValue != null) {
+        if (this.switchKey == null && this.defaultValue != null) {
             this.changeSwitch({value: this.defaultValue});
         }
     },
