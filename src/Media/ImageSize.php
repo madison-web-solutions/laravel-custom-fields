@@ -55,23 +55,23 @@ class ImageSize
             case 'format':
                 return $this->$name;
             case 'width':
-                if ($this->method == 'fit' || $this->method == 'widen') {
-                    return $this->width;
-                } else {
+                if ($this->method == 'heighten') {
                     return 'auto';
+                } else {
+                    return $this->width;
                 }
             case 'height':
-                if ($this->method == 'fit' || $this->method == 'heighten') {
-                    return $this->height;
-                } else {
+                if ($this->method == 'widen') {
                     return 'auto';
+                } else {
+                    return $this->height;
                 }
         }
     }
 
     public function setMethod(string $method)
     {
-        $methods = ['none', 'fit', 'heighten', 'widen'];
+        $methods = ['none', 'fit', 'heighten', 'widen', 'contain'];
         if (! in_array($method, $methods)) {
             throw new \Exception("Unexpected resize method '{$method}' - expected " . implode(', ', $methods));
         }
@@ -123,6 +123,9 @@ class ImageSize
             case 'widen':
                 $resized = $image->widen($this->width);
                 break;
+            case 'contain':
+                $resized = ($image->height() > $image->width() ? $image->heighten($this->height) : $image->widen($this->width));
+                break;
             case 'none':
                 $resized = $image;
                 break;
@@ -166,6 +169,9 @@ class ImageSize
                 break;
             case 'widen':
                 $parts[] = "w{$this->height}";
+                break;
+            case 'contain':
+                $parts[] = "contain-w{$this->width}-h{$this->height}-{$this->position}";
                 break;
             case 'none':
                 $parts[] = "none";
