@@ -1,7 +1,7 @@
 <template>
     <select ref="input" :name="nameAttr" :class="{'lcf-input-has-error': hasError}" @change="change">
         <option ref="placeholder" :disabled="field.options.required" :selected="value == null">{{ field.options.required ? 'Select' : '' }}</option>
-        <option v-for="optionLabel, optionValue in choices" :value="optionValue" :selected="value == optionValue">{{ optionLabel }}</option>
+        <option v-for="choice in choices" :value="choice.key" :selected="value == choice.key">{{ choice.label }}</option>
     </select>
 </template>
 

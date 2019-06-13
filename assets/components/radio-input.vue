@@ -1,8 +1,8 @@
 <template>
     <div ref="input" class="lcf-radio-group" :class="{'lcf-input-has-error': hasError}" @change="change">
-        <label v-for="optionLabel, optionValue in choices">
-            <input :name="nameAttr" type="radio" :value="optionValue" :checked="value == optionValue" />
-            <span>{{ optionLabel }}</span>
+        <label v-for="choice in choices">
+            <input :name="nameAttr" type="radio" :value="choice.key" :checked="value == choice.key" />
+            <span>{{ choice.label }}</span>
         </label>
     </div>
 </template>

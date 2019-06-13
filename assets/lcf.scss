@@ -111,10 +111,8 @@
         }
     }
 
-    .lcf-switch-field {
-        select {
-            margin-bottom: 2rem;
-        }
+    .lcf-switch-select {
+        margin-bottom: 2rem;
     }
 }
 // End repeater
@@ -287,6 +285,7 @@
 
 .lcf-field[data-lcf-field-type="choice"] {
     position: relative;
+    
     &:after {
         content: '\f078';
         position: absolute;

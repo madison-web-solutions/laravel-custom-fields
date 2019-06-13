@@ -35,6 +35,17 @@ class ChoiceField extends Field
         }
     }
 
+    public function jsonSerialize()
+    {
+        $output = parent::jsonSerialize();
+        $choicesArr = [];
+        foreach ($this->choices as $key => $label) {
+            $choicesArr[] = ['key' => $key, 'label' => $label];
+        }
+        $output['options']['choices'] = $choicesArr;
+        return $output;
+    }
+
     public function getValidationRules()
     {
         $rules = parent::getValidationRules();
