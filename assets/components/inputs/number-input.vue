@@ -1,38 +1,58 @@
 <template>
-    <div class="lcf-input lcf-input-number">
-        <input :class="inputClasses" type="number" :name="name" novalidate :step="step" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
-    </div>
+    <lcf-input-wrapper class="lcf-input lcf-input-number" v-bind="wrapperProps">
+        <input type="number" :class="inputClasses" :name="name" novalidate :step="myStep" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
+    </lcf-input-wrapper>
 </template>
 
 <script>
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
+    props: {
+        max: {
+            type: Number,
+            required: false,
+        },
+        min: {
+            type: Number,
+            required: false,
+        },
+        integersOnly: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        decimals: {
+            type: Number,
+            required: false,
+        },
+        step: {
+            type: Number,
+            required: false,
+        }
+    },
     computed: {
-        integersOnly: function() {
-            return this.setting('integers_only');
-        },
-        decimals: function() {
-            return this.integersOnly ? 0 : this.setting('decimals');
-        },
-        decimalsStep: function() {
-            return this.decimals == null ? 'any' : Math.pow(10, -this.decimals);
-        },
-        step: function() {
-            return this.setting('step', this.decimalsStep);
-        },
-        max: function() {
-            return this.setting('max');
-        },
-        min: function() {
-            return this.setting('min');
+        myStep: function() {
+            if (this.step == null) {
+                if (this.integersOnly) {
+                    return 1;
+                } else {
+                    if (this.decimals == null) {
+                        return 'any';
+                    } else {
+                        return Math.pow(10, -this.myDecimals);
+                    }
+                }
+            } else {
+                return this.step;
+            }
         }
     },
     methods: {
         change: function(e) {
             var value = e.target.value * 1;
-            if (this.step != 'any') {
-                value = Math.round(value / this.step) * this.step;
+            if (this.myStep != 'any') {
+                value = Math.round(value / this.myStep) * this.myStep;
             }
             if (this.min != null) {
                 value = Math.max(value, this.min);

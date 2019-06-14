@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-input lcf-input-search">
+    <lcf-input-wrapper class="lcf-input lcf-input-search" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
         <div class="lcf-combo" @click="toggleOpenSearch">
             <input type="text" :class="inputClasses" disabled :value="displayString" />
@@ -12,7 +12,7 @@
                 <div v-for="suggestion in suggestions" class="lcf-search-suggestion" aria-role="option" @click="change(suggestion)">{{ suggestion.display_name }}</div>
             </div>
         </div>
-    </div>
+    </lcf-input-wrapper>
 </template>
 
 <script>
@@ -21,6 +21,16 @@ import inputMixin from '../../input-mixin.js';
 import { debounce, isArray } from 'lodash-es';
 export default {
     mixins: [inputMixin],
+    props: {
+        searchType: {
+            type: String,
+            required: true
+        },
+        searchSettings: {
+            type: Object,
+            required: true
+        }
+    },
     data: function() {
         return {
             searchOpen: false,
@@ -45,11 +55,9 @@ export default {
             }
         }, 300);
         this.handleDocumentClick = (e) => {
-            console.log('handleDocumentClick');
             if (this.$refs.searchInterface) {
                 if (! Util.elementIsOrContains(this.$refs.searchInterface, e.target)) {
                     // user clicked outside the search interface, so interpret this as trying to close the search
-                    console.log('handleDocumentClick closing');
                     this.closeSearch();
                 }
             }
@@ -59,12 +67,6 @@ export default {
         document.removeEventListener('click', this.handleDocumentClick);
     },
     computed: {
-        searchType: function() {
-            return this.setting('search_type');
-        },
-        searchSettings: function() {
-            return this.setting('search_settings');
-        },
         displayName: function() {
             return this.$lcfStore.getDisplayName(this.searchType, this.searchSettings, this.value);
         },
@@ -96,14 +98,12 @@ export default {
             }
         },
         closeSearch: function() {
-            console.log('closeSearch');
             this.suggestions = null;
             this.$refs.input.value = '';
             this.searchOpen = false;
             document.removeEventListener('click', this.handleDocumentClick);
         },
         openSearch: function() {
-            console.log('openSearch');
             this.suggestions = null;
             this.searchOpen = true;
             window.setTimeout(() => {

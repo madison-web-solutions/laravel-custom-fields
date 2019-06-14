@@ -1,19 +1,22 @@
 <template>
-    <div class="lcf-input lcf-input-text-area">
+    <lcf-input-wrapper class="lcf-input lcf-input-text" v-bind="wrapperProps">
         <textarea :name="name" :class="inputClasses" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
-    </div>
+    </lcf-input-wrapper>
 </template>
 
 <script>
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
-    computed: {
-        rows: function() {
-            return this.setting('rows', 5);
+    props: {
+        max: {
+            type: Number,
+            required: false,
         },
-        max: function() {
-            return this.setting('max');
+        rows: {
+            type: Number,
+            required: false,
+            default: 5
         }
     },
     methods: {

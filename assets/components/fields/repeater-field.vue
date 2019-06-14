@@ -53,7 +53,7 @@ export default {
     },
     computed: {
         subField: function() {
-            return get(this.field, 'settings.sub_field');
+            return get(this.field, 'settings.subField');
         },
         length: function() {
             return this.childIds ? this.childIds.length: 0;

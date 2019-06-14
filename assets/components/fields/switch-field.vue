@@ -1,7 +1,7 @@
 <template>
     <div class="lcf-field lcf-switch-field" v-if="shouldShow">
         <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
-            <lcf-select-input key="switch" class="lcf-switch-select" :settings="switchSelectSettings" :value="switchKey" @change="changeSwitch" />
+            <lcf-select-input key="switch" class="lcf-switch-select" :name="inputName + '[switch]'" :required="true" :choices="switchChoices" :value="switchKey" @change="changeSwitch" />
             <component :is="switchField.fieldComponent" :key="switchId" :path="path.concat(switchKey)" :field="switchField" />
         </lcf-input-wrapper>
     </div>
@@ -20,20 +20,17 @@ export default {
     },
     computed: {
         switchFields: function() {
-            return get(this.field, 'settings.switch_fields');
+            return get(this.field, 'settings.switchFields');
         },
         switchKeys: function() {
             return keys(this.switchFields);
         },
-        switchSelectSettings: function() {
-            var settings = {
-                name: this.inputName + '[switch]',
-                choices: []
-            };
+        switchChoices: function() {
+            var choices = [];
             forEach(this.switchKeys, (key) => {
-                settings.choices.push({value: key, label: this.switchLabel(key)});
+                choices.push({value: key, label: this.switchLabel(key)});
             });
-            return settings;
+            return choices;
         },
         switchKey: function() {
             return this.childValues.switch || this.getValidSwitchKey();
@@ -50,7 +47,7 @@ export default {
     },
     methods: {
         switchLabel: function(key) {
-            return get(this.field, 'settings.switch_labels.' + key, key);
+            return get(this.field, 'settings.switchLabels.' + key, key);
         },
         getValidSwitchKey: function(input) {
             if (input && this.switchFields[input]) {

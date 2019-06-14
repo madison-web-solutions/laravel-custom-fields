@@ -6,6 +6,7 @@ use Log;
 use JsonSerializable;
 use Validator as LaravelValidator;
 use Illuminate\Support\MessageBag;
+use Illuminate\Support\Str;
 use MadisonSolutions\Coerce\Coerce;
 
 abstract class Field implements JsonSerializable
@@ -89,13 +90,19 @@ abstract class Field implements JsonSerializable
         return null;
     }
 
+    // This is the data that will be passed to the front end vue component to render the field
     public function jsonSerialize()
     {
-        return [
+        $data = [
             'fieldComponent' => $this->fieldComponent(),
             'inputComponent' => $this->inputComponent(),
-            'settings' => array_merge($this->options, ['type' => $this->fieldTypeName()]),
+            'settings' => ['type' => $this->fieldTypeName()],
         ];
+        foreach ($this->options as $key => $value) {
+            // camelCase option names as per convention in JS
+            $data['settings'][Str::camel($key)] = $value;
+        }
+        return $data;
     }
 
     public function defaultValue()

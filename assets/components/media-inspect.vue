@@ -9,12 +9,8 @@
             <p v-if="! hasImage">Media Type: {{ category }}</p>
         </div>
         <div data-name="details">
-            <lcf-input-wrapper label="Title">
-                <lcf-text-input key="title" :settings="{}" :value="displayVals.title" @input="change" />
-            </lcf-input-wrapper>
-            <lcf-input-wrapper :label="isImage ? 'Alt' : 'Subtitle'">
-                <lcf-text-input key="alt" :settings="{}" :value="displayVals.alt" @input="change" />
-            </lcf-input-wrapper>
+            <lcf-text-input key="title" label="Title" :value="displayVals.title" @input="change" />
+            <lcf-text-input key="alt" :label="isImage ? 'Alt' : 'Subtitle'" :value="displayVals.alt" @input="change" />
             <p v-if="imgWidth && imgHeight">{{ imgWidth }}px x {{ imgHeight }}px</p>
             <div class="lcf-btn-group-right">
                 <button v-if="editable && edited" type="button" class="lcf-btn-primary" @click.stop="saveUpdates">Save Changes</button>
@@ -22,7 +18,11 @@
                 <button v-if="deletable" type="button" class="lcf-btn-danger" @click.stop="deleteItem">Delete</button>
             </div>
         </div>
-        <div data-name="url">URL: <a :href="item.url" target="_blank">{{ item.url }}</a></div>
+        <div data-name="url">
+            URL:
+            <a v-if="item.url" :href="item.url" target="_blank">{{ item.url }}</a>
+            <span v-if="! item.url" class="lcf-error">Error - File not found</span>
+        </div>
     </div>
 </template>
 

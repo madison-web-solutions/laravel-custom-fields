@@ -1,8 +1,6 @@
 <template>
     <div class="lcf-field lcf-object-field" v-if="shouldShow">
-        <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="combinedErrors">
-            <component :key="nodeId" :is="inputComponent" :settings="inputSettings" :value="childValues" :hasError="hasError" :hasChildError="hasChildError" @change="updateMyValue" />
-        </lcf-input-wrapper>
+        <component :key="nodeId" :is="inputComponent" v-bind="inputSettings" :value="childValues" :errors="errors" :childErrors="childErrors" @change="updateMyValue" />
     </div>
 </template>
 
@@ -23,25 +21,6 @@ export default {
         },
         keys: function() {
             return get(this.field, 'settings.keys');
-        },
-        combinedErrors: function() {
-            var combinedErrors = [];
-            forEach(this.errors, msg => {
-                combinedErrors.push(msg);
-            });
-            forEach(this.childErrors, (childErrorMsgs, key) => {
-                forEach(childErrorMsgs, msg => {
-                    combinedErrors.push(key + ': ' + msg);
-                });
-            });
-            return combinedErrors;
-        },
-        hasChildError: function() {
-            var hasChildError = {};
-            forEach(this.keys, key => {
-                hasChildError[key] = this.childErrors[key] && this.childErrors[key].length;
-            });
-            return hasChildError;
         }
     },
     methods: {

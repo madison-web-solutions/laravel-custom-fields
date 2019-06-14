@@ -7,7 +7,6 @@ export default {
     props: ['groupName', 'fieldName', 'field', 'initialValue'],
     created: function() {
         this.$lcfStore.setInitialValue(this.groupName, this.fieldName, this.initialValue);
-        console.log('field-wrapper-created initial values set', this.fieldName);
     },
     computed: {
         fieldComponent: function() {

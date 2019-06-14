@@ -1,24 +1,28 @@
 <template>
-    <div class="lcf-input lcf-input-media" :class="inputClasses">
+    <lcf-input-wrapper class="lcf-input lcf-input-media" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-
         <lcf-media-library v-if="libraryOpen" :category="category" @select="select" @close="closeLibrary" />
-
-        <template v-if="! libraryOpen">
+        <div v-if="! libraryOpen" :class="inputClasses">
             <lcf-media-preview v-if="item" :item="item" />
             <div v-if="value && !item" class="lcf-ml-preview lcf-ml-active">
                 <p>Loading</p>
             </div>
             <button type="button" class="lcf-btn" @click="openLibrary">{{ value ? 'Change' : 'Select' }}</button>
             <button type="button" class="lcf-btn" v-if="value" @click="remove" data-action="remove-image">Remove</button>
-        </template>
-    </div>
+        </div>
+    </lcf-input-wrapper>
 </template>
 
 <script>
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
+    props: {
+        category: {
+            type: String,
+            required: false
+        }
+    },
     data: function() {
         return {
             libraryOpen: false
@@ -27,10 +31,7 @@ export default {
     computed: {
         item: function() {
             return this.$lcfStore.getMediaItem(this.value);
-        },
-        category: function() {
-            return this.setting('category');
-        },
+        }
     },
     methods: {
         openLibrary: function() {

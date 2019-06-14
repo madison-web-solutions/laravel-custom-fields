@@ -40,8 +40,6 @@ class LinkField extends Field
     {
         $data = parent::jsonSerialize();
         $data['settings']['keys'] = ['manual', 'link_id', 'url', 'label'];
-        $data['settings']['search_type'] = 'link';
-        $data['settings']['search_settings'] = [];
         return $data;
     }
 

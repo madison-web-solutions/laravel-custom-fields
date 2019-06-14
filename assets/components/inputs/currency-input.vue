@@ -1,30 +1,39 @@
 <template>
-    <div class="lcf-input lcf-input-currency">
+    <lcf-input-wrapper class="lcf-input lcf-input-currency" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
         <input :class="inputClasses" ref="input" type="text" :value="displayValue" @change="change" @keydown.enter.prevent="change" />
-    </div>
+    </lcf-input-wrapper>
 </template>
 
 <script>
 import { trim } from 'lodash-es';
 import inputMixin from '../../input-mixin.js';
 export default {
+    props: {
+        symbol: {
+            type: String,
+            required: false,
+        },
+        symbolPlacement: {
+            type: String,
+            required: false
+        },
+        max: {
+            type: Number,
+            required: false,
+        },
+        min: {
+            type: Number,
+            required: false,
+        }
+    },
     mixins: [inputMixin],
     computed: {
-        symbol: function() {
-            return this.setting('symbol');
-        },
         symbolBefore: function() {
-            return (this.setting('symbol_placement') == 'before') ? this.symbol : '';
+            return (this.symbolPlacement == 'before') ? this.symbol : '';
         },
         symbolAfter: function() {
-            return (this.setting('symbol_placement') == 'after') ? this.symbol : '';
-        },
-        max: function() {
-            return this.setting('max');
-        },
-        min: function() {
-            return this.setting('min');
+            return (this.symbolPlacement == 'after' ? this.symbol : '');
         },
         displayValue: function() {
             if (Number.isInteger(this.value)) {

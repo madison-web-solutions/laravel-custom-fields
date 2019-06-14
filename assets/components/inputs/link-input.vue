@@ -1,18 +1,10 @@
 <template>
-    <div class="lcf-input lcf-input-link">
-        <lcf-input-wrapper label="" help="" errors="">
-            <lcf-radio-input key="manual" :settings="manualField" :value="manual ? 'true' : 'false'" :hasError="false" @change="change" />
-        </lcf-input-wrapper>
-        <lcf-input-wrapper  v-if="! manual" label="Link to" help="" errors="">
-            <lcf-search-input key="link_id" :settings="linkIdField" :value="linkId" :hasError="false" @change="change" />
-        </lcf-input-wrapper>
-        <lcf-input-wrapper  v-if="manual" label="Link URL" help="" errors="">
-            <lcf-text-input key="url" :settings="urlField" :value="url" :hasError="false" @change="change" />
-        </lcf-input-wrapper>
-        <lcf-input-wrapper  v-if="withLabel" label="Link label" help="" errors="">
-            <lcf-text-input key="label" :settings="labelField" :value="label" :hasError="false" @change="change" />
-        </lcf-input-wrapper>
-    </div>
+    <lcf-input-wrapper class="lcf-input lcf-input-link" v-bind="wrapperProps">
+        <lcf-radio-input key="manual" :name="name + '[manual]'" :choices="manualChoices" :value="manualVal ? 'true' : 'false'" @change="change" />
+        <lcf-search-input v-if="! manualVal" key="link_id" :name="name + '[link_id]'" label="Link to" :required="required" searchType="link" :searchSettings="{}" :value="linkIdVal" @change="change" />
+        <lcf-text-input  v-if="manualVal" key="url" :name="name + '[url]'" label="Link URL" :required="required" placeholder="https://" :value="urlVal" @change="change" />
+        <lcf-input-wrapper v-if="withLabel" key="label" :name="name + '[label]'" :value="labelVal" label="Link label" :placeholder="defaultLabel" @change="change" />
+    </lcf-input-wrapper>
 </template>
 
 <script>
@@ -20,68 +12,41 @@ import { get } from 'lodash-es';
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
+    props: {
+        withLabel: {
+            type: Boolean,
+            required: false,
+            default: true
+        }
+    },
     computed: {
-        withLabel: function() {
-            return this.setting('with_label', true);
-        },
-        searchType: function() {
-            return this.setting('search_type');
-        },
-        searchSettings: function() {
-            return this.setting('search_settings');
-        },
-        manual: function() {
+        manualVal: function() {
             return get(this.value, 'manual', false);
         },
-        linkId: function() {
+        linkIdVal: function() {
             return get(this.value, 'link_id');
         },
-        url: function() {
+        urlVal: function() {
             return get(this.value, 'url');
         },
-        label: function() {
+        labelVal: function() {
             return get(this.value, 'label');
         },
         linkInfo: function() {
-            if (this.linkId && ! this.manual) {
-                return this.$lcfStore.lookupSearchObj(this.searchType, this.searchSettings, this.linkId);
+            if (this.linkIdVal && ! this.manualVal) {
+                return this.$lcfStore.lookupSearchObj(this.searchType, this.searchSettings, this.linkIdVal);
             } else {
-                return {url: this.url, label: this.url};
+                return {url: this.urlVal, label: this.urlVal};
             }
         },
         defaultLabel: function() {
             return get(this.linkInfo, 'label');
         },
-        manualField: function() {
-            return {
-                default: false,
-                name: this.name + '[manual]',
-                choices: [
-                    {value: 'false', label: 'Search for page to link to'},
-                    {value: 'true', label: 'Enter URL manually'}
-                ]
-            };
-        },
-        linkIdField: function() {
-            return {
-                name: this.name + '[link_id]',
-                required: this.required,
-                search_type: this.searchType,
-                search_settings: this.searchSettings
-            };
-        },
-        urlField: function() {
-            return {
-                name: this.name + '[url]',
-                required: this.required,
-                placeholder: 'https://'
-            }
-        },
-        labelField: function() {
-            return {
-                name: this.name + '[label]',
-                placeholder: this.defaultLabel
-            };
+        manualChoices: function() {
+            return [
+                {value: 'false', label: 'Search for page to link to'},
+                {value: 'true', label: 'Enter URL manually'}
+            ];
         }
     },
     methods: {

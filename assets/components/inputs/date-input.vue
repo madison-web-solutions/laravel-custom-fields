@@ -1,8 +1,8 @@
 <template>
-    <div class="lcf-input lcf-input-date">
+    <lcf-input-wrapper class="lcf-input lcf-input-date" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-        <input :class="inputClasses" ref="input" :type="inputType" :placeholder="placeholder" :value="displayValue" @change="change" />
-    </div>
+        <input :class="inputClasses" ref="input" :type="inputType" :placeholder="myPlaceholder" :value="displayValue" @change="change" />
+    </lcf-input-wrapper>
 </template>
 
 <script>
@@ -19,7 +19,7 @@ export default {
         inputType: function() {
             return this.support ? 'date' : 'text';
         },
-        placeholder: function() {
+        myPlaceholder: function() {
             return this.support ? null : 'dd/mm/yyyy';
         },
         displayValue: function() {

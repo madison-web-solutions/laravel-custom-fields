@@ -1,7 +1,7 @@
 <template>
-    <div class="lcf-input lcf-input-time">
-        <input type="text" :class="inputClasses" :name="name" :placeholder="placeholder" :value="value" @change="change" />
-    </div>
+    <lcf-input-wrapper class="lcf-input lcf-input-time" v-bind="wrapperProps">
+        <input type="text" :class="inputClasses" :name="name" :placeholder="myPlaceholder" :value="value" @change="change" />
+    </lcf-input-wrapper>
 </template>
 
 <script>
@@ -10,11 +10,15 @@ import { get, trim } from 'lodash-es';
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
+    props: {
+        withSeconds: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    },
     computed: {
-        withSeconds: function() {
-            return get(this.settings, 'with_seconds', false);
-        },
-        placeholder: function() {
+        myPlaceholder: function() {
             return this.withSeconds ? 'hh:mm:ss' : 'hh:mm';
         }
     },

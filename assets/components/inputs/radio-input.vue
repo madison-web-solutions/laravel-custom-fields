@@ -1,10 +1,12 @@
 <template>
-    <div class="lcf-input lcf-input-radio lcf-radio-group" :class="inputClasses">
-        <label v-for="choice in choices">
-            <input :name="name" type="radio" :value="choice.value" :checked="value == choice.value" @change="change" />
-            <span>{{ choice.label }}</span>
-        </label>
-    </div>
+    <lcf-input-wrapper class="lcf-input lcf-input-radio" v-bind="wrapperProps">
+        <div class="lcf-radio-group" :class="inputClasses">
+            <label v-for="choice in choices">
+                <input :name="name" type="radio" :value="choice.value" :checked="value == choice.value" @change="change" />
+                <span>{{ choice.label }}</span>
+            </label>
+        </div>
+    </lcf-input-wrapper>
 </template>
 
 <script>
@@ -12,9 +14,10 @@ import { find } from 'lodash-es';
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
-    computed: {
-        choices: function() {
-            return this.setting('choices');
+    props: {
+        choices: {
+            type: Array,
+            required: true,
         }
     },
     methods: {

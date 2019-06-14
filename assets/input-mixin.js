@@ -1,18 +1,54 @@
-import { get } from 'lodash-es';
 export default {
-    props: ['settings', 'value', 'hasError'],
+    props: {
+        label: {
+            type: String,
+            required: false
+        },
+        name: {
+            type: String,
+            required: false
+        },
+        value: {
+            required: true
+        },
+        errors: {
+            type: Array,
+            required: false,
+        },
+        required: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        placeholder: {
+            type: String,
+            required: false
+        },
+        help: {
+            type: String,
+            required: false
+        }
+    },
+    data: function() {
+        return {
+            inputId: Math.random().toString(36).substring(2)
+        };
+    },
     computed: {
-        name: function() {
-            return this.setting('name');
-        },
         _key: function() {
-            return this.setting('key', this.$vnode.key);
+            return this.$vnode.key;
         },
-        required: function() {
-            return this.setting('required', false);
+        hasError: function() {
+            return (this.errors && this.errors.length);
         },
-        placeholder: function() {
-            return this.setting('placeholder');
+        wrapperProps: function() {
+            return {
+                label: this.label,
+                labelFor: this.labelFor,
+                required: this.required,
+                help: this.help,
+                errors: this.errors
+            };
         },
         inputClasses: function() {
             return {
@@ -21,8 +57,5 @@ export default {
         }
     },
     methods: {
-        setting: function(name, defaultVal) {
-            return get(this.settings, name, defaultVal == null ? null : defaultVal);
-        }
     }
 };

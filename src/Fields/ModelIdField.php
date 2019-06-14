@@ -34,12 +34,12 @@ class ModelIdField extends ScalarField
     public function jsonSerialize()
     {
         $data = parent::jsonSerialize();
-        $data['settings']['search_type'] = 'model:' . $this->model_class;
-        $data['settings']['search_settings'] = [
-            'model_class' => Arr::pull($data['settings'], 'model_class'),
+        $data['settings']['searchType'] = 'model:' . $this->model_class;
+        $data['settings']['searchSettings'] = [
+            'model_class' => Arr::pull($data['settings'], 'modelClass'),
             'criteria' => Arr::pull($data['settings'], 'criteria', null),
-            'search_fields' => Arr::pull($data['settings'], 'search_fields'),
-            'label_attribute' => Arr::pull($data['settings'], 'label_attribute'),
+            'search_fields' => Arr::pull($data['settings'], 'searchFields'),
+            'label_attribute' => Arr::pull($data['settings'], 'labelAttribute'),
         ];
         return $data;
     }

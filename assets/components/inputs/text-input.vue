@@ -1,16 +1,17 @@
 <template>
-    <div class="lcf-input lcf-input-text">
+    <lcf-input-wrapper class="lcf-input lcf-input-text" v-bind="wrapperProps">
         <input type="text" :class="inputClasses" :name="name" :maxlength="max" :placeholder="placeholder" :value="value" @change="change" @input="input" />
-    </div>
+    </lcf-input-wrapper>
 </template>
 
 <script>
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
-    computed: {
-        max: function() {
-            return this.setting('max');
+    props: {
+        max: {
+            type: Number,
+            required: false,
         }
     },
     methods: {

@@ -18,7 +18,7 @@ export default {
     },
     computed: {
         subFields: function() {
-            return get(this.field, 'settings.sub_fields');
+            return get(this.field, 'settings.subFields');
         }
     }
 };
