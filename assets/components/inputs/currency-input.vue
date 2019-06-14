@@ -1,7 +1,7 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-currency" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-        <input :class="inputClasses" ref="input" type="text" :value="displayValue" @change="change" @keydown.enter.prevent="change" />
+        <input :id="inputId" :class="inputClasses" ref="input" type="text" :value="displayValue" @change="change" @keydown.enter.prevent="change" />
     </lcf-input-wrapper>
 </template>
 

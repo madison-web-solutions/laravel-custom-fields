@@ -44,7 +44,7 @@ export default {
         wrapperProps: function() {
             return {
                 label: this.label,
-                labelFor: this.labelFor,
+                labelFor: this.inputId,
                 required: this.required,
                 help: this.help,
                 errors: this.errors

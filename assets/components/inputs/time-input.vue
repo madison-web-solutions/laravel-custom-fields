@@ -1,6 +1,6 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-time" v-bind="wrapperProps">
-        <input type="text" :class="inputClasses" :name="name" :placeholder="myPlaceholder" :value="value" @change="change" />
+        <input :id="inputId" type="text" :class="inputClasses" :name="name" :placeholder="myPlaceholder" :value="value" @change="change" />
     </lcf-input-wrapper>
 </template>
 

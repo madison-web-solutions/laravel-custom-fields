@@ -1,7 +1,7 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-date" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-        <input :class="inputClasses" ref="input" :type="inputType" :placeholder="myPlaceholder" :value="displayValue" @change="change" />
+        <input :id="inputId" :class="inputClasses" ref="input" :type="inputType" :placeholder="myPlaceholder" :value="displayValue" @change="change" />
     </lcf-input-wrapper>
 </template>
 

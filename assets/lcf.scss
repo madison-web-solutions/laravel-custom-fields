@@ -104,10 +104,12 @@
 }
 
 .lcf-input-select {
-    position: relative;
     select {
         border-top-right-radius: $lcf-button-radius;
         border-bottom-right-radius: $lcf-button-radius;
+    }
+    .lcf-select-wrapper {
+        position: relative;
     }
     .lcf-combo-button {
         position: absolute;

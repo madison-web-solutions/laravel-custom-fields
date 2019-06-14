@@ -1,6 +1,6 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-number" v-bind="wrapperProps">
-        <input type="number" :class="inputClasses" :name="name" novalidate :step="myStep" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
+        <input :id="inputId" type="number" :class="inputClasses" :name="name" novalidate :step="myStep" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
     </lcf-input-wrapper>
 </template>
 

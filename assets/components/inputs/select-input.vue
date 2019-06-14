@@ -1,10 +1,12 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-select" v-bind="wrapperProps">
-        <select ref="input" :class="inputClasses" :name="name" @change="change">
-            <option ref="placeholder" :disabled="required" value="" :selected="isNull">{{ required ? 'Select' : '' }}</option>
-            <option v-for="choice in choices" :value="choice.value" :selected="value == choice.value">{{ choice.label }}</option>
-        </select>
-        <button type="button" class="lcf-combo-button"><i class="fas fa-caret-down"></i></button>
+        <div class="lcf-select-wrapper">
+            <select :id="inputId" ref="input" :class="inputClasses" :name="name" @change="change">
+                <option ref="placeholder" :disabled="required" value="" :selected="isNull">{{ required ? 'Select' : '' }}</option>
+                <option v-for="choice in choices" :value="choice.value" :selected="value == choice.value">{{ choice.label }}</option>
+            </select>
+            <button type="button" class="lcf-combo-button"><i class="fas fa-caret-down"></i></button>
+        </div>
     </lcf-input-wrapper>
 </template>
 

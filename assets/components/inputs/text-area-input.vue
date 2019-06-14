@@ -1,6 +1,6 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-text" v-bind="wrapperProps">
-        <textarea :name="name" :class="inputClasses" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
+        <textarea :id="inputId" :name="name" :class="inputClasses" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
     </lcf-input-wrapper>
 </template>
 
