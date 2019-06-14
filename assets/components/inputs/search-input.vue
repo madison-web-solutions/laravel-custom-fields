@@ -2,11 +2,11 @@
     <lcf-input-wrapper class="lcf-input lcf-input-search" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
         <div class="lcf-combo" @click="toggleOpenSearch">
-            <input type="text" :class="inputClasses" disabled :value="displayString" />
+            <input type="text" :class="inputClasses" :disabled="disabled" readonly :value="displayString" />
             <button type="button" class="lcf-combo-button"><i class="fas fa-caret-down"></i></button>
         </div>
         <div ref="searchInterface" v-if="searchOpen" class="lcf-search-interface">
-            <input ref="input" type="search" value="" placeholder="Search" @input="search" @keydown.enter.prevent="search" />
+            <input ref="input" type="search" value="" placeholder="Search" :disabled="disabled" @input="search" @keydown.enter.prevent="search" />
             <p v-if="statusMessage" class="lcf-help">{{ statusMessage }}</p>
             <div v-if="hasResults" aria-role="listbox">
                 <div v-for="suggestion in suggestions" class="lcf-search-suggestion" aria-role="option" @click="change(suggestion)">{{ suggestion.display_name }}</div>
@@ -104,6 +104,7 @@ export default {
             document.removeEventListener('click', this.handleDocumentClick);
         },
         openSearch: function() {
+            if (this.disabled) {return;}
             this.suggestions = null;
             this.searchOpen = true;
             window.setTimeout(() => {
@@ -113,6 +114,7 @@ export default {
             }, 10);
         },
         change: function(suggestion) {
+            if (this.disabled) {return;}
             this.closeSearch();
             this.$emit('change', {key: this._key, value: suggestion.id});
         }

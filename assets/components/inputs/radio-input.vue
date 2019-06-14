@@ -2,7 +2,7 @@
     <lcf-input-wrapper class="lcf-input lcf-input-radio" v-bind="wrapperProps">
         <div class="lcf-radio-group" :class="inputClasses">
             <label v-for="choice in choices">
-                <input :name="name" type="radio" :value="choice.value" :checked="value == choice.value" @change="change" />
+                <input :name="name" type="radio" :value="choice.value" :checked="value == choice.value" :disabled="disabled" @change="change" />
                 <span>{{ choice.label }}</span>
             </label>
         </div>
@@ -22,6 +22,7 @@ export default {
     },
     methods: {
         change: function() {
+            if (this.disabled) {return;}
             var selectedRadio = find(this.$el.querySelectorAll('input[type=radio]'), radio => radio.checked);
             this.$emit('change', {key: this._key, value: selectedRadio ? selectedRadio.value : null});
         }

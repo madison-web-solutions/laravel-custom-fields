@@ -27,6 +27,11 @@ export default {
         help: {
             type: String,
             required: false
+        },
+        disabled: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     },
     data: function() {
@@ -52,7 +57,8 @@ export default {
         },
         inputClasses: function() {
             return {
-                'lcf-has-error': this.hasError
+                'lcf-has-error': this.hasError,
+                'lcf-input-disabled': this.disabled
             };
         }
     },

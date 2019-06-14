@@ -1,7 +1,7 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-date" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-        <input :id="inputId" :class="inputClasses" ref="input" :type="inputType" :placeholder="myPlaceholder" :value="displayValue" @change="change" />
+        <input :id="inputId" :class="inputClasses" ref="input" :type="inputType" :placeholder="myPlaceholder" :value="displayValue" :disabled="disabled" @change="change" />
     </lcf-input-wrapper>
 </template>
 
@@ -43,6 +43,7 @@ export default {
             return (input.value !== notADateValue);
         },
         change: function() {
+            if (this.disabled) {return;}
             if (this.support) {
                 var newValue = this.$refs.input.value;
             } else {

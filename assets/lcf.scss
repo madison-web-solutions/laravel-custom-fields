@@ -24,6 +24,7 @@
 }
 
 .lcf-field-label {
+    color: $lcf-field-label-color;
     font-weight: $lcf-field-label-font-weight;
     margin-bottom: $lcf-spacer * 0.25;
 }
@@ -90,6 +91,7 @@
 
 .lcf-input {
     input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
+        color: $lcf-input-color;
         font-size: $lcf-font-size;
         appearance: none;
         border: $lcf-border-width solid $lcf-border-color;
@@ -99,6 +101,10 @@
         width: 100%;
         &.lcf-has-error {
             border-color: $lcf-border-error-color;
+        }
+        &.lcf-input-disabled {
+            color: $lcf-input-disabled-color;
+            background-color: $lcf-input-disabled-background-color;
         }
     }
 }

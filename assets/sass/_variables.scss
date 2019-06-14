@@ -2,12 +2,18 @@
 $lcf-very-light-grey: #f6f6f6 !default;
 $lcf-light-grey: #eeeeee !default;
 $lcf-grey: #cccccc !default;
+$lcf-dark-grey: #555555 !default;
+$lcf-very-dark-grey: #222222 !default;
 $lcf-red: #ff0000 !default;
 $lcf-blue: #0000ff !default;
 $lcf-green: #00963e !default;
 
 $lcf-background-color: $lcf-very-light-grey !default;
 $lcf-input-background-color: white !default;
+$lcf-input-color: $lcf-very-dark-grey !default;
+$lcf-field-label-color: $lcf-very-dark-grey !default;
+$lcf-input-disabled-color: $lcf-dark-grey !default;
+$lcf-input-disabled-background-color: $lcf-very-light-grey !default;
 
 $lcf-error-msg-color: $lcf-red !default;
 $lcf-button-background-color: $lcf-light-grey !default;

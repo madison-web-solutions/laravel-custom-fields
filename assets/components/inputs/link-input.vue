@@ -1,9 +1,9 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-link" v-bind="wrapperProps">
-        <lcf-radio-input key="manual" :name="name + '[manual]'" :choices="manualChoices" :value="manualVal ? 'true' : 'false'" @change="change" />
-        <lcf-search-input v-if="! manualVal" key="link_id" :name="name + '[link_id]'" label="Link to" :required="required" searchType="link" :searchSettings="{}" :value="linkIdVal" @change="change" />
-        <lcf-text-input v-if="manualVal" key="url" :name="name + '[url]'" label="Link URL" :required="required" placeholder="https://" :value="urlVal" @change="change" />
-        <lcf-input-wrapper v-if="withLabel" key="label" :name="name + '[label]'" :value="labelVal" label="Link label" :placeholder="defaultLabel" @change="change" />
+        <lcf-radio-input key="manual" :name="name + '[manual]'" :choices="manualChoices" :value="manualVal ? 'true' : 'false'" :disabled="disabled" @change="change" />
+        <lcf-search-input v-if="! manualVal" key="link_id" :name="name + '[link_id]'" label="Link to" :required="required" searchType="link" :searchSettings="{}" :value="linkIdVal" :disabled="disabled" @change="change" />
+        <lcf-text-input v-if="manualVal" key="url" :name="name + '[url]'" label="Link URL" :required="required" placeholder="https://" :value="urlVal" :disabled="disabled" @change="change" />
+        <lcf-input-wrapper v-if="withLabel" key="label" :name="name + '[label]'" :value="labelVal" label="Link label" :placeholder="defaultLabel" :disabled="disabled" @change="change" />
     </lcf-input-wrapper>
 </template>
 
@@ -51,6 +51,7 @@ export default {
     },
     methods: {
         change: function(e) {
+            if (this.disabled) {return;}
             var payload = {key: this._key, value: {}};
             if (e.key == 'manual') {
                 payload.value.manual = (e.value == 'true');

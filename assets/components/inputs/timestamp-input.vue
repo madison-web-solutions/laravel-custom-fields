@@ -1,7 +1,7 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-timestamp" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-        <input :id="inputId" type="text" :class="inputClasses" :value="displayValue" placeholder="dd/mm/yyyy hh:mm:ss" @change="change" />
+        <input :id="inputId" type="text" :class="inputClasses" :value="displayValue" placeholder="dd/mm/yyyy hh:mm:ss" :disabled="disabled" @change="change" />
     </lcf-input-wrapper>
 </template>
 
@@ -43,6 +43,7 @@ export default {
     },
     methods: {
         change: function(e) {
+            if (this.disabled) {return;}
             var d = new Date();
             var inputValue = trim(e.target.value);
 

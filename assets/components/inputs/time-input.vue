@@ -1,6 +1,6 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-time" v-bind="wrapperProps">
-        <input :id="inputId" type="text" :class="inputClasses" :name="name" :placeholder="myPlaceholder" :value="value" @change="change" />
+        <input :id="inputId" type="text" :class="inputClasses" :name="name" :placeholder="myPlaceholder" :value="value" :disabled="disabled" @change="change" />
     </lcf-input-wrapper>
 </template>
 
@@ -24,6 +24,7 @@ export default {
     },
     methods: {
         change: function(e) {
+            if (this.disabled) {return;}
             var inputValue = trim(e.target.value);
             if (inputValue == '') {
                 this.$emit('change', {key: this._key, value: null});

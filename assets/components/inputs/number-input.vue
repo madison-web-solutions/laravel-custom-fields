@@ -1,6 +1,6 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-number" v-bind="wrapperProps">
-        <input :id="inputId" type="number" :class="inputClasses" :name="name" novalidate :step="myStep" :min="min" :max="max" :value="value" @change="change" @keydown.enter.prevent="change" />
+        <input :id="inputId" type="number" :class="inputClasses" :name="name" novalidate :step="myStep" :min="min" :max="max" :value="value" :disabled="disabled" @change="change" @keydown.enter.prevent="change" />
     </lcf-input-wrapper>
 </template>
 
@@ -50,6 +50,7 @@ export default {
     },
     methods: {
         change: function(e) {
+            if (this.disabled) {return;}
             var value = e.target.value * 1;
             if (this.myStep != 'any') {
                 value = Math.round(value / this.myStep) * this.myStep;

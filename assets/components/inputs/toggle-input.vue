@@ -27,6 +27,7 @@ export default {
     },
     methods: {
         toggle: function() {
+            if (this.disabled) {return;}
             this.$emit('change', {key: this._key, value: ! this.value});
         }
     }

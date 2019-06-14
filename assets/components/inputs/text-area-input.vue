@@ -1,6 +1,6 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-text" v-bind="wrapperProps">
-        <textarea :id="inputId" :name="name" :class="inputClasses" :rows="rows" :maxlength="max" @change="change">{{ value }}</textarea>
+        <textarea :id="inputId" :name="name" :class="inputClasses" :rows="rows" :maxlength="max" :disabled="disabled" @change="change">{{ value }}</textarea>
     </lcf-input-wrapper>
 </template>
 
@@ -21,6 +21,7 @@ export default {
     },
     methods: {
         change: function(e) {
+            if (this.disabled) {return;}
             this.$emit('change', {key: this._key, value: e.target.value});
         }
     }

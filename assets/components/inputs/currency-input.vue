@@ -1,7 +1,7 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-currency" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-        <input :id="inputId" :class="inputClasses" ref="input" type="text" :value="displayValue" @change="change" @keydown.enter.prevent="change" />
+        <input :id="inputId" :class="inputClasses" ref="input" type="text" :value="displayValue" :disabled="disabled" @change="change" @keydown.enter.prevent="change" />
     </lcf-input-wrapper>
 </template>
 
@@ -45,6 +45,7 @@ export default {
     },
     methods: {
         change: function(e) {
+            if (this.disabled) {return;}
             var rawValue = this.$refs.input.value;
             var floatVal = parseFloat(rawValue.replace(/[^0-9\.]/g, ''));
             if (! isFinite(floatVal)) {
