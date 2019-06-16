@@ -290,14 +290,25 @@ abstract class Field implements JsonSerializable
         return null;
     }
 
-    public function walk(callable $callback, $value, ...$params)
+    public function walk(callable $callback, $value)
     {
-        $cast_value = $this->coerce($value);
-        return $this->doWalk($callback, $cast_value, [], ...$params);
+        $this->coerce($value, $cast_value);
+        $this->doWalk($callback, $cast_value, []);
     }
 
-    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    protected function doWalk(callable $callback, $cast_value, array $path)
     {
-        $callback($this, $cast_value, $path, ...$params);
+        $callback($this, $cast_value, $path);
+    }
+
+    public function map(callable $callback, $value)
+    {
+        $this->coerce($value, $cast_value);
+        return $this->doMap($callback, $cast_value, []);
+    }
+
+    protected function doMap(callable $callback, $cast_value, array $path)
+    {
+        return $callback($this, $cast_value, $path);
     }
 }

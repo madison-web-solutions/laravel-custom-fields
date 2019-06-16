@@ -76,15 +76,28 @@ class SwitchField extends Field
         return $this->switch_fields[$key] ?? null;
     }
 
-    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    protected function doWalk(callable $callback, $cast_value, array $path)
     {
-        $callback($this, $cast_value, $path, ...$params);
+        $callback($this, $cast_value, $path);
         if (is_null($cast_value)) {
             return;
         }
         $switch_name = $cast_value->switch;
         $switch_field = $this->switch_fields[$switch_name];
         array_push($path, $switch_name);
-        $switch_field->doWalk($callback, $cast_value->value, $path, ...$params);
+        $switch_field->doWalk($callback, $cast_value->value, $path);
+    }
+
+    protected function doMap(callable $callback, $cast_value, array $path)
+    {
+        if (is_null($cast_value)) {
+            return null;
+        }
+        $switch_name = $cast_value->switch;
+        $switch_field = $this->switch_fields[$switch_name];
+        array_push($path, $switch_name);
+
+        $mapped_switch_value = $switch_field->doMap($callback, $cast_value->value, $path);
+        return new SwitchValue($switch_name, $mapped_switch_value);
     }
 }

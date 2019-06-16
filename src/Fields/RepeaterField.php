@@ -84,16 +84,30 @@ class RepeaterField extends Field
         return $this->sub_field;
     }
 
-    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    protected function doWalk(callable $callback, $cast_value, array $path)
     {
-        $callback($this, $cast_value, $path, ...$params);
+        $callback($this, $cast_value, $path);
         if (is_null($cast_value)) {
             return;
         }
         foreach ($cast_value as $i => $sub_value) {
             array_push($path, $i);
-            $this->sub_field->doWalk($callback, $sub_value, $path, ...$params);
+            $this->sub_field->doWalk($callback, $sub_value, $path);
             array_pop($path);
         }
+    }
+
+    protected function doMap(callable $callback, $cast_value, array $path)
+    {
+        if (is_null($cast_value)) {
+            return null;
+        }
+        $mapped_value = [];
+        foreach ($cast_value as $i => $sub_value) {
+            array_push($path, $i);
+            $mapped_value[$i] = $this->sub_field->doMap($callback, $sub_value, $path);
+            array_pop($path);
+        }
+        return $mapped_value;
     }
 }

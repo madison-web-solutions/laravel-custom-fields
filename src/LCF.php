@@ -85,4 +85,36 @@ class LCF
         // The MySQL LIKE operator is case-insensitive anyway by default
         return (($connection instanceof Illuminate\Database\PostgresConnection) ? 'ILIKE' : 'LIKE');
     }
+
+    public static function loadModels(Field $field, $value, array $with = [])
+    {
+        $field->coerce($value, $cast_value);
+
+        // Find the models which should be loaded by walking through the value tree and getting the values of any model fields
+        $models_to_load = [];
+        $field->walk(function ($sub_field, $sub_value, $path) use (&$models_to_load) {
+            if ($sub_value && ($sub_field instanceof Fields\ModelIdField)) {
+                if (! isset($models_to_load[$sub_field->model_class])) {
+                    $models_to_load[$sub_field->model_class] = [];
+                }
+                $models_to_load[$sub_field->model_class][] = $sub_value;
+            }
+        }, $cast_value);
+
+        // Now load the models
+        $models = [];
+        foreach ($models_to_load as $class_name => $ids) {
+            $dummy = new $class_name();
+            $models[$class_name] = $class_name::with($with[$class_name] ?? [])->findMany($ids)->keyBy($dummy->getKeyName());
+        }
+
+        // Now insert the loaded models back into the value tree in the right places
+        return $field->map(function ($sub_field, $sub_value, $path) use ($models) {
+            if ($sub_field instanceof Fields\ModelIdField) {
+                return $models[$sub_field->model_class][$sub_value] ?? null;
+            } else {
+                return $sub_value;
+            }
+        }, $cast_value);
+    }
 }

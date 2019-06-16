@@ -49,7 +49,7 @@ class ModelIdField extends ScalarField
         return 'lcf-search-input';
     }
 
-    protected function newInstance() : Model
+    public function newInstance() : Model
     {
         return new $this->model_class;
     }

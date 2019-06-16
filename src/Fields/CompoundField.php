@@ -62,16 +62,30 @@ class CompoundField extends Field
         return $this->sub_fields[$key] ?? null;
     }
 
-    protected function doWalk(callable $callback, $cast_value, array $path, ...$params)
+    protected function doWalk(callable $callback, $cast_value, array $path)
     {
-        $callback($this, $cast_value, $path, ...$params);
+        $callback($this, $cast_value, $path);
         if (is_null($cast_value)) {
             return;
         }
         foreach ($this->sub_fields as $key => $field) {
             array_push($path, $key);
-            $field->doWalk($callback, $cast_value[$key] ?? null, $path, ...$params);
+            $field->doWalk($callback, $cast_value[$key] ?? null, $path);
             array_pop($path);
         }
+    }
+
+    protected function doMap(callable $callback, $cast_value, array $path)
+    {
+        if (is_null($cast_value)) {
+            return null;
+        }
+        $mapped_value = [];
+        foreach ($this->sub_fields as $key => $field) {
+            array_push($path, $key);
+            $mapped_value[$key] = $field->doMap($callback, $cast_value[$key] ?? null, $path);
+            array_pop($path);
+        }
+        return $mapped_value;
     }
 }
