@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { forEach } from 'lodash-es';
 import inputMixin from '../../input-mixin.js';
 export default {
     mixins: [inputMixin],
