@@ -6,6 +6,13 @@
     font-size: $lcf-font-size;
 }
 
+.lcf-field {
+    margin-bottom: $lcf-spacer;
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .lcf-error {
     color: $lcf-error-msg-color;
     .lcf-error-msg {

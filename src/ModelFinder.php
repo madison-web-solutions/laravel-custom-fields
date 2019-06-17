@@ -58,27 +58,27 @@ class ModelFinder
         $query->where($this->newInstance()->getKeyName(), $id);
     }
 
-    protected function getResult(Model $model)
+    protected function getResult(Model $model) : SearchResult
     {
-        return [
-            'id' => $model->getKey(),
-            'display_name' => $model->getAttribute($this->label_attribute),
-        ];
+        return new SearchResult($model->getKey(), $model->getAttribute($this->label_attribute));
     }
 
-    public function getSuggestions(string $search)
+    public function getSuggestions(string $search, int $page = 1) : SearchResultSet
     {
+        $num_per_page = 20;
         $query = $this->getQuery();
         $this->applyCriteria($query);
         $this->applySearch($query, $search);
-        $suggestions = [];
-        foreach ($query->take(10)->get() as $model) {
-            $suggestions[] = $this->getResult($model);
+        $has_more = ($query->count() > ($num_per_page * $page));
+        $results = new SearchResultSet($has_more);
+        $models = $query->limit($num_per_page)->offset($num_per_page * ($page - 1))->get();
+        foreach ($models as $model) {
+            $results->addResult($this->getResult($model));
         }
-        return $suggestions;
+        return $results;
     }
 
-    public function lookup($id)
+    public function lookup($id) : ?SearchResult
     {
         $query = $this->getQuery();
         $this->applyCriteria($query);

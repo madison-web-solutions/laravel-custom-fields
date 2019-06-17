@@ -6,9 +6,9 @@
             <button type="button" class="lcf-combo-button"><i class="fas fa-caret-down"></i></button>
         </div>
         <div ref="searchInterface" v-if="searchOpen" class="lcf-search-interface">
-            <input ref="input" type="search" value="" placeholder="Search" :disabled="disabled" @input="search" @keydown.enter.prevent="search" />
+            <input ref="input" type="search" value="" placeholder="Search" :disabled="disabled" @input="handleSearch" @keydown.enter.prevent="handleSearch" />
             <p v-if="statusMessage" class="lcf-help">{{ statusMessage }}</p>
-            <div v-if="hasResults" aria-role="listbox">
+            <div v-if="hasResults" class="lcf-search-suggestions" aria-role="listbox" @scroll="handleScroll">
                 <div v-for="suggestion in suggestions" class="lcf-search-suggestion" aria-role="option" @click="change(suggestion)">{{ suggestion.display_name }}</div>
             </div>
         </div>
@@ -34,26 +34,18 @@ export default {
     data: function() {
         return {
             searchOpen: false,
-            searchingFor: null,
+            searchString: null,
+            page: 1,
+            hasMore: true,
             suggestions: null, // null means not searched, an empty array means no results
+            searchId: null,
         }
     },
     created: function() {
-        this.search = debounce(() => {
-            this.suggestions = null;
-            this.searchingFor = this.$refs.input.value;
-            if (this.searchingFor.length >= 2) {
-                this.$lcfStore.getSuggestions(this.searchType, this.searchSettings, this.searchingFor, (searched, suggestions) => {
-                    if (this.searchingFor == searched) {
-                        this.searchingFor = null;
-                        this.suggestions = suggestions;
-                    } else {
-                        // Don't show suggestions for an out of date search
-                        return;
-                    }
-                });
-            }
+        this.getDebounce = debounce((searchString, page, callback) => {
+            this.searchId = this.$lcfStore.getSuggestions(this.searchType, this.searchSettings, searchString, page, callback);
         }, 300);
+
         this.handleDocumentClick = (e) => {
             if (this.$refs.searchInterface) {
                 if (! Util.elementIsOrContains(this.$refs.searchInterface, e.target)) {
@@ -80,7 +72,7 @@ export default {
             return isArray(this.suggestions) && (this.suggestions.length == 0);
         },
         statusMessage: function() {
-            if (this.searchingFor) {
+            if (this.searchId) {
                 return 'Searching ...';
             } else if (this.noResults) {
                 return 'No results';
@@ -90,6 +82,39 @@ export default {
         }
     },
     methods: {
+        handleSearch: function() {
+            this.suggestions = null;
+            var searchString = this.$refs.input.value;
+            if (searchString.length < 2) {
+                return;
+            }
+            this.getDebounce(searchString, 1, (searchedId, suggestions, hasMore) => {
+                if (this.searchId != searchedId) {
+                    return;
+                }
+                this.searchId = null;
+                this.searchString = searchString;
+                this.page = 1;
+                this.hasMore = hasMore;
+                this.suggestions = suggestions;
+            });
+        },
+        handleScroll: function(e) {
+            var ele = e.target;
+            var scrollProportion = ((ele.scrollTop + ele.offsetHeight) / ele.scrollHeight);
+            if (this.hasMore && !this.searchId && scrollProportion > 0.9) {
+                var page = this.page + 1;
+                this.searchId = this.$lcfStore.getSuggestions(this.searchType, this.searchSettings, this.searchString, page, (searchedId, suggestions, hasMore) => {
+                    if (this.searchId != searchedId) {
+                        return;
+                    }
+                    this.searchId = null;
+                    this.page = page;
+                    this.hasMore = hasMore;
+                    this.suggestions = this.suggestions.concat(suggestions);
+                });
+            }
+        },
         toggleOpenSearch: function() {
             if (this.searchOpen) {
                 this.closeSearch();

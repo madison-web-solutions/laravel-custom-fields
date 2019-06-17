@@ -6,12 +6,16 @@
 
 .lcf-search-interface {
     @include lcf-panel;
-    max-height: 12rem;
-    overflow-y: auto;
     input {
         margin-bottom: $lcf-spacer;
     }
 }
+
+.lcf-search-suggestions {
+    max-height: 10rem;
+    overflow-y: auto;
+}
+
 .lcf-search-suggestion {
     cursor: pointer;
     &:hover {

@@ -19,17 +19,18 @@ class Controller extends BaseController
             'search_type' => 'required|string',
             'search_settings' => 'required|json',
             'search' => 'required|string|min:2',
+            'page' => 'nullable|integer|min:1',
         ]);
         $type = explode(':', $request->search_type)[0];
         $settings = json_decode($request->search_settings);
 
         if ($type == 'model') {
             $mf = app(LCF::class)->makeModelFinder($settings->model_class, $settings->criteria, $settings->search_fields, $settings->label_attribute);
-            return response()->json($mf->getSuggestions($request->search));
+            return response()->json($mf->getSuggestions($request->search, $request->page ?? 1));
         }
         if ($type === 'link') {
             $lf = app(LCF::class)->getLinkFinder();
-            return response()->json($lf->getSuggestions($request->search));
+            return response()->json($lf->getSuggestions($request->search, $request->page ?? 1));
         }
         throw new \Exception("Unexpected type {$type}");
     }

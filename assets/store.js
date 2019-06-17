@@ -279,6 +279,8 @@ var testCondition = function(pathStr, condition) {
     return true;
 };
 
+var searchIdCounter = 1;
+
 var lookupSearchObj = function(searchType, searchSettings, id) {
     if (! id) {
         return null;
@@ -305,21 +307,24 @@ var getDisplayName = function(searchType, searchSettings, id) {
     return obj ? obj.display_name : '';
 };
 
-var getSuggestions = function(searchType, searchSettings, search, callback) {
+var getSuggestions = function(searchType, searchSettings, search, page, callback) {
+    var searchId = searchIdCounter++;
     var params = {
         search_type: searchType,
         search_settings: JSON.stringify(searchSettings),
-        search: search
+        search: search,
+        page: page
     };
     axios.get('/lcf/suggestions', {params: params}).then(response => {
-        forEach(response.data, suggestion => {
-            var key = searchType + ':' + suggestion.id;
-            Vue.set(store.searchObjs, key, suggestion);
+        forEach(response.data.results, result => {
+            var key = searchType + ':' + result.id;
+            Vue.set(store.searchObjs, key, result);
         });
-        callback(search, response.data);
+        callback(searchId, response.data.results, response.data.has_more);
     }, error => {
         console.log(error);
     });
+    return searchId;
 };
 
 var getMediaItem = function(id) {
@@ -337,7 +342,6 @@ var getMediaItem = function(id) {
     return store.mediaItems[id];
 };
 
-var searchIdCounter = 1;
 var searchMediaLibrary = function(category, search, page, callback) {
     var searchId = searchIdCounter++;
     axios.get('/lcf/media-library', {params: {

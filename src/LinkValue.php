@@ -33,9 +33,9 @@ class LinkValue implements JsonSerializable
         if (empty($link_id)) {
             return null;
         }
-        $info = app(LCF::class)->getLinkFinder()->lookup($link_id);
-        if ($info) {
-            return new LinkValue(false, $link_id, $info['url'], $info['label'], $label);
+        $result = app(LCF::class)->getLinkFinder()->lookup($link_id);
+        if ($result) {
+            return new LinkValue(false, $link_id, $result->url, $result->label, $label);
         } else {
             return new LinkValue(false, $link_id, '', '', $label);
         }
