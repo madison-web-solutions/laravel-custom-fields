@@ -16,13 +16,9 @@
         "madison-solutions/coerce": "^1.2",
         "madison-solutions/just-date": ">=1.1.2"
     },
-    "require-dev": {
-        "phpunit/phpunit": "^7.0"
-    },
     "autoload": {
         "psr-4": {
-            "MadisonSolutions\\LCF\\": "src/",
-            "MadisonSolutions\\LCFTest\\": "test/"
+            "MadisonSolutions\\LCF\\": "src/"
         }
     }
 }
