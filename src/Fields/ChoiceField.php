@@ -12,6 +12,7 @@ class ChoiceField extends ScalarField
     {
         $defaults = parent::optionDefaults();
         $defaults['input'] = 'select';
+        $defaults['input_layout'] = 'horizontal';
         return $defaults;
     }
 
@@ -21,6 +22,7 @@ class ChoiceField extends ScalarField
         $rules['choices'] = ['required', 'array', 'min:1'];
         $rules['choices.*'] = 'required|string';
         $rules['input'] = 'required|in:select,radio,search';
+        $rules['input_layout'] = 'nullable|in:horizontal,vertical';
         return $rules;
     }
 

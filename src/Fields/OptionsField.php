@@ -10,11 +10,19 @@ class OptionsField extends Field
 {
     protected $store_in_json = true;
 
+    public function optionDefaults() : array
+    {
+        $defaults = parent::optionDefaults();
+        $defaults['input_layout'] = 'horizontal';
+        return $defaults;
+    }
+
     public function optionRules() : array
     {
         $rules = parent::optionRules();
         $rules['choices'] = ['required', 'array', 'min:1'];
         $rules['choices.*'] = 'required|string';
+        $rules['input_layout'] = 'nullable|in:horizontal,vertical';
         return $rules;
     }
 
