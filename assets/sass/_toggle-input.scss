@@ -1,0 +1,21 @@
+.lcf-toggle-switch {
+    .fa-toggle-on {
+        color: $lcf-toggle-on-color;
+    }
+    .fa-toggle-off {
+        color: $lcf-toggle-off-color;
+    }
+    &:hover {
+        cursor: default;
+        .fa-toggle-on {
+            color: darken($lcf-toggle-on-color, 10%);
+        }
+        .fa-toggle-off {
+            color: darken($lcf-toggle-off-color, 10%);
+        }
+    }
+    &.lcf-has-error {
+        @include lcf-panel;
+        border-color: $lcf-border-error-color;
+    }
+}

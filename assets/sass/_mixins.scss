@@ -1,0 +1,5 @@
+@mixin lcf-panel {
+    padding: $lcf-spacer;
+    border: $lcf-border-width solid $lcf-border-color;
+    background-color: $lcf-background-color;
+}

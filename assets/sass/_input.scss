@@ -1,0 +1,48 @@
+.lcf-input-wrapper {
+    margin-bottom: $lcf-spacer;
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.lcf-input {
+    input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
+        color: $lcf-input-color;
+        font-size: $lcf-font-size;
+        appearance: none;
+        border: $lcf-border-width solid $lcf-border-color;
+        border-radius: 0;
+        background-color: $lcf-input-background-color;
+        padding: $lcf-input-padding-y $lcf-input-padding-x;
+        width: 100%;
+        &.lcf-has-error {
+            border-color: $lcf-border-error-color;
+        }
+        &.lcf-input-disabled {
+            color: $lcf-input-disabled-color;
+            background-color: $lcf-input-disabled-background-color;
+        }
+    }
+}
+
+.lcf-radio-group, .lcf-checkbox-group {
+    > label {
+        margin: 0;
+        margin-right: $lcf-spacer * 2;
+        input, span {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    }
+}
+
+.lcf-checkbox-group {
+    &.lcf-has-error {
+        @include lcf-panel;
+        border-color: $lcf-border-error-color;
+    }
+    > label.lcf-has-error {
+        @include lcf-panel;
+        border-color: $lcf-border-error-color;
+    }
+}

@@ -1,165 +1,18 @@
 @import "sass/variables";
 
-@mixin lcf-panel {
-    padding: $lcf-spacer;
-    border: $lcf-border-width solid $lcf-border-color;
-    background-color: $lcf-background-color;
-}
-
+@import "sass/mixins";
+@import "sass/general";
 @import "sass/buttons";
+@import 'sass/input';
 
-.lcf-form, .lcf-panel {
-    @include lcf-panel;
-}
+@import 'sass/compound-field';
+@import "sass/repeater-field";
+@import 'sass/switch-field';
 
-.lcf-form, .lcf-field, .lcf-input {
-    font-size: $lcf-font-size;
-}
-
-.lcf-error {
-    color: $lcf-error-msg-color;
-    .lcf-error-msg {
-        display: block;
-    }
-}
-
-.lcf-field-label {
-    color: $lcf-field-label-color;
-    font-weight: $lcf-field-label-font-weight;
-    margin-bottom: $lcf-spacer * 0.25;
-}
-
-.lcf-required-asterisk {
-    color: $lcf-required-asterisk-color;
-}
-
-.lcf-help {
-    font-size: $lcf-small-font-size;
-    margin-top: -$lcf-spacer * 0.5;
-    margin-bottom: $lcf-spacer * 0.5;
-}
-
-.lcf-combo {
-    display: flex;
-    .lcf-combo-button {
-        border-left: none;
-    }
-}
-
-.lcf-input-wrapper, .lcf-field {
-    margin-bottom: $lcf-spacer;
-    &:last-child {
-        margin-bottom: 0;
-    }
-}
-
-.lcf-switch-select {
-    margin-bottom: $lcf-spacer;
-}
-
-.lcf-compound-input {
-    &.lcf-compound-with-label {
-        @include lcf-panel;
-    }
-    &.lcf-has-error {
-        @include lcf-panel;
-        border-color: $lcf-border-error-color;
-    }
-}
-
-.lcf-toggle-switch {
-    .fa-toggle-on {
-        color: $lcf-toggle-on-color;
-    }
-    .fa-toggle-off {
-        color: $lcf-toggle-off-color;
-    }
-    &:hover {
-        cursor: default;
-        .fa-toggle-on {
-            color: darken($lcf-toggle-on-color, 10%);
-        }
-        .fa-toggle-off {
-            color: darken($lcf-toggle-off-color, 10%);
-        }
-    }
-    &.lcf-has-error {
-        @include lcf-panel;
-        border-color: $lcf-border-error-color;
-    }
-}
-
-.lcf-input {
-    input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
-        color: $lcf-input-color;
-        font-size: $lcf-font-size;
-        appearance: none;
-        border: $lcf-border-width solid $lcf-border-color;
-        border-radius: 0;
-        background-color: $lcf-input-background-color;
-        padding: $lcf-input-padding-y $lcf-input-padding-x;
-        width: 100%;
-        &.lcf-has-error {
-            border-color: $lcf-border-error-color;
-        }
-        &.lcf-input-disabled {
-            color: $lcf-input-disabled-color;
-            background-color: $lcf-input-disabled-background-color;
-        }
-    }
-}
-
-.lcf-input-select {
-    select {
-        border-top-right-radius: $lcf-button-radius;
-        border-bottom-right-radius: $lcf-button-radius;
-    }
-    .lcf-select-wrapper {
-        position: relative;
-    }
-    .lcf-combo-button {
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: 100%;
-        pointer-events: none;
-    }
-    &:hover .lcf-combo-button {
-        background-color: darken($lcf-button-background-color, 10%);
-    }
-}
-
-.lcf-radio-group, .lcf-checkbox-group {
-    > label {
-        margin: 0;
-        margin-right: $lcf-spacer * 2;
-        input, span {
-            display: inline-block;
-            vertical-align: middle;
-        }
-    }
-}
-
-.lcf-checkbox-group {
-    &.lcf-has-error {
-        @include lcf-panel;
-        border-color: $lcf-border-error-color;
-    }
-    > label.lcf-has-error {
-        @include lcf-panel;
-        border-color: $lcf-border-error-color;
-    }
-}
-
-
-.lcf-input-link {
-    @include lcf-panel;
-    &.lcf-has-error {
-        border-color: $lcf-border-error-color;
-    }
-}
+@import 'sass/link-input';
+@import "sass/markdown-input";
+@import "sass/search-input";
+@import 'sass/select-input';
+@import 'sass/toggle-input';
 
 @import "sass/media";
-@import "sass/repeater";
-@import "sass/markdown";
-@import "sass/search";

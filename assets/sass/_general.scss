@@ -1,0 +1,37 @@
+.lcf-form, .lcf-panel {
+    @include lcf-panel;
+}
+
+.lcf-form, .lcf-field, .lcf-input {
+    font-size: $lcf-font-size;
+}
+
+.lcf-error {
+    color: $lcf-error-msg-color;
+    .lcf-error-msg {
+        display: block;
+    }
+}
+
+.lcf-field-label {
+    color: $lcf-field-label-color;
+    font-weight: $lcf-field-label-font-weight;
+    margin-bottom: $lcf-spacer * 0.25;
+}
+
+.lcf-required-asterisk {
+    color: $lcf-required-asterisk-color;
+}
+
+.lcf-help {
+    font-size: $lcf-small-font-size;
+    margin-top: -$lcf-spacer * 0.5;
+    margin-bottom: $lcf-spacer * 0.5;
+}
+
+.lcf-combo {
+    display: flex;
+    .lcf-combo-button {
+        border-left: none;
+    }
+}

@@ -1,0 +1,19 @@
+.lcf-input-select {
+    select {
+        border-top-right-radius: $lcf-button-radius;
+        border-bottom-right-radius: $lcf-button-radius;
+    }
+    .lcf-select-wrapper {
+        position: relative;
+    }
+    .lcf-combo-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        pointer-events: none;
+    }
+    &:hover .lcf-combo-button {
+        background-color: darken($lcf-button-background-color, 10%);
+    }
+}

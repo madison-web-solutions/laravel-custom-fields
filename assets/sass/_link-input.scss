@@ -1,0 +1,6 @@
+.lcf-input-link {
+    @include lcf-panel;
+    &.lcf-has-error {
+        border-color: $lcf-border-error-color;
+    }
+}

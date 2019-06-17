@@ -1,0 +1,9 @@
+.lcf-compound-input {
+    &.lcf-compound-with-label {
+        @include lcf-panel;
+    }
+    &.lcf-has-error {
+        @include lcf-panel;
+        border-color: $lcf-border-error-color;
+    }
+}
