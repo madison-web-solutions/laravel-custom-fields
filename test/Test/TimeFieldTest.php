@@ -93,4 +93,22 @@ class TimeFieldTest extends TestCase
         ]);
         $this->assertValidationFails($field, null);
     }
+
+    public function testInputTransformations()
+    {
+        $field = LCF::newTimeField([
+            'step' => '00:00:10',
+        ]);
+        $this->assertCoerceOk($field, '14:47:56', '14:48:00');
+
+        $field = LCF::newTimeField([
+            'step' => '00:15',
+        ]);
+        $this->assertCoerceOk($field, '14:47:56', '14:45:00');
+
+        $field = LCF::newTimeField([
+            'step' => '01:00',
+        ]);
+        $this->assertCoerceOk($field, '14:47:56', '15:00:00');
+    }
 }

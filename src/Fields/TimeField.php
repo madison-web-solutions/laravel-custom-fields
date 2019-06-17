@@ -15,6 +15,7 @@ class TimeField extends ScalarField
         parent::__construct($options);
         $this->options['max'] = ($this->options['max'] ? JustTime::fromHis($this->options['max']) : null);
         $this->options['min'] = ($this->options['min'] ? JustTime::fromHis($this->options['min']) : null);
+        $this->options['step'] = ($this->options['step'] ? JustTime::fromHis($this->options['step']) : null);
     }
 
     public function optionDefaults() : array
@@ -23,6 +24,7 @@ class TimeField extends ScalarField
         $defaults['max'] = null;
         $defaults['min'] = null;
         $defaults['with_seconds'] = false;
+        $defaults['step'] = null;
         return $defaults;
     }
 
@@ -39,6 +41,7 @@ class TimeField extends ScalarField
         $rules['max'] = ['nullable', 'string', $time_rule];
         $rules['min'] = ['nullable', 'string', $time_rule];
         $rules['with_seconds'] = 'boolean';
+        $rules['step'] = ['nullable', 'string', $time_rule];
         return $rules;
     }
 
@@ -82,5 +85,13 @@ class TimeField extends ScalarField
         }
         $output = ($keep_invalid ? $input : null);
         return false;
+    }
+
+    protected function applyInputTransformationsNotNull($cast_value)
+    {
+        if ($this->step) {
+            $cast_value = $cast_value->round($this->step->since_midnight);
+        }
+        return $cast_value;
     }
 }

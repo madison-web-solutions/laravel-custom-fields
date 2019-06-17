@@ -181,22 +181,41 @@ var dateConvert = function(input, fromFormat, toFormat) {
 };
 
 var timeParse = function(input) {
+    if (input == null || input == '') {
+        return null;
+    }
+    // parse the string input
     var res1 = /^(\d\d)(\d\d)(\d\d)?$/.exec(input);
-    var res2 = /^(\d\d?):(\d\d?)(:(\d\d?))?$/.exec(input);
+    var res2 = /^(\d+):(\d+)(:(\d+))?$/.exec(input);
     if (res1) {
         var hours = parseInt(res1[1], 10);
         var mins = parseInt(res1[2], 10);
-        var secs = (res1[3] == null ? 0 : parseInt(res1[3]));
+        var secs = (res1[3] == null ? 0 : parseInt(res1[3], 10));
     } else if (res2) {
         var hours = parseInt(res2[1], 10);
         var mins = parseInt(res2[2], 10);
-        var secs = (res2[4] == null ? 0 : parseInt(res2[4]));
+        var secs = (res2[4] == null ? 0 : parseInt(res2[4], 10));
     } else {
         return null;
     }
-    hours = clamp(hours, 0, 23);
-    mins = clamp(mins, 0, 59);
-    secs = clamp(secs, 0, 59);
+    return secs + (mins * 60) + (hours * 60 * 60);
+};
+
+var timeSplit = function(secondsSinceMidnight) {
+    // wrap out of range secs, mins and hours
+    var secs, mins, hours, q, r;
+    var quotientAndRemainder = (a, b) => {
+        q = (a < 0) ? -Math.ceil(-a / b) : Math.floor(a / b);
+        r = a - (b * q);
+    };
+    quotientAndRemainder(secondsSinceMidnight, 60);
+    secs = r;
+    mins = q;
+    quotientAndRemainder(mins, 60);
+    mins = r;
+    hours = q;
+    quotientAndRemainder(hours, 24);
+    hours = r;
     return [hours, mins, secs];
 };
 
@@ -231,6 +250,7 @@ export default {
     dateTo,
     dateConvert,
     timeParse,
+    timeSplit,
     timeFormat,
     replaceAll
 };
