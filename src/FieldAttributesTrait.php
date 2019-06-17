@@ -85,4 +85,9 @@ trait FieldAttributesTrait
             return $this->setLcfFieldValue($key, $value);
         }
     }
+
+    public function expand($key, array $with = [])
+    {
+        return $this->getField($key)->expand($this->$key);
+    }
 }

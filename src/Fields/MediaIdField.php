@@ -60,4 +60,47 @@ class MediaIdField extends ScalarField
         $output = ($keep_invalid ? $input : null);
         return false;
     }
+
+    protected static $load_queue = [];
+    protected static $loaded = [];
+
+    public static function queueItemToLoad($id)
+    {
+        if (isset(self::$loaded[$id])) {
+            return;
+        }
+        self::$load_queue[] = $id;
+    }
+
+    public static function fetchQueuedItems()
+    {
+        if (empty(self::$load_queue)) {
+            return;
+        }
+        foreach (MediaItem::findMany(self::$load_queue) as $item) {
+            self::$loaded[$item->id] = $item;
+        }
+        self::$load_queue = [];
+    }
+
+    public static function getQueuedItem($id)
+    {
+        return self::$loaded[$id] ?? null;
+    }
+
+    protected function expandPrepareNotNull($cast_value)
+    {
+        self::queueItemToLoad($cast_value);
+    }
+
+    protected function doExpandNotNull($cast_value)
+    {
+        self::fetchQueuedItems();
+        return self::getQueuedItem($cast_value);
+    }
+
+    protected function expandKey(string $key)
+    {
+        return preg_replace('/_id$/', '', $key);
+    }
 }

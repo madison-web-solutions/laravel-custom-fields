@@ -110,4 +110,20 @@ class RepeaterField extends Field
         }
         return $mapped_value;
     }
+
+    protected function expandPrepareNotNull($cast_value)
+    {
+        foreach ($cast_value as $sub_value) {
+            $this->sub_field->expandPrepare($sub_value);
+        }
+    }
+
+    protected function doExpandNotNull($cast_value)
+    {
+        $new_value = [];
+        foreach ($cast_value as $i => $sub_value) {
+            $new_value[$i] = $this->sub_field->doExpand($sub_value);
+        }
+        return $new_value;
+    }
 }

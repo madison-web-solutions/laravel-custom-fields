@@ -311,4 +311,38 @@ abstract class Field implements JsonSerializable
     {
         return $callback($this, $cast_value, $path);
     }
+
+    public function expand($value)
+    {
+        $this->coerce($value, $cast_value);
+        $this->expandPrepare($cast_value);
+        return $this->doExpand($cast_value);
+    }
+
+    protected function expandPrepare($cast_value)
+    {
+        if (! is_null($cast_value)) {
+            $this->expandPrepareNotNull($cast_value);
+        }
+    }
+
+    protected function expandPrepareNotNull($cast_value)
+    {
+        return;
+    }
+
+    protected function doExpand($cast_value)
+    {
+        return is_null($cast_value) ? null : $this->doExpandNotNull($cast_value);
+    }
+
+    protected function expandKey(string $key)
+    {
+        return $key;
+    }
+
+    protected function doExpandNotNull($cast_value)
+    {
+        return $cast_value;
+    }
 }

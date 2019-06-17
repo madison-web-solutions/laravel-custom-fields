@@ -78,14 +78,31 @@ class CompoundField extends Field
     protected function doMap(callable $callback, $cast_value, array $path)
     {
         if (is_null($cast_value)) {
-            return null;
+            $mapped_value = null;
+        } else {
+            $mapped_value = [];
+            foreach ($this->sub_fields as $key => $field) {
+                array_push($path, $key);
+                $mapped_value[$key] = $field->doMap($callback, $cast_value[$key] ?? null, $path);
+                array_pop($path);
+            }
         }
-        $mapped_value = [];
+        return $callback($this, $mapped_value, $path);
+    }
+
+    protected function expandPrepareNotNull($cast_value)
+    {
         foreach ($this->sub_fields as $key => $field) {
-            array_push($path, $key);
-            $mapped_value[$key] = $field->doMap($callback, $cast_value[$key] ?? null, $path);
-            array_pop($path);
+            $field->expandPrepare($cast_value[$key] ?? null);
         }
-        return $mapped_value;
+    }
+
+    protected function doExpandNotNull($cast_value)
+    {
+        $new_value = [];
+        foreach ($this->sub_fields as $key => $field) {
+            $new_value[$field->expandKey($key)] = $field->doExpand($cast_value[$key] ?? null);
+        }
+        return $new_value;
     }
 }

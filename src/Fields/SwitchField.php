@@ -100,4 +100,17 @@ class SwitchField extends Field
         $mapped_switch_value = $switch_field->doMap($callback, $cast_value->value, $path);
         return new SwitchValue($switch_name, $mapped_switch_value);
     }
+
+    protected function expandPrepareNotNull($cast_value)
+    {
+        $switch_field = $this->switch_fields[$cast_value->switch];
+        $switch_field->expandPrepare($cast_value->value);
+    }
+
+    protected function doExpandNotNull($cast_value)
+    {
+        $switch_field = $this->switch_fields[$cast_value->switch];
+        $new_value = $switch_field->doExpand($cast_value->value);
+        return new SwitchValue($cast_value->switch, $new_value);
+    }
 }

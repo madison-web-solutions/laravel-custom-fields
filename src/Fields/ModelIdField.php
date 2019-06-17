@@ -90,4 +90,55 @@ class ModelIdField extends ScalarField
         $output = ($keep_invalid ? $input : null);
         return false;
     }
+
+    protected static $load_queue = [];
+    protected static $loaded = [];
+
+    public static function queueModelToLoad($model_class, $id)
+    {
+        if (isset(self::$loaded[$model_class][$id])) {
+            return;
+        }
+        if (! isset(self::$load_queue[$model_class])) {
+            self::$load_queue[$model_class] = [];
+        }
+        self::$load_queue[$model_class][] = $id;
+    }
+
+    public static function fetchQueuedModels()
+    {
+        if (empty(self::$load_queue)) {
+            return;
+        }
+        foreach (self::$load_queue as $model_class => $ids) {
+            foreach ($model_class::findMany($ids) as $model) {
+                if (! isset(self::$loaded[$model_class])) {
+                    self::$loaded[$model_class] = [];
+                }
+                self::$loaded[$model_class][$model->getKey()] = $model;
+            }
+        }
+        self::$load_queue = [];
+    }
+
+    public static function getQueuedModel($model_class, $id)
+    {
+        return self::$loaded[$model_class][$id] ?? null;
+    }
+
+    protected function expandPrepareNotNull($cast_value)
+    {
+        self::queueModelToLoad($this->model_class, $cast_value);
+    }
+
+    protected function doExpandNotNull($cast_value)
+    {
+        self::fetchQueuedModels();
+        return self::getQueuedModel($this->model_class, $cast_value);
+    }
+
+    protected function expandKey(string $key)
+    {
+        return preg_replace('/_id$/', '', $key);
+    }
 }
