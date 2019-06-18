@@ -20,6 +20,29 @@ class ModelFinder
         $this->label_attribute = $label_attribute;
     }
 
+    public function __get($key)
+    {
+        switch ($key) {
+            case 'model_class':
+            case 'criteria':
+            case 'search_fields':
+            case 'label_attribute':
+                return $this->$key;
+        }
+    }
+
+    public function __isset($key)
+    {
+        switch ($key) {
+            case 'model_class':
+            case 'criteria':
+            case 'search_fields':
+            case 'label_attribute':
+                return true;
+        }
+        return false;
+    }
+
     protected function newInstance() : Model
     {
         return new $this->model_class;

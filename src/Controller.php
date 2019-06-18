@@ -14,7 +14,6 @@ class Controller extends BaseController
 
     public function getSuggestions(Request $request)
     {
-        $this->authorize('getSuggestions', LCF::class);
         $request->validate([
             'search_type' => 'required|string',
             'search_settings' => 'required|json',
@@ -25,14 +24,15 @@ class Controller extends BaseController
         $settings = json_decode($request->search_settings);
 
         if ($type == 'model') {
-            $mf = app(LCF::class)->makeModelFinder($settings->model_class, $settings->criteria, $settings->search_fields, $settings->label_attribute);
-            return response()->json($mf->getSuggestions($request->search, $request->page ?? 1));
+            $finder = app(LCF::class)->makeModelFinder($settings->model_class, $settings->criteria, $settings->search_fields, $settings->label_attribute);
+        } elseif ($type === 'link') {
+            $finder = app(LCF::class)->getLinkFinder();
+        } else {
+            throw new \Exception("Unexpected type {$type}");
         }
-        if ($type === 'link') {
-            $lf = app(LCF::class)->getLinkFinder();
-            return response()->json($lf->getSuggestions($request->search, $request->page ?? 1));
-        }
-        throw new \Exception("Unexpected type {$type}");
+
+        $this->authorize('getSuggestions', [LCF::class, $finder]);
+        return response()->json($finder->getSuggestions($request->search, $request->page ?? 1));
     }
 
     public function lookup(Request $request)
