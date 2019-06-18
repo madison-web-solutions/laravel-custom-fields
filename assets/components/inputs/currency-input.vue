@@ -37,7 +37,7 @@ export default {
         },
         displayValue: function() {
             if (Number.isInteger(this.value)) {
-                return this.symbolBefore + (this.value / 100).toFixed(2) + this.symbolAfter;
+                return (this.value < 0 ? '-' : '') + this.symbolBefore + (Math.abs(this.value) / 100).toFixed(2) + this.symbolAfter;
             } else {
                 return '';
             }
@@ -47,7 +47,7 @@ export default {
         change: function(e) {
             if (this.disabled) {return;}
             var rawValue = this.$refs.input.value;
-            var floatVal = parseFloat(rawValue.replace(/[^0-9\.]/g, ''));
+            var floatVal = parseFloat(rawValue.replace(/[^-0-9\.]/g, ''));
             if (! isFinite(floatVal)) {
                 this.$emit('change', {key: this._key, value: null});
             }
