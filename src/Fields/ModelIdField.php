@@ -28,6 +28,7 @@ class ModelIdField extends ScalarField
         $rules['search_fields'] = 'required|array|min:1';
         $rules['search_fields.*'] = 'required|string';
         $rules['label_attribute'] = 'required|string';
+        $rules['load_with'] = 'nullable|array';
         return $rules;
     }
 
@@ -91,50 +92,42 @@ class ModelIdField extends ScalarField
         return false;
     }
 
-    protected static $load_queue = [];
-    protected static $loaded = [];
+    protected $models_to_load = [];
+    protected $models_loaded = [];
 
-    public static function queueModelToLoad($model_class, $id)
+    public function queueModelToLoad($id)
     {
-        if (isset(self::$loaded[$model_class][$id])) {
+        if (isset($this->models_loaded[$id])) {
             return;
         }
-        if (! isset(self::$load_queue[$model_class])) {
-            self::$load_queue[$model_class] = [];
-        }
-        self::$load_queue[$model_class][] = $id;
+        $this->models_to_load[$id] = true;
     }
 
-    public static function fetchQueuedModels()
+    public function fetchQueuedModels()
     {
-        if (empty(self::$load_queue)) {
+        if (empty($this->models_to_load)) {
             return;
         }
-        foreach (self::$load_queue as $model_class => $ids) {
-            foreach ($model_class::findMany($ids) as $model) {
-                if (! isset(self::$loaded[$model_class])) {
-                    self::$loaded[$model_class] = [];
-                }
-                self::$loaded[$model_class][$model->getKey()] = $model;
-            }
+        $query = $this->newInstance()->query();
+        if ($this->load_with) {
+            $query->with($this->load_with);
         }
-        self::$load_queue = [];
-    }
-
-    public static function getQueuedModel($model_class, $id)
-    {
-        return self::$loaded[$model_class][$id] ?? null;
+        $ids = array_keys($this->models_to_load);
+        foreach ($query->findMany($ids) as $model) {
+            $this->models_loaded[$model->getKey()] = $model;
+        }
+        $this->models_to_load = [];
     }
 
     protected function expandPrepareNotNull($cast_value)
     {
-        self::queueModelToLoad($this->model_class, $cast_value);
+        $this->queueModelToLoad($cast_value);
     }
 
     protected function doExpandNotNull($cast_value)
     {
-        self::fetchQueuedModels();
-        return self::getQueuedModel($this->model_class, $cast_value);
+        $this->fetchQueuedModels();
+        return $this->models_loaded[$cast_value] ?? null;
     }
 
     protected function expandKey(string $key)
