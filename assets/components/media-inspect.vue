@@ -18,6 +18,7 @@
             <button type="button" data-name="close" @click.stop="close">Close</button>
             <button v-if="selectable" data-name="select" type="button" @click.stop="selectItem">Select</button>
             <button v-if="deletable" data-name="delete" type="button" @click.stop="deleteItem">Delete</button>
+            <p v-if="item.orig">{{ item.orig }}</p>
         </div>
     </div>
 </template>
