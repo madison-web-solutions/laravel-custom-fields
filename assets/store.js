@@ -265,7 +265,7 @@ var testCondition = function(pathStr, condition) {
     if (! condition) {
         return true;
     }
-    var testNodePath = pathArg(resolveRelativePath(pathStr, condition[1]));
+    var testNodePath = pathArg(resolveRelativePath(pathStr, '^' + condition[1]));
     var testNode = getNode(testNodePath);
     if (! testNode) {
         return true;

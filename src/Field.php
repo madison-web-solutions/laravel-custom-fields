@@ -27,7 +27,7 @@ abstract class Field implements JsonSerializable
         return function ($attribute, $value, $fail) use ($reserved) {
             if (is_array($value)) {
                 foreach ($value as $key => $dummy) {
-                    if (! preg_match('/^[_a-z][_a-z0-9]+$/', $key)) {
+                    if (! preg_match('/^[_a-z][_a-z0-9]*$/', $key)) {
                         $fail("Invalid key '{$key}' in {$attribute} - keys must be simple snake_case strings");
                     }
                     if (in_array($key, $reserved)) {
@@ -263,7 +263,8 @@ abstract class Field implements JsonSerializable
             array_pop($basePath);
             $relativePath = substr($relativePath, 1);
         }
-        return implode($basePath, '.') . ($relativePath ? '.' . $relativePath : '');
+        $path = array_merge($basePath, $relativePath ? explode('.', $relativePath) : []);
+        return implode('.', $path);
     }
 
     protected function testCondition(string $path, array $data)
@@ -271,18 +272,48 @@ abstract class Field implements JsonSerializable
         if (! $this->condition) {
             return true;
         }
+        return $this->doTestCondition($this->condition, $path, $data);
+    }
 
-        $conditionType = $this->condition[0];
-        $relativePath = $this->condition[1];
-        $testValue = $this->condition[2] ?? null;
-        $otherFieldPath = $this->resolveRelativePath($path, $relativePath);
-        $otherFieldValue = data_get($data, $otherFieldPath);
+    protected function doTestCondition(array $condition, string $path, array $data)
+    {
+        $condition_type = array_shift($condition);
 
-        switch ($conditionType) {
+        /* maybe coming soon
+        if ($condition_type == 'and') {
+            foreach ($condition as $sub_condition) {
+                if (! $this->doTestCondition($sub_condition, $path, $data)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        if ($condition_type == 'or') {
+            foreach ($condition as $sub_condition) {
+                if ($this->doTestCondition($sub_condition, $path, $data)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if ($condition_type == 'not') {
+            $negated_condition = $condition[0];
+            return ! $this->doTestCondition($negated_condition, $path, $data);
+        }
+        */
+
+        $relative_path = $condition[0];
+        $test_value = $condition[1] ?? null;
+        $other_field_path = $this->resolveRelativePath($path, '^' . $relative_path);
+        $other_field_value = data_get($data, $other_field_path);
+
+        switch ($condition_type) {
             case 'eq':
-                return $otherFieldValue === $testValue;
+                return $other_field_value === $test_value;
             case 'in':
-                return in_array($otherFieldValue, $testValue);
+                return in_array($other_field_value, $test_value);
         }
         return true;
     }
