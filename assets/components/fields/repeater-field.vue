@@ -1,5 +1,5 @@
 <template>
-    <div class="lcf-field lcf-repeater-field" v-if="shouldShow">
+    <div :class="myCssClasses" class="lcf-repeater-field" v-if="shouldShow">
         <lcf-input-wrapper :label="label" :required="required" :help="help" :errors="errors">
             <div class="lcf-input lcf-repeater-input" :class="{'lcf-has-error': hasError}">
                 <div v-for="nodeId, index in childIds" :class="{'lcf-drag-hide': (draggingStartedIndex === index)}" class="lcf-repeater-item" :data-index="index" :draggable="draggableIndex === index" @dragstart="dragStart">

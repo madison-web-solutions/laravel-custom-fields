@@ -2,11 +2,18 @@
     @include lcf-panel;
 }
 
+.lcf-form {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
+}
+
 .lcf-form, .lcf-field, .lcf-input {
     font-size: $lcf-font-size;
 }
 
 .lcf-field {
+    flex-basis: 100%;
     margin-bottom: $lcf-spacer;
     &:last-child {
         margin-bottom: 0;

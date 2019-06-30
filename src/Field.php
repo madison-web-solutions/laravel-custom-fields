@@ -72,6 +72,8 @@ abstract class Field implements JsonSerializable
             'required' => 'required|boolean',
             'help' => 'nullable|string',
             'default' => 'nullable',
+            'css_classes' => 'nullable|array',
+            'css_classes.*' => 'required|string',
             'condition' => 'nullable|array',
             'condition.0' => 'required_with:condition|in:eq,in',
             'condition.1' => 'required_with:condition|string',

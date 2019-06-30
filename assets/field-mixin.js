@@ -1,6 +1,6 @@
 import { assign, get } from 'lodash-es';
 export default {
-    props: ['path', 'field'],
+    props: ['path', 'field', 'cssClasses'],
     computed: {
         pathStr: function() {
             return this.path.join('.');
@@ -40,6 +40,10 @@ export default {
         },
         inputSettings: function() {
             return assign({name: this.inputName, key: this.path[this.path.length - 1]}, this.field.settings);
+        },
+        myCssClasses: function() {
+            var fieldClasses = get(this.field, 'settings.cssClasses', []);
+            return ['lcf-field'].concat(fieldClasses).concat(this.cssClasses);
         },
         condition: function() {
             return get(this.field, 'settings.condition');
