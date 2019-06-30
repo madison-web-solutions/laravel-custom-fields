@@ -233,7 +233,7 @@ abstract class Field implements JsonSerializable
         }
         if (is_null($value)) {
             if ($this->options['required']) {
-                $messages[$path][] = $this->trans('invalid');
+                $messages[$path][] = $this->trans('required');
             }
             return;
         }

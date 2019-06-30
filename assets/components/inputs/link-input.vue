@@ -34,7 +34,7 @@ export default {
         },
         linkInfo: function() {
             if (this.linkIdVal && ! this.manualVal) {
-                return this.$lcfStore.lookupSearchObj(this.searchType, this.searchSettings, this.linkIdVal);
+                return this.$lcfStore.lookupSearchObj('link', this.searchSettings, this.linkIdVal);
             } else {
                 return {url: this.urlVal, label: this.urlVal};
             }

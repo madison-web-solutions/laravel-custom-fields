@@ -55,8 +55,10 @@ class LCFServiceProvider extends ServiceProvider
                 ->prefix('lcf')
                 ->middleware(config('route_middleware', ['web']))
                 ->group(function () {
-                    Route::get('suggestions', 'Controller@getSuggestions');
-                    Route::get('lookup', 'Controller@lookup');
+                    Route::get('model-suggestions', 'Controller@getModelSuggestions');
+                    Route::get('link-suggestions', 'Controller@getLinkSuggestions');
+                    Route::get('model-lookup', 'Controller@lookupModel');
+                    Route::get('link-lookup', 'Controller@lookupLink');
                     Route::post('markdown', 'Controller@markdown');
 
                     Route::get('media-library', 'Media\Controller@index');

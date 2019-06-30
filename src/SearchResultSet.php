@@ -2,9 +2,10 @@
 
 namespace MadisonSolutions\LCF;
 
+use Countable;
 use JsonSerializable;
 
-class SearchResultSet implements JsonSerializable
+class SearchResultSet implements Countable, JsonSerializable
 {
     protected $has_more;
     protected $results;
@@ -15,9 +16,19 @@ class SearchResultSet implements JsonSerializable
         $this->results = [];
     }
 
+    public function getResults()
+    {
+        return $this->results;
+    }
+
     public function addResult(SearchResult $result)
     {
         $this->results[] = $result;
+    }
+
+    public function count() : int
+    {
+        return count($this->results);
     }
 
     public function jsonSerialize()

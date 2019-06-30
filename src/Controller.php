@@ -2,64 +2,67 @@
 
 namespace MadisonSolutions\LCF;
 
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests;
 
-    public function getSuggestions(Request $request)
+    public function getModelSuggestions(Request $request)
     {
         $request->validate([
-            'search_type' => 'required|string',
-            'search_settings' => 'required|json',
+            'model_class' => ['required', new FindableModelRule()],
+            'finder_context' => 'nullable|string',
             'search' => 'required|string|min:2',
             'page' => 'nullable|integer|min:1',
         ]);
-        $type = explode(':', $request->search_type)[0];
-        $settings = json_decode($request->search_settings);
+        $model_class = $request->model_class;
+        $this->authorize('lookupModels', [LCF::class, $model_class, $request->finder_context]);
+        $instance = new $model_class();
+        $suggestions = $instance->lcfGetSuggestions($request->search, $request->page ?? 1, $request->finder_context);
+        return response()->json($suggestions);
+    }
 
-        if ($type == 'model') {
-            $finder = app(LCF::class)->makeModelFinder($settings->model_class, $settings->criteria, $settings->search_fields, $settings->label_attribute);
-        } elseif ($type === 'link') {
-            $finder = app(LCF::class)->getLinkFinder();
-        } else {
-            throw new \Exception("Unexpected type {$type}");
-        }
-
-        $this->authorize('getSuggestions', [LCF::class, $finder]);
+    public function getLinkSuggestions(Request $request)
+    {
+        $this->authorize('lookupLinks', [LCF::class]);
+        $request->validate([
+            'search' => 'required|string|min:2',
+            'page' => 'nullable|integer|min:1',
+        ]);
+        $finder = app(LCF::class)->getLinkFinder();
         return response()->json($finder->getSuggestions($request->search, $request->page ?? 1));
     }
 
-    public function lookup(Request $request)
+    public function lookupModel(Request $request)
     {
-        $this->authorize('lookup', LCF::class);
         $request->validate([
-            'search_type' => 'required|string',
-            'search_settings' => 'required|json',
+            'model_class' => ['required', new FindableModelRule()],
+            'finder_context' => 'nullable|string',
             'id' => 'required',
         ]);
-        $type = explode(':', $request->search_type)[0];
-        $settings = json_decode($request->search_settings);
+        $model_class = $request->model_class;
+        $this->authorize('lookupModels', [LCF::class, $model_class, $request->finder_context]);
+        $instance = new $model_class();
+        $result = $instance->lcfLookup($request->id, $request->finder_context);
+        return response()->json($result);
+    }
 
-        if ($type == 'model') {
-            $mf = app(LCF::class)->makeModelFinder($settings->model_class, $settings->criteria, $settings->search_fields, $settings->label_attribute);
-            return response()->json($mf->lookup($request->id));
-        }
-        if ($type === 'link') {
-            $lf = app(LCF::class)->getLinkFinder();
-            return response()->json($lf->lookup($request->id));
-        }
-        throw new \Exception("Unexpected type {$type}");
+    public function lookupLink(Request $request)
+    {
+        $this->authorize('lookupLinks', [LCF::class]);
+        $request->validate([
+            'id' => 'required',
+        ]);
+        $finder = app(LCF::class)->getLinkFinder();
+        return response()->json($finder->lookup($request->id));
     }
 
     public function markdown(Request $request)
     {
-        $this->authorize('markdown', LCF::class);
+        $this->authorize('markdown', [LCF::class]);
         $request->validate([
             'input' => 'nullable|string',
         ]);

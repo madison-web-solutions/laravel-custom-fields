@@ -285,15 +285,21 @@ var lookupSearchObj = function(searchType, searchSettings, id) {
     if (! id) {
         return null;
     }
-    var key = searchType + ':' + id;
+    var params = {id};
+    if (searchType == 'model') {
+        params.model_class = searchSettings.model_class;
+        params.finder_context = searchSettings.finder_context;
+        var key = searchSettings.model_class + ':' + id + ':' + searchSettings.finder_context;
+        var url = '/lcf/model-lookup';
+    } else if (searchType == 'link') {
+        var key = 'link:' + id;
+        var url = '/lcf/link-lookup';
+    } else {
+        throw new Error('Unrecognised search type ' + searchType);
+    }
     if (! store.searchObjs.hasOwnProperty(key)) {
         Vue.set(store.searchObjs, key, '');
-        var params = {
-            search_type: searchType,
-            search_settings: JSON.stringify(searchSettings),
-            id: id
-        };
-        axios.get('/lcf/lookup', {params: params}).then(response => {
+        axios.get(url, {params: params}).then(response => {
             Vue.set(store.searchObjs, key, response.data);
         }, error => {
             console.log(error);
@@ -307,18 +313,27 @@ var getDisplayName = function(searchType, searchSettings, id) {
     return obj ? obj.display_name : '';
 };
 
-var getSuggestions = function(searchType, searchSettings, search, page, callback) {
+var getSuggestions = function(searchType, searchSettings, searchString, page, callback) {
     var searchId = searchIdCounter++;
-    var params = {
-        search_type: searchType,
-        search_settings: JSON.stringify(searchSettings),
-        search: search,
-        page: page
-    };
-    axios.get('/lcf/suggestions', {params: params}).then(response => {
+    var params = {search: searchString, page: page};
+    if (searchType == 'model') {
+        params.model_class = searchSettings.model_class;
+        params.finder_context = searchSettings.finder_context;
+        var key = (result) => {
+            return searchSettings.model_class + ':' + result.id + ':' + searchSettings.finder_context;
+        };
+        var url = '/lcf/model-suggestions';
+    } else if (searchType == 'link') {
+        var key = (result) => {
+            return 'link:' + result.id;
+        };
+        var url = '/lcf/link-suggestions';
+    } else {
+        throw new Error('Unrecognised search type ' + searchType);
+    }
+    axios.get(url, {params: params}).then(response => {
         forEach(response.data.results, result => {
-            var key = searchType + ':' + result.id;
-            Vue.set(store.searchObjs, key, result);
+            Vue.set(store.searchObjs, key(result), result);
         });
         callback(searchId, response.data.results, response.data.has_more);
     }, error => {

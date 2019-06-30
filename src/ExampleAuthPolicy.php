@@ -6,15 +6,15 @@ use Log;
 
 class ExampleAuthPolicy
 {
-    public function getSuggestions($user, $finder)
+    public function lookupModels($user, string $model_class, ?string $finder_context)
     {
-        \Log::warning("Access to LCF.getSuggestions denied by ExampleAuthPolicy - You probably need to define a Policy for LCF routes.");
+        \Log::warning("Access to LCF.lookupModels denied by ExampleAuthPolicy - You probably need to define a Policy for LCF routes.");
         return false;
     }
 
-    public function lookup($user, $finder)
+    public function lookupLinks($user)
     {
-        \Log::warning("Access to LCF.lookup denied by ExampleAuthPolicy - You probably need to define a Policy for LCF routes.");
+        \Log::warning("Access to LCF.lookupLinks denied by ExampleAuthPolicy - You probably need to define a Policy for LCF routes.");
         return false;
     }
 

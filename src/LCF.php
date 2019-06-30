@@ -35,15 +35,6 @@ class LCF
         return $this->link_finder_instance;
     }
 
-    public function makeModelFinder(...$args)
-    {
-        $model_finder_class = config('lcf.model_finder_class', ModelFinder::class);
-        if (! is_a($model_finder_class, ModelFinder::class, true)) {
-            throw new \Exception('config lcf.model_finder_class does not define a class extending from ' . ModelFinder::class);
-        }
-        return new $model_finder_class(...$args);
-    }
-
     protected static $classmap = [
         'ChoiceField' => Fields\ChoiceField::class,
         'CompoundField' => Fields\CompoundField::class,
