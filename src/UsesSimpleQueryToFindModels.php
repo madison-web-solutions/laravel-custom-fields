@@ -10,7 +10,7 @@ trait UsesSimpleQueryToFindModels
 
     abstract public function lcfGetLabel(?string $context = null) : string;
 
-    public function lcfapplyCriteria(Builder $query, ?string $context = null)
+    public function lcfApplyCriteria(Builder $query, ?string $context = null)
     {
         // Override to set criteria on the search results
     }
@@ -19,7 +19,7 @@ trait UsesSimpleQueryToFindModels
     {
         $num_per_page = 20;
         $query = $this->query();
-        $this->lcfapplyCriteria($query, $context);
+        $this->lcfApplyCriteria($query, $context);
         $ilike = LCF::iLikeOperator($query->getConnection());
         $query->where(function ($q) use ($ilike, $search, $context) {
             $search_esc = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $search) . '%';
