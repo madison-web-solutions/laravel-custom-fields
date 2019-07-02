@@ -4,7 +4,6 @@ namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\LCF\Field;
 use MadisonSolutions\LCF\SwitchValue;
-use MadisonSolutions\LCF\Validator;
 
 class SwitchField extends Field
 {
@@ -57,7 +56,7 @@ class SwitchField extends Field
         return $ok;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! ($value instanceof SwitchValue)) {
             $messages[$path][] = $this->trans('invalid');
@@ -68,7 +67,7 @@ class SwitchField extends Field
             return false;
         }
         $switch_field = $this->switch_fields[$value->switch];
-        $switch_field->validate("{$path}.{$value->switch}", $value->value, $messages, $validator);
+        $switch_field->validate("{$path}.{$value->switch}", $value->value, $messages, $data);
     }
 
     public function getSubField(string $key)

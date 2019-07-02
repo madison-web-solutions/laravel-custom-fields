@@ -3,7 +3,6 @@
 namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\Coerce\Coerce;
-use MadisonSolutions\LCF\Validator;
 
 class CurrencyField extends IntegerField
 {
@@ -41,7 +40,7 @@ class CurrencyField extends IntegerField
         }
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! is_int($value)) {
             $messages[$path][] = $this->trans('invalid');

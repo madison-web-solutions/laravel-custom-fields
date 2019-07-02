@@ -59,7 +59,7 @@ class Validator extends LaravelValidator
     protected function validateField($field_name, $field)
     {
         $value = $this->getValue($field_name);
-        $field->validate($field_name, $value, $field_messages, $this);
+        $field->validate($field_name, $value, $field_messages, $this->getData());
 
         foreach ($field_messages as $path => $path_messages) {
             $this->failedRules[$path]['LCFField'] = [];

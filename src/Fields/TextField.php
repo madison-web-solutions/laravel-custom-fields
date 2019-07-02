@@ -5,7 +5,6 @@ namespace MadisonSolutions\LCF\Fields;
 use Illuminate\Support\Str;
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
-use MadisonSolutions\LCF\Validator;
 
 class TextField extends ScalarField
 {
@@ -31,7 +30,17 @@ class TextField extends ScalarField
         return $rules;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    protected function borrowLaravelValdator()
+    {
+        // Laravel has lots of useful text validation method in the ValidatesAttributes trait
+        // In order to access them for one-off use,
+        // we can just return an anonymous class object that uses the trait.
+        return new class {
+            use \Illuminate\Validation\Concerns\ValidatesAttributes;
+        };
+    }
+
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! is_string($value)) {
             $messages[$path][] = $this->trans('invalid');
@@ -56,32 +65,32 @@ class TextField extends ScalarField
         $content_rule = $this->options['content'];
         switch ($content_rule) {
             case 'url':
-                if (! $validator->validateUrl('', $value)) {
+                if (! $this->borrowLaravelValdator()->validateUrl('', $value)) {
                     $messages[$path][] = $this->trans('invalid-url');
                 }
                 break;
             case 'uuid':
-                if (! $validator->validateUuid('', $value)) {
+                if (! $this->borrowLaravelValdator()->validateUuid('', $value)) {
                     $messages[$path][] = $this->trans('invalid-uuid');
                 }
                 break;
             case 'email':
-                if (! $validator->validateEmail('', $value)) {
+                if (! $this->borrowLaravelValdator()->validateEmail('', $value)) {
                     $messages[$path][] = $this->trans('invalid-email');
                 }
                 break;
             case 'ip':
-                if (! $validator->validateIp('', $value)) {
+                if (! $this->borrowLaravelValdator()->validateIp('', $value)) {
                     $messages[$path][] = $this->trans('invalid-ip');
                 }
                 break;
             case 'ipv4':
-                if (! $validator->validateIpv4('', $value)) {
+                if (! $this->borrowLaravelValdator()->validateIpv4('', $value)) {
                     $messages[$path][] = $this->trans('invalid-ipv4');
                 }
                 break;
             case 'ipv6':
-                if (! $validator->validateIpv6('', $value)) {
+                if (! $this->borrowLaravelValdator()->validateIpv6('', $value)) {
                     $messages[$path][] = $this->trans('invalid-ipv6');
                 }
                 break;

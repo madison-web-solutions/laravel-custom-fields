@@ -6,7 +6,6 @@ use DateTime;
 use Carbon\Carbon;
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
-use MadisonSolutions\LCF\Validator;
 
 class TimestampField extends ScalarField
 {
@@ -38,7 +37,7 @@ class TimestampField extends ScalarField
         return 'lcf-timestamp-input';
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! ($value instanceof Carbon)) {
             $messages[$path][] = $this->trans('invalid');

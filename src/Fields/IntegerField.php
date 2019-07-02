@@ -4,7 +4,6 @@ namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
-use MadisonSolutions\LCF\Validator;
 
 class IntegerField extends ScalarField
 {
@@ -36,7 +35,7 @@ class IntegerField extends ScalarField
         return $data;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! is_int($value)) {
             $messages[$path][] = $this->trans('invalid');

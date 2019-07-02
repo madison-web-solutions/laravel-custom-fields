@@ -4,7 +4,6 @@ namespace MadisonSolutions\LCF\Fields;
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
 use MadisonSolutions\LCF\LCF;
-use MadisonSolutions\LCF\Validator;
 use MadisonSolutions\LCF\Media\MediaItem;
 use MadisonSolutions\LCF\Media\MediaType;
 
@@ -29,7 +28,7 @@ class MediaIdField extends ScalarField
         return 'lcf-media-input';
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! is_int($value)) {
             $messages[$path][] = $this->trans('invalid');

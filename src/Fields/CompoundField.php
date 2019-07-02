@@ -3,7 +3,6 @@
 namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\LCF\Field;
-use MadisonSolutions\LCF\Validator;
 
 class CompoundField extends Field
 {
@@ -46,14 +45,14 @@ class CompoundField extends Field
         return $ok;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! is_array($value)) {
             $messages[$path][] = $this->trans('invalid');
             return;
         }
         foreach ($this->sub_fields as $key => $field) {
-            $field->validate("{$path}.{$key}", $value[$key] ?? null, $messages, $validator);
+            $field->validate("{$path}.{$key}", $value[$key] ?? null, $messages, $data);
         }
     }
 

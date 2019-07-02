@@ -4,7 +4,6 @@ namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\Field;
-use MadisonSolutions\LCF\Validator;
 
 class OptionsField extends Field
 {
@@ -49,7 +48,7 @@ class OptionsField extends Field
         return $data;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! is_array($value)) {
             $messages[$path][] = $this->trans('invalid');

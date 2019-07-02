@@ -4,7 +4,6 @@ namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
-use MadisonSolutions\LCF\Validator;
 
 class NumberField extends ScalarField
 {
@@ -31,7 +30,7 @@ class NumberField extends ScalarField
         return 'lcf-number-input';
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! (is_int($value) || (is_float($value) && is_finite($value)))) {
             $messages[$path][] = $this->trans('invalid');

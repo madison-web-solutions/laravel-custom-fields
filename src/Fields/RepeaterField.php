@@ -3,7 +3,6 @@
 namespace MadisonSolutions\LCF\Fields;
 
 use MadisonSolutions\LCF\Field;
-use MadisonSolutions\LCF\Validator;
 
 class RepeaterField extends Field
 {
@@ -54,7 +53,7 @@ class RepeaterField extends Field
         return $ok;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! is_array($value)) {
             $messages[$path][] = $this->trans('invalid');
@@ -75,7 +74,7 @@ class RepeaterField extends Field
             $messages[$path][] = $this->trans('min', ['min' => $min]);
         }
         foreach ($value as $i => $sub_value) {
-            $this->sub_field->validate("{$path}.{$i}", $sub_value, $messages, $validator);
+            $this->sub_field->validate("{$path}.{$i}", $sub_value, $messages, $data);
         }
     }
 

@@ -401,15 +401,15 @@ abstract class Field implements JsonSerializable
      * @param string $path The location of this value within the tree of submitted data (in 'dot notation')
      * @param mixed $value The value being tested
      * @param ?array &$messages Array into which error messages are written
-     * @param Validator $validator Validator object providing access to other submitted data
+     * @param array $data Array containing all submitted data (required for testing relative conditions)
      * @return void Nothing is returned, the overall decision about whether data is valid depends on the presence or not of error messages
      */
-    public function validate(string $path, $value, &$messages, Validator $validator)
+    public function validate(string $path, $value, &$messages, array $data)
     {
         if (is_null($messages)) {
             $messages = [];
         }
-        if ($this->testCondition($path, $validator->getData()) === false) {
+        if ($this->testCondition($path, $data) === false) {
             if (! is_null($value)) {
                 $messages[$path][] = $this->trans('null-required');
             }
@@ -421,7 +421,7 @@ abstract class Field implements JsonSerializable
             }
             return;
         }
-        return $this->validateNotNull($path, $value, $messages, $validator);
+        return $this->validateNotNull($path, $value, $messages, $data);
     }
 
     /**
@@ -430,10 +430,10 @@ abstract class Field implements JsonSerializable
      * @param string $path The location of this value within the tree of submitted data (in 'dot notation')
      * @param mixed $value The value being tested
      * @param ?array &$messages Array into which error messages are written
-     * @param Validator $validator Validator object providing access to other submitted data
+     * @param array $data Array containing all submitted data (required for testing relative conditions)
      * @return void Nothing is returned, the overall decision about whether data is valid depends on the presence or not of error messages
      */
-    public function validateNotNull(string $path, $cast_value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $cast_value, &$messages, array $data)
     {
         //
     }

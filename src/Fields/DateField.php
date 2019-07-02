@@ -6,7 +6,6 @@ use DateTime;
 use MadisonSolutions\JustDate\JustDate;
 use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\ScalarField;
-use MadisonSolutions\LCF\Validator;
 
 class DateField extends ScalarField
 {
@@ -45,7 +44,7 @@ class DateField extends ScalarField
         return 'lcf-date-input';
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! ($value instanceof JustDate)) {
             $messages[$path][] = $this->trans('invalid');

@@ -8,7 +8,6 @@ use MadisonSolutions\LCF\FindableInterface;
 use MadisonSolutions\LCF\FindableModelRule;
 use MadisonSolutions\LCF\ScalarField;
 use MadisonSolutions\LCF\LCF;
-use MadisonSolutions\LCF\Validator;
 
 class ModelIdField extends ScalarField
 {
@@ -55,7 +54,7 @@ class ModelIdField extends ScalarField
         return new $this->model_class;
     }
 
-    public function validateNotNull(string $path, $value, &$messages, ?Validator $validator = null)
+    public function validateNotNull(string $path, $value, &$messages, array $data)
     {
         if (! ($this->string_keys ? is_string($value) : is_int($value))) {
             $messages[$path][] = $this->trans('invalid');
