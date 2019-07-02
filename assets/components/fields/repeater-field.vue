@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div v-if="canAdd" class="lcf-repeater-append">
-                    <button type="button" class="lcf-btn" @click="insert(length)"><i class="fas fa-plus-circle"></i> Add row</button>
+                    <button type="button" class="lcf-btn" @click="insert(length)"><i class="fas fa-plus-circle"></i> {{ appendLabel }}</button>
                 </div>
                 <div ref="insertMarker" class="lcf-repeater-insert-marker" :style="insertMarkerStyle"></div>
             </div>
@@ -63,6 +63,9 @@ export default {
         },
         max: function() {
             return get(this.field, 'settings.max');
+        },
+        appendLabel: function() {
+            return get(this.field, 'settings.appendLabel', 'Add row');
         },
         canAdd: function() {
             return this.max == null || this.length < this.max;
