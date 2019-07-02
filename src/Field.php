@@ -387,7 +387,7 @@ abstract class Field implements JsonSerializable
      * submitted data), and writes any validation error messages to the supplied $messages array.
      *
      * All fields have a 'condition' option which allows a user to specify the conditions under which the field should be present in the forms.
-     * If the condition check is negative, then validation for this field will not be performed.
+     * If the condition check is negative, then the field must have null value in order to pass validation.
      *
      * Note that this function is not intended to be called by external code - it would normally only be called from within a Validator instance
      *
@@ -410,6 +410,9 @@ abstract class Field implements JsonSerializable
             $messages = [];
         }
         if ($this->testCondition($path, $validator->getData()) === false) {
+            if (! is_null($value)) {
+                $messages[$path][] = $this->trans('null-required');
+            }
             return;
         }
         if (is_null($value)) {
@@ -447,7 +450,16 @@ abstract class Field implements JsonSerializable
     public function trans(string $msg_code, array $params = [])
     {
         $field_code = $this->fieldTypeName();
-        return __("lcf::validation.{$field_code}.{$msg_code}", $params);
+        $try = "lcf::validation.fields.{$field_code}.{$msg_code}";
+        $out = __($try, $params);
+        if ($out == $try) {
+            $try = "lcf::validation.default.{$msg_code}";
+            $out = __($try, $params);
+        }
+        if ($out == $try) {
+            $out = $msg_code;
+        }
+        return $out;
     }
 
     /**
