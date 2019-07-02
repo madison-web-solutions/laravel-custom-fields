@@ -108,7 +108,7 @@ class RepeaterField extends Field
             $mapped_value[$i] = $this->sub_field->doMap($callback, $sub_value, $path);
             array_pop($path);
         }
-        return $mapped_value;
+        return $callback($this, $mapped_value, $path);
     }
 
     protected function expandPrepareNotNull($cast_value)

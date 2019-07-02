@@ -98,7 +98,8 @@ class SwitchField extends Field
         array_push($path, $switch_name);
 
         $mapped_switch_value = $switch_field->doMap($callback, $cast_value->value, $path);
-        return new SwitchValue($switch_name, $mapped_switch_value);
+        $mapped_value = new SwitchValue($switch_name, $mapped_switch_value);
+        return $callback($this, $mapped_value, $path);
     }
 
     protected function expandPrepareNotNull($cast_value)
