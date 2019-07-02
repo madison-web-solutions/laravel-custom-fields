@@ -47,7 +47,12 @@ export default {
     },
     methods: {
         switchLabel: function(key) {
-            return get(this.field, 'settings.switchLabels.' + key, key);
+            var label = get(this.field, 'settings.switchLabels.' + key);
+            if (! label) {
+                // If no label is set, guess one by proper-casing the key
+                label = key.replace(/^\w/, t => t.toUpperCase()).replace(/_\w/g, t => ' ' + t.charAt(1).toUpperCase());
+            }
+            return label;
         },
         getValidSwitchKey: function(input) {
             if (input && this.switchFields[input]) {
