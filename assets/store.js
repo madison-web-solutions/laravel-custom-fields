@@ -57,7 +57,9 @@ var setInitialValue = function(groupName, fieldName, value)
     }
     var recurse = function(value) {
         var id = uniqueId('v');
-        if (isScalar(value)) {
+        if (value == null) {
+            return addNode(null, null);
+        } else if (isScalar(value)) {
             return addNode(value, null);
         } else if (isArray(value)) {
             return addNode(null, map(value, recurse));

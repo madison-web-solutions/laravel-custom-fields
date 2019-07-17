@@ -13,6 +13,11 @@ class Validator extends LaravelValidator
     {
         parent::__construct(validator()->getTranslator(), $data, $rules, [], []);
         $this->fields = $fields;
+
+        $app = app();
+        if (isset($app['db'], $app['validation.presence'])) {
+            $this->setPresenceVerifier($app['validation.presence']);
+        }
     }
 
     /**
