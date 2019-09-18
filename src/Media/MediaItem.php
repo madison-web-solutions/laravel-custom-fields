@@ -1,12 +1,14 @@
 <?php
 namespace MadisonSolutions\LCF\Media;
 
+use Log;
+use Storage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
-use \Illuminate\Support\Str;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Intervention\Image\Exception\NotReadableException;
 use Intervention\Image\ImageManager;
-use Storage;
 
 class MediaItem extends Model
 {
@@ -59,7 +61,11 @@ class MediaItem extends Model
         if (! $this->fileExists($size)) {
             try {
                 $this->createImageSize($size);
+            } catch (NotReadableException $e) {
+                Log::warning("urlOrCreate failed - Invalid image data for " . $this->location() . ": " . $e->getMessage());
+                return false;
             } catch (FileNotFoundException $e) {
+                Log::warning("urlOrCreate failed - Original image file not found for for " . $this->location());
                 return false;
             }
         }

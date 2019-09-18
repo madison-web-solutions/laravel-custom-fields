@@ -126,7 +126,7 @@ Route::post('lcf/media-library/update', function (Request $request) {
     ]);
     $item = MediaItem::findOrFail($request->item_id);
     $item->title = $request->title;
-    $item->alt = $request->alt;
+    $item->alt = $request->alt ?? '';
     $item->save();
     return [
         'ok' => true,
