@@ -55,7 +55,7 @@ Route::get('lcf/link-lookup', function (Request $request, LCF $lcf) {
 
 Route::get('lcf/media-library', function (Request $request) {
     // @todo authorization
-    $query = MediaItem::query();
+    $query = MediaItem::query()->orderBy('updated_at', 'desc');
     $search = $request->input('search');
     if ($search) {
         $words = preg_split('/\s+/', $search);
