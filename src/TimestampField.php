@@ -81,7 +81,11 @@ class TimestampField extends Field
             return true;
         }
         if (is_string($input)) {
-            $timestamp = strtotime($input);
+            if (preg_match('/^\d+$/', $input)) {
+                $timestamp = (int) $input;
+            } else {
+                $timestamp = strtotime($input);
+            }
             if ($timestamp === false) {
                 $output = null;
                 return false;

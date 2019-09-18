@@ -1,5 +1,8 @@
 <template>
-    <input ref="input" :name="nameAttr" type="text" :class="{'lcf-input-has-error': hasError}" :value="formattedValue" :placeholder="placeholder" @change="change" @keydown.enter.prevent="change" />
+    <div>
+        <input ref="input" type="text" :class="{'lcf-input-has-error': hasError}" :value="formattedValue" :placeholder="placeholder" @change="change" @keydown.enter.prevent="change" />
+        <input :name="nameAttr" type="hidden" :value="value" />
+    </div>
 </template>
 
 <script>
