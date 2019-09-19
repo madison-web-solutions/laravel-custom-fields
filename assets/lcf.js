@@ -31,6 +31,7 @@ var initLcf = function() {
         var groupName = el.getAttribute('data-group-name');
         var errors = JSON.parse(el.getAttribute('data-errors') || '{}');
         store.setErrors(groupName, errors);
+        el.parentElement.removeChild(el);
     });
 };
 

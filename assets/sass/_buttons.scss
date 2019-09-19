@@ -1,6 +1,5 @@
 
 .lcf-btn-group {
-    margin-bottom: $lcf-spacer;
     .lcf-btn, .lcf-btn-primary, .lcf-btn-danger {
         margin-right: ($lcf-spacer * 0.5);
     }
@@ -16,7 +15,8 @@
 }
 
 %lcf-btn-base {
-    line-height: 1.4;
+    line-height: 1.1;
+    padding: 0.2em 0.6em;
     font-size: $lcf-button-font-size;
     border: 1px solid $lcf-border-color;
     border-radius: $lcf-button-radius;

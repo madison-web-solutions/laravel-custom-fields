@@ -3,21 +3,17 @@
 }
 
 .lcf-form {
-    display: flex;
-    flex-flow: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-gap: $lcf-spacer;
 }
 
 .lcf-form, .lcf-field, .lcf-input {
     font-size: $lcf-font-size;
 }
 
-.lcf-field {
-    flex-basis: 100%;
-    margin-bottom: $lcf-spacer;
-    &:last-child {
-        margin-bottom: 0;
-    }
+.lcf-field, .lcf-btn-group {
+    grid-column-end: span 12;
 }
 
 .lcf-error {
@@ -28,6 +24,7 @@
 }
 
 .lcf-field-label {
+    display: inline-block;
     color: $lcf-field-label-color;
     font-weight: $lcf-field-label-font-weight;
     margin-bottom: $lcf-spacer * 0.25;

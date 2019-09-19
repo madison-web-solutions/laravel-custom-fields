@@ -1,16 +1,15 @@
 .lcf-input-markdown{
     position: relative;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: $lcf-spacer;
     height: 200px;
-    > textarea {
-        flex-basis: 50%;
+    > label {
+        grid-column-end: span 2;
     }
     .lcf-markdown-preview {
         @include lcf-panel;
         background-color: $lcf-input-background-color;
-        margin-left: $lcf-spacer;
-        flex-basis: 50%;
         overflow: auto;
         cursor: not-allowed;
     }
@@ -27,5 +26,8 @@
         width: 100vw;
         height: 100vh;
         padding: 10px;
+        > label {
+            display: none;
+        }
     }
 }
