@@ -62,6 +62,7 @@ class LCFServiceProvider extends ServiceProvider
                     Route::post('markdown', 'Controller@markdown');
 
                     Route::get('media-library', 'Media\Controller@index');
+                    Route::get('media-library/folders', 'Media\Controller@folders');
                     Route::post('media-library', 'Media\Controller@upload');
                     Route::get('media-library/{id}', 'Media\Controller@get');
                     Route::post('media-library/{id}', 'Media\Controller@update');

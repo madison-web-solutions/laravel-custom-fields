@@ -135,6 +135,16 @@ class StorageItem
         $this->deleteFile();
         $fh = fopen($srcPath, 'rb');
         $this->disk()->put($this->location(), $fh);
+        fclose($fh);
+    }
+
+    public function setFileByResource($fh)
+    {
+        if (! is_resource($fh) || get_resource_type($fh) != 'stream') {
+            throw new \InvalidArgumentException("Argument to setFileByResource() must be a stream resource");
+        }
+        $this->deleteFile();
+        $this->disk()->put($this->location(), $fh);
     }
 
     public function setFileContents(string $contents)

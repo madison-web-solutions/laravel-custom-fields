@@ -5,13 +5,16 @@
             <button type="button" class="lcf-ml-tab" :class="{active: mode == 'upload'}" @click.prevent="uploadMode">Upload</button>
             <button v-if="! standalone" type="button" class="lcf-ml-tab" @click="cancel">Cancel</button>
         </div>
-        <div class="lcf-panel" :style="{display: showLibrary ? 'block' : 'none'}">
-            <lcf-input-wrapper class="lcf-input">
-                <input ref="searchInput" type="search" placeholder="search" @input="handleSearch" @keydown.enter.prevent="handleSearch" />
-            </lcf-input-wrapper>
+        <div v-if="showLibrary" class="lcf-panel">
+            <div class="lcf-ml-search">
+                <lcf-input-wrapper class="lcf-input">
+                    <input ref="searchInput" type="search" placeholder="search" @input="handleSearch" @keydown.enter.prevent="handleSearch" />
+                </lcf-input-wrapper>
+                <lcf-select-input :value="selectedFolderId" :choices="folderChoices" placeholder="All Folders" @change="selectFolder"></lcf-select-input>
+            </div>
 
             <p v-if="! standalone" >Click to select:</p>
-            <div class="lcf-ml-index" @scroll="handleScroll">
+            <div class="lcf-ml-index" ref="libraryIndex" @scroll="handleScroll">
                 <template v-for="upload in uploads">
                     <div class="lcf-ml-preview" :class="'lcf-ml-'+upload.status" v-if="upload.status != 'done'">
                         <p v-if="upload.status == 'new'">Queued</p>
@@ -20,6 +23,7 @@
                     </div>
                 </template>
                 <lcf-media-preview v-for="item in items" :key="item.id" :item="item" @select="select" />
+                <p v-if="searchId">Loading more...</p>
             </div>
         </div>
         <div class="lcf-panel" v-if="showUpload">
@@ -61,14 +65,16 @@ export default {
             itemIds: [],
             selectedItemId: null,
             searchId: null,
+            libraryScrollPos: 0,
+            selectedFolderId: null,
         }
     },
     created: function() {
-        this.getDebounce = debounce((category, searchString, page, callback) => {
-            this.searchId = this.$lcfStore.searchMediaLibrary(category, searchString, page, callback);
+        this.getDebounce = debounce((category, searchString, folder, page, callback) => {
+            this.searchId = this.$lcfStore.searchMediaLibrary(category, searchString, folder, page, callback);
         }, 300);
 
-        this.searchId = this.$lcfStore.searchMediaLibrary(this.category, '', 1, (searchedId, itemIds, hasMore) => {
+        this.searchId = this.$lcfStore.searchMediaLibrary(this.category, '', null, 1, (searchedId, itemIds, hasMore) => {
             if (this.searchId != searchedId) {
                 return;
             }
@@ -97,12 +103,27 @@ export default {
         },
         showInspect: function() {
             return this.mode == 'inspect' && this.selectedItem && ! this.hasDragObj;
+        },
+        folders: function() {
+            return this.$lcfStore.getMediaLibraryFolders();
+        },
+        folderChoices: function() {
+            return map(this.folders, (folder) => {
+                return {
+                    value: folder.id,
+                    label: folder.path.join(' / ')
+                };
+            });
         }
     },
     methods: {
         libraryMode: function() {
             this.mode = 'library';
             this.selectedItemId = null;
+            // scroll to previous position
+            window.setTimeout(() => {
+                this.$refs.libraryIndex.scrollTop = this.libraryScrollPos;
+            }, 10);
         },
         uploadMode: function() {
             this.mode = 'upload';
@@ -125,9 +146,13 @@ export default {
                 this.itemIds.push(itemId);
             }
         },
+        selectFolder: function(e) {
+            this.selectedFolderId = e.value;
+            this.handleSearch();
+        },
         handleSearch: function() {
             var searchString = this.$refs.searchInput.value;
-            this.getDebounce(this.category, searchString, 1, (searchedId, itemIds, hasMore) => {
+            this.getDebounce(this.category, searchString, this.selectedFolderId, 1, (searchedId, itemIds, hasMore) => {
                 if (this.searchId != searchedId) {
                     return;
                 }
@@ -139,12 +164,13 @@ export default {
                 this.libraryAddMany(itemIds);
             });
         },
-        handleScroll: function(e) {
-            var ele = e.target;
+        handleScroll: function() {
+            var ele = this.$refs.libraryIndex;
+            this.libraryScrollPos = ele.scrollTop;
             var scrollProportion = ((ele.scrollTop + ele.offsetHeight) / ele.scrollHeight);
             if (this.hasMore && !this.searchId && scrollProportion > 0.9) {
                 var page = this.page + 1;
-                this.searchId = this.$lcfStore.searchMediaLibrary(this.category, this.searchString, page, (searchedId, itemIds, hasMore) => {
+                this.searchId = this.$lcfStore.searchMediaLibrary(this.category, this.searchString, this.selectedFolderId, page, (searchedId, itemIds, hasMore) => {
                     if (this.searchId != searchedId) {
                         return;
                     }
@@ -179,6 +205,7 @@ export default {
                     status: 'new',
                     progress: 0,
                     error: null,
+                    autoSelect: (! this.standalone && files.length == 1),
                 });
             }
             this.next();
@@ -196,6 +223,9 @@ export default {
                 }
             }
             if (!nextUpload) {
+                if (this.autoSelectId) {
+
+                }
                 return;
             }
             this.uploading = true;
@@ -209,6 +239,9 @@ export default {
             this.$lcfStore.uploadToMediaLibrary(formData, (progress) => {
                 nextUpload.progress = progress;
             }, (itemId) => {
+                if (nextUpload.autoSelect) {
+                    this.$emit('select', {item: this.$lcfStore.getMediaItem(itemId)});
+                }
                 var index = this.uploads.indexOf(nextUpload);
                 this.uploads.splice(index, 1);
                 this.libraryAdd(itemId, true);

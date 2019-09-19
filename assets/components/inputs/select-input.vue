@@ -2,7 +2,7 @@
     <lcf-input-wrapper class="lcf-input lcf-input-select" v-bind="wrapperProps">
         <div class="lcf-select-wrapper">
             <select :id="inputId" ref="input" :class="inputClasses" :name="name" :disabled="disabled" @change="change">
-                <option ref="placeholder" :disabled="required" value="" :selected="isNull">{{ required ? 'Select' : '' }}</option>
+                <option ref="placeholder" :disabled="required" value="" :selected="isNull">{{ nullLabel }}</option>
                 <option v-for="choice in choices" :value="choice.value" :selected="value == choice.value">{{ choice.label }}</option>
             </select>
             <button type="button" class="lcf-combo-button"><i class="fas fa-caret-down"></i></button>
@@ -23,6 +23,9 @@ export default {
     computed: {
         isNull: function() {
             return this.value == null || this.value == '';
+        },
+        nullLabel: function() {
+            return this.placeholder || (this.required ? 'Select' : '');
         }
     },
     methods: {

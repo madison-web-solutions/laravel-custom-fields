@@ -5,15 +5,18 @@ import Vue from 'vue';
 var store = new Vue({
     data: function() {
         return {
-            groups: {},
-            nodes: {},
+            top: {}, // Top level node ids
+            nodes: {}, // Node objects
             mediaItems: {},
+            mediaFolders: null,
             searchObjs: {}
         };
     }
 });
 
+// Mounting the store to an element in the dom allows store data to be inspected in vue dev tools
 var el = document.body.appendChild(document.createElement('div'));
+el.classList.add('lcf-store-dummy');
 store.$mount(el);
 
 var mapArrayOrObject = function(arrayOrObject, fn) {
@@ -28,6 +31,7 @@ var mapArrayOrObject = function(arrayOrObject, fn) {
     }
 };
 
+// Return true if value is string, number, boolean or null
 var isScalar = function(value) {
     switch (typeof value) {
         case 'string':
@@ -41,68 +45,41 @@ var isScalar = function(value) {
     }
 };
 
-// Create a new node with the given value and child node ids
-// Return the id for the created node
-var addNode = function(value, children) {
-    var id = uniqueId('v');
-    //console.log("creating node " + id + " with value " + value);
-    Vue.set(store.nodes, id, {value: value, children: children, errors: []});
-    return id;
-};
-
-var setInitialValue = function(groupName, fieldName, value)
-{
-    if (! store.groups[groupName]) {
-        Vue.set(store.groups, groupName, {});
+var getNode = function(pathOrId) {
+    if (pathOrId == null) {
+        return null;
     }
-    var recurse = function(value) {
-        var id = uniqueId('v');
-        if (value == null) {
-            return addNode(null, null);
-        } else if (isScalar(value)) {
-            return addNode(value, null);
-        } else if (isArray(value)) {
-            return addNode(null, map(value, recurse));
-        } else if (isObject(value)) {
-            return addNode(null, mapValues(value, recurse));
-        } else {
-            throw new Error("value must be scalar, array or object");
-        }
-    };
-    Vue.set(store.groups[groupName], fieldName, recurse(value));
+    if (isString(pathOrId) && store.nodes[pathOrId]) {
+        return store.nodes[pathOrId];
+    }
+    if (isString(pathOrId) || isArray(pathOrId)) {
+        return store.nodes[getId(pathOrId)];
+    }
+    throw new Error("value must be node id (string) or path (string/array)");
 };
 
 // Get the node id for a given absolute path
 // path is an array, starting with the groupname
+// returns null if no node at path
 var getId = function(path) {
-    if (path.length < 2) {
-        return null;
+    if (isString(path)) {
+        path = path.split('.');
     }
-    var groupName = path[0];
-    var fieldName = path[1];
-    if (! store.groups[groupName] || ! store.groups[groupName][fieldName]) {
-        return null;
+    var id = store.top[path[0]];
+    for (var i = 1; i < path.length; i++) {
+        var node = id ? store.nodes[id] : null;
+        if (node && node.children) {
+            id = node.children[path[i]];
+        } else {
+            return null;
+        }
     }
-    var id = store.groups[groupName][fieldName];
-    var getChildId = function(parentId, key) {
-        var node = parentId ? store.nodes[parentId] : null;
-        return (node && node.children) ? node.children[key] : null;
-    };
-    for (var i = 2; i < path.length; i++) {
-        id = getChildId(id, path[i]);
-    };
     return id;
 };
 
-var getNode = function(path) {
-    return store.nodes[getId(path)];
-};
-
 var getValue = function(path) {
-    //console.log("getting value at path " + path.join('.'));
     var node = getNode(path);
     var value = node ? node.value : null;
-    //console.log("value at path " + path.join('.')+ " is " + value);
     return value;
 };
 
@@ -134,6 +111,113 @@ var getChildErrors = function(path) {
     return mapArrayOrObject(getChildNodes(path), node => node ? node.errors : []);
 };
 
+
+
+
+// Create a new node and return the id for the created node
+var addNode = function() {
+    var id = uniqueId('v');
+    Vue.set(store.nodes, id, {value: null, children: null, errors: []});
+    return id;
+};
+
+var setInitialValue = function(groupName, fieldName, value) {
+    groupName = stringArg(groupName);
+    fieldName = stringArg(fieldName);
+    var groupNodeId = store.top[groupName];
+    if (! groupNodeId) {
+        groupNodeId = addNode();
+        Vue.set(store.top, groupName, groupNodeId);
+    }
+    var groupNode = getOrCreateObjectNode(groupNodeId);
+    var fieldNodeId = groupNode.children[fieldName];
+    if (! fieldNodeId) {
+        fieldNodeId = addNode();
+        Vue.set(groupNode.children, fieldName, fieldNodeId);
+    }
+    setValueDeepAtId(fieldNodeId, value);
+};
+
+// External
+var setValueDeep = function(path, value) {
+    var nodeId = getId(path);
+    if (! nodeId) {
+        throw new Error("no node exists at path " + path);
+    }
+    setValueDeepAtId(nodeId, value);
+};
+
+// Internal
+var setValueDeepAtId = function(nodeId, value) {
+    var node = store.nodes[nodeId];
+    if (! node) {
+        throw new Error("no node exists with id " + nodeId);
+    }
+    deleteNodeChildren(node);
+    if (value == null || isScalar(value)) {
+        Vue.set(node, 'value', value);
+    } else if (isArray(value) || isObject(value)) {
+        Vue.set(node, 'value', null);
+        var childIds = mapArrayOrObject(value, (childValue, key) => {
+            var childId = addNode();
+            setValueDeepAtId(childId, childValue);
+            return childId;
+        });
+        Vue.set(node, 'children', childIds);
+    } else {
+        throw new Error("value must be scalar, array or object");
+    }
+};
+
+// Return the value tree from the node at the specified path
+
+var getValueDeep = function(path) {
+    return getValueDeepAtId(getId(path));
+};
+
+var getValueDeepAtId = function(nodeId) {
+    var node = store.nodes[nodeId];
+    if (! node) {
+        return null;
+    } else if (node.children == null) {
+        return node.value;
+    } else {
+        return mapArrayOrObject(node.children, getValueDeepAtId);
+    }
+};
+
+
+// Delete a node from the tree, and recursively delete all sub-nodes
+// Return the value tree from the deleted node
+
+var deleteNode = function(path) {
+    return deleteNodeAtId(getId(path));
+};
+
+var deleteNodeAtId = function(nodeId) {
+    var node = store.nodes[nodeId];
+    var ret = null;
+    if (node) {
+        ret = deleteNodeChildren(node);
+        Vue.delete(store.nodes, id);
+    }
+    return ret;
+};
+
+var deleteNodeChildren = function(node) {
+    var ret = null;
+    if (node.children == null) {
+        ret = node.value;
+    } else {
+        ret =  mapArrayOrObject(node.children, deleteNodeAtId);
+        Vue.set(node, 'children', null);
+    }
+    return ret;
+};
+
+
+
+
 var getOrCreateArrayNode = function(path) {
     var node = getNode(path);
     if (! node) {
@@ -163,40 +247,39 @@ var getOrCreateObjectNode = function(path) {
 };
 
 var arrayInsert = function(path, index) {
+    index = integerArg(index);
     var node = getOrCreateArrayNode(path);
-    var childId = addNode(null, null);
-    node.children.splice(index, 0, childId);
+    node.children.splice(index, 0, addNode());
 };
 
 var arrayDelete = function(path, index) {
+    index = integerArg(index);
     var node = getOrCreateArrayNode(path);
     var deletedId = node.children.splice(index, 1)[0];
-    Vue.delete(store.nodes, deletedId); // Also delete children?
+    deleteNodeAtId(deletedId);
 };
 
 var arrayMove = function(path, from, to) {
+    from = integerArg(from);
+    to = integerArg(to);
     var node = getOrCreateArrayNode(path);
     var cutId = node.children.splice(from, 1)[0];
     node.children.splice(to, 0, cutId);
 };
 
 var objectAddKey = function(path, key) {
-    var node = getOrCreateObjectNode(state, path);
-    var childId = addNode(state, null, null);
-    Vue.set(node.children, key, childId);
+    var node = getOrCreateObjectNode(path);
+    Vue.set(node.children, key, addNode());
 };
 
 var objectDeleteKey = function(path, key) {
     var node = getOrCreateObjectNode(path);
-    var deletedId = node.children[key];
+    deleteNodeAtId(node.children[key]);
     Vue.delete(node.children, key);
-    Vue.delete(store.nodes, deletedId); // Also delete children?
 };
 
 var updateValue = function(path, value) {
-    //console.log("updating value at path " + path.join('.')+ " to " + value);
     if (! isScalar(value)) {
-        // @todo investigate js errors properly
         throw new Error("value is not a scalar");
     }
     var node = getNode(path);
@@ -215,17 +298,16 @@ var recurseTree = function(path, node, fn) {
     }
 };
 
-var walkTree = function(groupName, fn) {
-    var group = store.groups[groupName];
-    if (! group) {
-        throw new Error("No group " + groupName);
+var walkTree = function(path, fn) {
+    var node = getNode(path);
+    if (!node) {
+        throw new Error("Path " + path + " not found in store");
     }
-    forEach(group, (nodeId, fieldName) => {
-        recurseTree([fieldName], store.nodes[nodeId], fn);
-    });
+    recurseTree([], node, fn);
 };
 
 var setErrors = function(groupName, errors) {
+    groupName = stringArg(groupName);
     if (errors == null) {
         errors = {};
     }
@@ -234,6 +316,9 @@ var setErrors = function(groupName, errors) {
     }
     var handledPaths = mapValues(errors, () => false);
     walkTree(groupName, (path, node) => {
+        if (path.length == 0) {
+            return;
+        }
         var pathStr = path.join('.');
         //console.log('checking path '+pathStr+' for errors');
         if (errors.hasOwnProperty(pathStr)) {
@@ -359,11 +444,12 @@ var getMediaItem = function(id) {
     return store.mediaItems[id];
 };
 
-var searchMediaLibrary = function(category, search, page, callback) {
+var searchMediaLibrary = function(category, search, folderId, page, callback) {
     var searchId = searchIdCounter++;
     axios.get('/lcf/media-library', {params: {
         category: category,
         search: search,
+        folder_id: folderId,
         page: page
     }}).then(response => {
         var itemIds = [];
@@ -376,6 +462,18 @@ var searchMediaLibrary = function(category, search, page, callback) {
         console.log(error);
     });
     return searchId;
+};
+
+var getMediaLibraryFolders = function() {
+    if (store.mediaFolders == null) {
+        store.mediaFolders = [];
+        axios.get('/lcf/media-library/folders', {}).then(response => {
+            store.mediaFolders = response.data.folders;
+        }, error => {
+            console.log(error);
+        });
+    }
+    return store.mediaFolders;
 };
 
 var uploadToMediaLibrary = function(formData, progressFn, successFn, errorFn) {
@@ -438,13 +536,6 @@ var pathArg = function(path) {
     return map(path.split('.'), part => intRegex.test(part) ? parseInt(part) : part);
 };
 
-var scalarArg = function(value) {
-    if (! isScalar(value)) {
-        throw new Error("value must be a scalar primitive");
-    }
-    return value;
-};
-
 var stringArg = function(arg) {
     if (! isString(arg) || arg == '') {
         throw new Error("argument must be a non-empty string");
@@ -460,56 +551,30 @@ var integerArg = function(arg) {
 };
 
 export default {
-    getId: function(path) {
-        return getId(pathArg(path));
-    },
-    getValue: function(path) {
-        return getValue(pathArg(path));
-    },
-    getErrors: function(path) {
-        return getErrors(pathArg(path));
-    },
-    getChildIds: function(path) {
-        return getChildIds(pathArg(path));
-    },
-    getChildKeys: function(path) {
-        return getChildKeys(pathArg(path));
-    },
-    getChildValues: function(path) {
-        return getChildValues(pathArg(path));
-    },
-    getChildErrors: function(path) {
-        return getChildErrors(pathArg(path));
-    },
-    updateValue: function(path, value) {
-        updateValue(pathArg(path), scalarArg(value));
-    },
-    setInitialValue: function(groupName, fieldName, complexValue) {
-        setInitialValue(stringArg(groupName), stringArg(fieldName), complexValue);
-    },
-    setErrors: function(groupName, errors) {
-        setErrors(stringArg(groupName), errors);
-    },
-    arrayInsert: function(path, index) {
-        arrayInsert(pathArg(path), integerArg(index));
-    },
-    arrayDelete: function(path, index) {
-        arrayDelete(pathArg(path), integerArg(index));
-    },
-    arrayMove: function(path, from, to) {
-        arrayMove(pathArg(path), integerArg(from), integerArg(to));
-    },
+    getId: getId,
+    getValue: getValue,
+    getValueDeep: getValueDeep,
+    getErrors: getErrors,
+    getChildIds: getChildIds,
+    getChildKeys: getChildKeys,
+    getChildValues: getChildValues,
+    getChildErrors: getChildErrors,
+    updateValue: updateValue,
+    setInitialValue: setInitialValue,
+    setValueDeep: setValueDeep,
+    setErrors: setErrors,
+    arrayInsert: arrayInsert,
+    arrayDelete: arrayDelete,
+    arrayMove: arrayMove,
     objectInitKeys: function(path, keys) {
         if (! isArray(keys)) {
             throw new Error("keys must be an array");
         }
-        var node = getOrCreateObjectNode(pathArg(path));
+        var node = getOrCreateObjectNode(path);
         forEach(keys, (key) => {
             key = stringArg(key);
             if (! node.children[key]) {
-                var childId = addNode(null, null);
-                //console.log('initialising key '+key+' on '+path+' with node '+childId);
-                Vue.set(node.children, key, childId);
+                Vue.set(node.children, key, addNode());
             }
         });
     },
@@ -519,6 +584,7 @@ export default {
     getSuggestions: getSuggestions,
     getMediaItem: getMediaItem,
     searchMediaLibrary: searchMediaLibrary,
+    getMediaLibraryFolders: getMediaLibraryFolders,
     updateMediaItem: updateMediaItem,
     uploadToMediaLibrary: uploadToMediaLibrary,
     deleteMediaItem: deleteMediaItem,

@@ -22,15 +22,14 @@ class MediaItemResource extends Resource
     public function toArray($request)
     {
         $type = $this->type;
-        $exists = $this->getStorageItem()->fileExists();
         $out = [
             'id' => $this->id,
             'title' => $this->title,
             'alt' => $this->alt,
-            'url' => ($exists ? $this->url() : null),
+            'url' => ($this->fileExists() ? $this->url() : null),
             'extension' => $this->extension,
             'category' => ($type ? $type->category : null),
-            'thumb' => (($exists && $type->sizable) ? $this->urlOrCreate(self::thumbSize()) : null),
+            'thumb' => ($this->isSizable() ? $this->urlOrCreate(self::thumbSize()) : null),
         ];
         return $out;
     }

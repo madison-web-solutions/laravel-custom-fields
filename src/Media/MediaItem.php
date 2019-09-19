@@ -15,7 +15,8 @@ class MediaItem extends Model
 
     public function setUniqueSlug()
     {
-        $base = Str::slug($this->title);
+        // slug field size is 128, max suffix length is 5 ('-9999'), so truncate slug to 123 chars
+        $base = substr(Str::slug($this->title), 0, 123);
 
         for ($try = 1; $try < 10000; $try++) {
             $slug = $base . ( $try == 1 ? '' : "-{$try}" );
@@ -49,6 +50,16 @@ class MediaItem extends Model
     public function urlOrCreate($size = null)
     {
         return $this->getStorageItem()->urlOrCreate($size);
+    }
+
+    public function fileExists()
+    {
+        return $this->getStorageItem()->fileExists();
+    }
+
+    public function isSizable()
+    {
+        return $this->type->sizable && $this->fileExists();
     }
 
     public function delete()

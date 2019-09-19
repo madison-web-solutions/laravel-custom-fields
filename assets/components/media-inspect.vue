@@ -1,7 +1,7 @@
 <template>
     <div class="lcf-ml-inspect" :data-extension="extension" :data-category="category">
         <div data-name="back">
-            <a href="#" @click.stop="close"><i class="fas fa-long-arrow-alt-left"></i> Back</a>
+            <a href="#" @click.stop.prevent="close"><i class="fas fa-long-arrow-alt-left"></i> Back</a>
         </div>
         <div data-name="preview">
             <img v-if="hasImage" :src="item.url" />
@@ -11,7 +11,8 @@
         <div data-name="details">
             <lcf-text-input key="title" label="Title" :value="displayVals.title" @input="change" />
             <lcf-text-input key="alt" :label="isImage ? 'Alt' : 'Subtitle'" :value="displayVals.alt" @input="change" />
-            <p v-if="imgWidth && imgHeight">{{ imgWidth }}px x {{ imgHeight }}px</p>
+            <p class="lcf-ml-inspect-meta">ID: {{ item.id }}</p>
+            <p class="lcf-ml-inspect-meta" v-if="imgWidth && imgHeight">Dimensions: {{ imgWidth }}px x {{ imgHeight }}px</p>
             <div class="lcf-btn-group-right">
                 <button v-if="editable && edited" type="button" class="lcf-btn-primary" @click.stop="saveUpdates">Save Changes</button>
                 <button type="button" class="lcf-btn" @click.stop="close"><i class="fas fa-long-arrow-alt-left"></i> Back</button>

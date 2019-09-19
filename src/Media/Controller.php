@@ -16,7 +16,12 @@ class Controller extends BaseController
     public function index(Request $request)
     {
         $this->authorize('index', MediaItem::class);
-        $query = MediaItem::query();
+        $request->validate([
+            'search' => 'nullable|string',
+            'category' => 'nullable|string',
+            'folder_id' => 'nullable|integer',
+        ]);
+        $query = MediaItem::query()->orderBy('updated_at', 'desc');
         $ilike = LCF::iLikeOperator($query->getConnection());
 
         $search = $request->input('search');
@@ -33,8 +38,39 @@ class Controller extends BaseController
         if ($category) {
             $query->whereIn('extension', MediaType::allExtensionsForCategory($category));
         }
+        $folder_id = $request->input('folder_id');
+        if ($folder_id) {
+            $query->where('folder_id', $folder_id);
+        }
         $items = $query->paginate(50);
         return MediaItemResource::collection($items);
+    }
+
+    public function folders(Request $request)
+    {
+        $this->authorize('index', MediaItem::class);
+        $folder_data = [];
+        $recurse = function ($folder) use (&$folder_data, &$recurse) {
+            $path = [$folder->name];
+            $curr = $folder;
+            while ($curr = $curr->parent) {
+                $path[] = $curr->name;
+            }
+            $folder_data[] = [
+                'id' => $folder->id,
+                'name' => $folder->name,
+                'path' => array_reverse($path),
+            ];
+            foreach ($folder->children as $child) {
+                $recurse($child);
+            }
+        };
+        foreach (MediaFolder::tree() as $folder) {
+            $recurse($folder);
+        }
+        return [
+            'folders' => $folder_data,
+        ];
     }
 
     public function get(Request $request, $id)
@@ -69,7 +105,7 @@ class Controller extends BaseController
         $suffixLen = strlen($extension) + 1;
         $basename = substr($file->getClientOriginalName(), 0, -$suffixLen);
         $item = new MediaItem([
-            'title' => $basename,
+            'title' => substr($basename, 0, 128),
             'extension' => $mediaType->extension,
             'alt' => '',
         ]);
@@ -87,8 +123,8 @@ class Controller extends BaseController
         $item = MediaItem::findOrFail($id);
         $this->authorize('update', $item);
         $request->validate([
-            'title' => 'required|string|max:255',
-            'alt' => 'nullable|string|max:255',
+            'title' => 'required|string|max:128',
+            'alt' => 'nullable|string|max:256',
         ]);
 
         $item->title = $request->title;
