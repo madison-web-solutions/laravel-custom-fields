@@ -62,6 +62,9 @@
 
 .lcf-combo-button {
     @extend %lcf-btn-base;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 0;
+    &:last-child {
+        border-top-right-radius: $lcf-button-radius;
+        border-bottom-right-radius: $lcf-button-radius;
+    }
 }

@@ -1,9 +1,10 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-search" v-bind="wrapperProps">
         <input type="hidden" :name="name" :value="value" />
-        <div class="lcf-combo" @click="toggleOpenSearch">
-            <input type="text" :class="inputClasses" :disabled="disabled" readonly :value="displayString" />
-            <button type="button" class="lcf-combo-button"><i class="fas fa-caret-down"></i></button>
+        <div class="lcf-combo">
+            <input type="text" :class="inputClasses" :disabled="disabled" readonly :value="displayString" @click="toggleOpenSearch" />
+            <button v-if="value" type="button" class="lcf-combo-button" @click="clearValue"><i class="fas fa-times"></i></button>
+            <button type="button" class="lcf-combo-button" @click="toggleOpenSearch"><i class="fas fa-caret-down"></i></button>
         </div>
         <div ref="searchInterface" v-if="searchOpen" class="lcf-search-interface">
             <input ref="input" type="search" value="" placeholder="Search" :disabled="disabled" @input="handleSearch" @keydown.enter.prevent="handleSearch" />
@@ -142,6 +143,10 @@ export default {
             if (this.disabled) {return;}
             this.closeSearch();
             this.$emit('change', {key: this._key, value: suggestion.id});
+        },
+        clearValue: function() {
+            if (this.disabled) {return;}
+            this.$emit('change', {key: this._key, value: null});
         }
     }
 };
