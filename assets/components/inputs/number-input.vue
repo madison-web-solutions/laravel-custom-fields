@@ -1,6 +1,6 @@
 <template>
     <lcf-input-wrapper class="lcf-input lcf-input-number" v-bind="wrapperProps">
-        <input :id="inputId" type="number" :class="inputClasses" :name="name" novalidate :step="myStep" :min="min" :max="max" :value="value" :disabled="disabled" @change="change" @keydown.enter.prevent="change" />
+        <input :id="inputId" type="number" :class="inputClasses" :name="name" novalidate :step="myStep" :min="min" :max="max" :value="displayValue" :disabled="disabled" @change="change" @keydown.enter.prevent="change" />
     </lcf-input-wrapper>
 </template>
 
@@ -46,6 +46,9 @@ export default {
             } else {
                 return this.step;
             }
+        },
+        displayValue: function() {
+            return this.tempClear ? '' : this.value;
         }
     },
     methods: {
@@ -67,9 +70,10 @@ export default {
             // But that actually yields 1.1300000000000001 because of rounding errors in the float representation of 0.01
             value = value.toFixed(12) * 1;
             // clear the value first so that the new value definitely gets redrawn on screen
-            this.$emit('change', {key: this._key, value: null});
+            this.tempClear = true;
             this.$nextTick(() => {
                 this.$emit('change', {key: this._key, value: value});
+                this.tempClear = false;
             });
         }
     }

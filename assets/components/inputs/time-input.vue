@@ -30,6 +30,9 @@ export default {
             return Util.timeParse(this.step);
         },
         displayValue: function() {
+            if (this.tempClear) {
+                return '';
+            }
             var parsedValue = this.parse(this.value, false);
             return parsedValue ? parsedValue : this.value;
         },
@@ -50,11 +53,12 @@ export default {
             if (this.disabled) {return;}
             var inputValue = this.$refs.input.value;
             // clear the value first so that the new value definitely gets redrawn on screen
-            this.$emit('change', {key: this._key, value: null});
+            this.tempClear = true;
             if (inputValue != '') {
                 var newValue = this.parse(inputValue, true);
                 this.$nextTick(() => {
                     this.$emit('change', {key: this._key, value: newValue ? newValue : inputValue});
+                    this.tempClear = false;
                 });
             }
         }

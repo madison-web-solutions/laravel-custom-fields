@@ -36,7 +36,7 @@ export default {
             return (this.symbolPlacement == 'after' ? this.symbol : '');
         },
         displayValue: function() {
-            if (Number.isInteger(this.value)) {
+            if (! this.tempClear && Number.isInteger(this.value)) {
                 return (this.value < 0 ? '-' : '') + this.symbolBefore + (Math.abs(this.value) / 100).toFixed(2) + this.symbolAfter;
             } else {
                 return '';
@@ -59,9 +59,10 @@ export default {
                 penceVal = Math.min(penceVal, this.max);
             }
             // clear the value first so that the new value definitely gets redrawn on screen
-            this.$emit('change', {key: this._key, value: null});
+            this.tempClear = true;
             this.$nextTick(() => {
                 this.$emit('change', {key: this._key, value: penceVal});
+                this.tempClear = false;
             });
         }
     }

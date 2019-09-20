@@ -26,6 +26,9 @@ export default {
             if (this.support) {
                 return this.value;
             } else {
+                if (this.tempClear) {
+                    return '';
+                }
                 // If it's a valid date, then convert to d/m/y for display
                 var dmyValue = Util.dateConvert(this.value, 'ymd', 'dmy');
                 return dmyValue ? dmyValue : this.value;
@@ -46,13 +49,19 @@ export default {
             if (this.disabled) {return;}
             if (this.support) {
                 var newValue = this.$refs.input.value;
+                this.$emit('change', {key: this._key, value: newValue});
             } else {
                 // If it's a valid date, then convert to y-m-d to send to the server
                 var inputValue = this.$refs.input.value;
                 var ymdValue = Util.dateConvert(inputValue, 'dmy', 'ymd');
                 var newValue = ymdValue ? ymdValue : inputValue;
+                // clear the value first so that the new value definitely gets redrawn on screen
+                this.tempClear = true;
+                this.$nextTick(() => {
+                    this.$emit('change', {key: this._key, value: newValue});
+                    this.tempClear = false;
+                });
             }
-            this.$emit('change', {key: this._key, value: newValue});
         }
     }
 };

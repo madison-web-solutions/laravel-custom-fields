@@ -37,7 +37,8 @@ export default {
     },
     data: function() {
         return {
-            inputId: Math.random().toString(36).substring(2)
+            inputId: Math.random().toString(36).substring(2),
+            tempClear: false
         };
     },
     computed: {
