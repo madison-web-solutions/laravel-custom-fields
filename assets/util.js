@@ -185,6 +185,7 @@ var timeParse = function(input) {
         return null;
     }
     // parse the string input
+    input = input.toLowerCase().replace(/\s/g, '').replace(/[\.,]/g, ':');
     var res1 = /^(\d\d)(\d\d)(\d\d)?$/.exec(input);
     var res2 = /^(\d+):(\d+)(:(\d+))?$/.exec(input);
     if (res1) {

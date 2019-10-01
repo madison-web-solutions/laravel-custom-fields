@@ -199,7 +199,7 @@ var deleteNodeAtId = function(nodeId) {
     var ret = null;
     if (node) {
         ret = deleteNodeChildren(node);
-        Vue.delete(store.nodes, id);
+        Vue.delete(store.nodes, nodeId);
     }
     return ret;
 };

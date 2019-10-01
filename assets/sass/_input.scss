@@ -23,6 +23,9 @@
             background-color: $lcf-input-disabled-background-color;
         }
     }
+    input[type=text], input[type=search], input[type=number], input[type=date], select {
+        height: 1.6em;
+    }
 }
 
 .lcf-radio-group, .lcf-checkbox-group {

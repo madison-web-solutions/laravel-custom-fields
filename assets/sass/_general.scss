@@ -32,12 +32,15 @@
 
 .lcf-required-asterisk {
     color: $lcf-required-asterisk-color;
+    display: inline-block;
+    vertical-align: top;
 }
 
 .lcf-help {
     font-size: $lcf-small-font-size;
     margin-top: -$lcf-spacer * 0.5;
     margin-bottom: $lcf-spacer * 0.5;
+    white-space: pre-line;
 }
 
 .lcf-combo {

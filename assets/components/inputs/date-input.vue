@@ -39,6 +39,7 @@ export default {
         browserSupportsDateInput: function() {
             // Check whether the browser supports date inputs
             // If it does, you won't be able to set an illegal value on an input with type="date"
+            // @todo actually you can... it'll let you set eg 31st September
             var input = document.createElement('input');
             var notADateValue = 'not-a-date';
             input.setAttribute('type','date');

@@ -151,7 +151,7 @@ export default {
                 var rect = ele.getBoundingClientRect();
                 return scrollTop + rect.top + 0.5 * rect.height;
             });
-            console.log(otherItems.length, midpoints, pageY);
+            //console.log(otherItems.length, midpoints, pageY);
             for (var i = 0; i < midpoints.length; i++) {
                 if (pageY < midpoints[i]) {
                     return i;
