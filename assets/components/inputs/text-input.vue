@@ -17,7 +17,7 @@ export default {
     methods: {
         change: function(e) {
             if (this.disabled) {return;}
-            this.$emit('change', {key: this._key, value: e.target.value});
+            this.$emit('change', {key: this._key, value: e.target.value == '' ? null : e.target.value});
         },
         input: function(e) {
             if (this.disabled) {return;}

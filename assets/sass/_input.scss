@@ -6,7 +6,7 @@
 }
 
 .lcf-input {
-    input[type=text], input[type=search], input[type=number], input[type=date], select, textarea {
+    input[type=text], input[type=search], input[type=number], input[type=date], input[type=password], select, textarea {
         color: $lcf-input-color;
         font-size: $lcf-font-size;
         appearance: none;
