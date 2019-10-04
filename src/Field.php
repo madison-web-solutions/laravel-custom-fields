@@ -129,7 +129,7 @@ abstract class Field implements JsonSerializable
             'css_classes' => 'nullable|array',
             'css_classes.*' => 'required|string',
             'condition' => 'nullable|array',
-            'condition.0' => 'required_with:condition|in:eq,in',
+            'condition.0' => 'required_with:condition|in:eq,neq,in,nin,empty,filled',
             'condition.1' => 'required_with:condition|string',
         ];
     }
@@ -547,8 +547,16 @@ abstract class Field implements JsonSerializable
         switch ($condition_type) {
             case 'eq':
                 return $other_field_value === $test_value;
+            case 'neq':
+                return $other_field_value !== $test_value;
             case 'in':
                 return in_array($other_field_value, $test_value);
+            case 'nin':
+                return !in_array($other_field_value, $test_value);
+            case 'empty':
+                return empty($other_field_value);
+            case 'filled':
+                return !empty($other_field_value);
         }
         return true;
     }

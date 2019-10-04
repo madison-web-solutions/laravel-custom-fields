@@ -360,8 +360,16 @@ var testCondition = function(pathStr, condition) {
     switch (condition[0]) {
         case 'eq':
             return condition[2] == testNode.value;
+        case 'neq':
+            return condition[2] != testNode.value;
         case 'in':
             return includes(condition[2], testNode.value);
+        case 'nin':
+            return ! includes(condition[2], testNode.value);
+        case 'empty':
+            return (testNode.value == null || testNode.value === '');
+        case 'filled':
+            return (testNode.value != null && testNode.value !== '');
     }
     return true;
 };
