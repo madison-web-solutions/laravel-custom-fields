@@ -101,15 +101,18 @@ class StorageItem
     public function createImageSize($size, bool $defer = false)
     {
         $size = ImageSize::coerce($size);
+        if (! $this->fileExists(null)) {
+            // The original file doesn't exist, so creating a resized version is bound to fail
+            $orig_loc = $this->location(null);
+            Log::warning("Failed to resize LCF media item - original file {$orig_loc} not found.");
+            return false;
+        }
         try {
             if ($defer) {
                 CreateImageSizeJob::dispatch($this, $size);
             } else {
                 CreateImageSizeJob::dispatchNow($this, $size);
             }
-        } catch (FileNotFoundException $e) {
-            Log::error("File not found - ".$e->getMessage()." - resize failed");
-            return false;
         } catch (NotReadableException $e) {
             Log::error("Intervention could not read image data for ".$this->location()." - resize failed");
             return false;
