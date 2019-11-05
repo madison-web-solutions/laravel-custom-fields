@@ -129,8 +129,8 @@ abstract class Field implements JsonSerializable
             'css_classes' => 'nullable|array',
             'css_classes.*' => 'required|string',
             'condition' => 'nullable|array',
-            'condition.0' => 'required_with:condition|in:eq,neq,in,nin,empty,filled',
-            'condition.1' => 'required_with:condition|string',
+            'condition.0' => 'required_with:condition|in:and,or,not,eq,neq,in,nin,empty,filled',
+            'condition.1' => 'required_with:condition',
         ];
     }
 
@@ -514,30 +514,26 @@ abstract class Field implements JsonSerializable
     {
         $condition_type = array_shift($condition);
 
-        /* maybe coming soon
         if ($condition_type == 'and') {
-            foreach ($condition as $sub_condition) {
+            foreach ($condition[0] as $sub_condition) {
                 if (! $this->doTestCondition($sub_condition, $path, $data)) {
                     return false;
                 }
             }
             return true;
         }
-
         if ($condition_type == 'or') {
-            foreach ($condition as $sub_condition) {
+            foreach ($condition[0] as $sub_condition) {
                 if ($this->doTestCondition($sub_condition, $path, $data)) {
                     return true;
                 }
             }
             return false;
         }
-
         if ($condition_type == 'not') {
             $negated_condition = $condition[0];
             return ! $this->doTestCondition($negated_condition, $path, $data);
         }
-        */
 
         $relative_path = $condition[0];
         $test_value = $condition[1] ?? null;

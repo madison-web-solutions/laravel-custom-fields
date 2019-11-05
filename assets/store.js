@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { uniqueId, isArray, isObject, isString, isInteger, map, mapValues, includes, forEach, cloneDeep } from 'lodash-es';
+import { uniqueId, isArray, isObject, isString, isInteger, map, mapValues, includes, forEach, cloneDeep, some, every } from 'lodash-es';
 import Vue from 'vue';
 
 var store = new Vue({
@@ -352,6 +352,17 @@ var testCondition = function(pathStr, condition) {
     if (! condition) {
         return true;
     }
+
+    if (condition[0] == 'and') {
+        return every(condition[1], (subCondition) => testCondition(pathStr, subCondition));
+    }
+    if (condition[0] == 'or') {
+        return some(condition[1], (subCondition) => testCondition(pathStr, subCondition));
+    }
+    if (condition[0] == 'not') {
+        return ! testCondition(pathStr, condition[1]);
+    }
+
     var testNodePath = pathArg(resolveRelativePath(pathStr, '^' + condition[1]));
     var testNode = getNode(testNodePath);
     if (! testNode) {
