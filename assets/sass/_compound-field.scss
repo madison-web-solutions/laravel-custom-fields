@@ -6,4 +6,10 @@
         @include lcf-panel;
         border-color: $lcf-border-error-color;
     }
+    > .lcf-field {
+        margin-bottom: $lcf-spacer;
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
 }
