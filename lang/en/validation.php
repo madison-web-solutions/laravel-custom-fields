@@ -44,6 +44,9 @@ return [
         ],
         'options' => [
         ],
+        'password' => [
+            'weak' => 'The password is not strong enough',
+        ],
         'repeater' => [
             'invalid' => 'The value must be a valid number',
             'min' => 'The minimum number of items is :min',
