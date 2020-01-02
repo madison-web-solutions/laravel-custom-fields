@@ -2,7 +2,7 @@
     <div class="lcf-input-wrapper">
         <label class="lcf-field-label" v-if="label" :for="labelFor">
             {{ label }}
-            <sup v-if="required" class="lcf-required-asterisk">*</sup>
+            <span v-if="required" class="lcf-required-asterisk">*</span>
         </label>
         <p v-if="help" class="lcf-help">{{ help }}</p>
         <slot></slot>

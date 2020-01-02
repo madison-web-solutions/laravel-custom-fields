@@ -1,4 +1,5 @@
 .lcf-compound-input {
+    @include lcf-grid-container;
     &.lcf-compound-with-label {
         @include lcf-panel;
     }

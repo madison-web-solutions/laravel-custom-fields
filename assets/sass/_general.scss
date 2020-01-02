@@ -3,9 +3,7 @@
 }
 
 .lcf-form {
-    display: grid;
-    grid-template-columns: [start] repeat(12, 1fr) [end];
-    grid-gap: $lcf-spacer;
+    @include lcf-grid-container;
 }
 
 .lcf-form, .lcf-field, .lcf-input {
@@ -34,6 +32,7 @@
     color: $lcf-required-asterisk-color;
     display: inline-block;
     vertical-align: top;
+    font-size: 0.8em;
 }
 
 .lcf-help {

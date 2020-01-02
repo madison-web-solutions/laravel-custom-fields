@@ -50,6 +50,7 @@
         padding: $lcf-spacer;
         border-left: $lcf-border-width solid $lcf-border-color;
         border-right: $lcf-border-width solid $lcf-border-color;
+        @include lcf-grid-container;
     }
 }
 

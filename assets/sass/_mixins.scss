@@ -3,3 +3,9 @@
     border: $lcf-border-width solid $lcf-border-color;
     background-color: $lcf-background-color;
 }
+
+@mixin lcf-grid-container {
+    display: grid;
+    grid-template-columns: [start] repeat(12, 1fr) [end];
+    grid-gap: $lcf-spacer;
+}
