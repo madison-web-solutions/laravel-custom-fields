@@ -41,6 +41,7 @@ class LCF
         'CurrencyField' => Fields\CurrencyField::class,
         'DateField' => Fields\DateField::class,
         'EnumField' => Fields\EnumField::class,
+        'HTMLField' => Fields\HTMLField::class,
         'IntegerField' => Fields\IntegerField::class,
         'LinkField' => Fields\LinkField::class,
         'MarkdownField' => Fields\MarkdownField::class,
