@@ -527,9 +527,9 @@ var updateMediaItem = function(itemId, data, successFn, errorFn) {
         successFn();
     }, error => {
         if (error.response.data && error.response.data.errors) {
-            errorFn('Error: ' + JSON.stringify(error.response.data.errors));
+            errorFn(error.response.data.errors);
         } else {
-            errorFn('Server error');
+            errorFn({'unknown': ['Server error']});
         }
     });
 };

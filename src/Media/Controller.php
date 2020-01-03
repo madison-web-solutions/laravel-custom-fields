@@ -7,6 +7,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Validation\ValidationException;
 use MadisonSolutions\LCF\LCF;
 
 class Controller extends BaseController
@@ -99,19 +100,36 @@ class Controller extends BaseController
             'title' => 'required|string|max:128',
             'alt' => 'nullable|string|max:256',
             'folder_id' => 'nullable|integer|exists:lcf_media_folders,id',
+            'replace_file' => 'nullable|file'
         ]);
+
+        if ($request->hasFile('replace_file')) {
+            $file = $request->file('replace_file');
+            if (! $file->isValid()) {
+                throw ValidationException::withMessages(['replace_file' => ["File upload invalid"]]);
+            }
+            $extension = $file->getClientOriginalExtension();
+            $mediaType = new MediaType($extension);
+            if ($mediaType->category == 'Unknown') {
+                throw ValidationException::withMessages(['replace_file' => ["Unrecognised file format"]]);
+            }
+            if ($mediaType->category != $item->type->category) {
+                throw ValidationException::withMessages(['replace_file' => ["Incompatible file - cannot replace a {$item->type->category} with a {$mediaType->category}"]]);
+            }
+            $item->extension = $mediaType->extension;
+            $item->getStorageItem()->setFileFromUpload($file);
+        }
 
         $item->title = $request->title;
         $item->alt = $request->alt ?? '';
         $item->folder_id = $request->folder_id;
         $item->save();
+
         return [
             'ok' => true,
             'item' => new MediaItemResource($item),
         ];
     }
-
-    // @todo replace file
 
     public function delete(Request $request, $id)
     {

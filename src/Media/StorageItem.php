@@ -70,7 +70,7 @@ class StorageItem
 
     public function url($size = null)
     {
-        return $this->disk()->url($this->location($size));
+        return $this->disk()->url($this->location($size)) . '?t=' . $this->lastModified();
     }
 
     public function urlOrCreate($size = null)
@@ -127,7 +127,7 @@ class StorageItem
 
     public function setFileFromUpload(UploadedFile $upload)
     {
-        if (!$upload->isValid()) {
+        if (! $upload->isValid()) {
             throw new \Exception("Uploaded file not valid");
         }
         $this->setFileByPath($upload->getPathname());
@@ -167,14 +167,14 @@ class StorageItem
         } else {
             // No size specified - assume we're deleting all
             // Find all files with the right slug
-            $base = $this->slug . '.';
+            $base = $this->dir . '/' . $this->slug . '.';
             foreach ($this->disk()->files($this->dir) as $file) {
                 if (strpos($file, $base) === 0) {
-                    $locations[] = "{$this->dir}/{$file}";
+                    $locations[] = $file;
                 }
             }
         }
-        // Now we have a list of locaitons to delete, actually delete them on the disk
+        // Now we have a list of locations to delete, actually delete them on the disk
         foreach ($locations as $location) {
             if ($this->disk()->exists($location)) {
                 $this->disk()->delete($location);

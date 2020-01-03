@@ -9,9 +9,18 @@
             <p v-if="! hasImage">Media Type: {{ category }}</p>
         </div>
         <div data-name="details">
-            <lcf-text-input key="title" :disabled="! editable" label="Title" :value="displayVals.title" @input="change" />
-            <lcf-text-input key="alt" :disabled="! editable" :label="isImage ? 'Alt' : 'Subtitle'" :value="displayVals.alt" @input="change" />
-            <lcf-select-input key="folder_id" :disabled="! editable" label="Folder" :value="displayVals.folder_id" :choices="folderChoices" placeholder="None" @change="change"></lcf-select-input>
+            <form ref="editForm">
+                <lcf-text-input key="title" name="title" :disabled="! editable" label="Title" :value="vals.title" :errors="errors.title" @input="change" />
+                <lcf-text-input key="alt" name="alt" :disabled="! editable" :label="isImage ? 'Alt' : 'Subtitle'" :value="vals.alt" :errors="errors.alt" @input="change" />
+                <lcf-select-input key="folder_id" name="folder_id" :disabled="! editable" label="Folder" :value="vals.folder_id" :errors="errors.folder_id" :choices="folderChoices" placeholder="None" @change="change"></lcf-select-input>
+                <div v-if="editable" class="lcf-input-wrapper lcf-input">
+                    <label class="lcf-field-label">Replace File</label>
+                    <input type="file" name="replace_file" ref="replaceFileInput" @change="setReplaceFile" />
+                    <lcf-error-messages :errors="errors.replace_file" />
+                </div>
+                <lcf-error-messages :errors="errors.unknown" />
+            </form>
+
             <p class="lcf-ml-inspect-meta">ID: {{ item.id }}</p>
             <p class="lcf-ml-inspect-meta" v-if="imgWidth && imgHeight">Dimensions: {{ imgWidth }}px x {{ imgHeight }}px</p>
             <div class="lcf-btn-group-right">
@@ -47,16 +56,19 @@ export default {
     },
     data: function() {
         return {
-            editedVals: {
-                title: false,
-                alt: false,
-                folder_id: false,
+            vals: {
+                title: null,
+                alt: null,
+                folder_id: null,
+                replace_file: null,
             },
+            errors: {},
             imgWidth: null,
             imgHeight: null,
         };
     },
-    created: function() {
+    mounted: function() {
+        this.resetForm();
         this.getDimensions();
     },
     computed: {
@@ -69,15 +81,8 @@ export default {
         folderId: function() {
             return get(this.item, 'folder_id');
         },
-        displayVals: function() {
-            return {
-                title: this.editedVals.title === false ? this.title : this.editedVals.title,
-                alt: this.editedVals.alt === false ? this.alt : this.editedVals.alt,
-                folder_id: this.editedVals.folder_id === false ? this.folderId : this.editedVals.folder_id
-            };
-        },
         edited: function() {
-            return (this.displayVals.title != this.title) || (this.displayVals.alt != this.alt) || (this.displayVals.folder_id != this.folderId);
+            return (this.vals.title != this.title) || (this.vals.alt != this.alt) || (this.vals.folder_id != this.folderId) || (this.vals.replace_file != null);
         },
         category: function() {
             return get(this.item, 'category')
@@ -115,6 +120,15 @@ export default {
         }
     },
     methods: {
+        resetForm: function() {
+            this.vals.title = this.title;
+            this.vals.alt = this.alt;
+            this.vals.folder_id = this.folderId;
+            this.vals.replace_file = null;
+            if (this.editable) {
+                this.$refs.replaceFileInput.value = null;
+            }
+        },
         getDimensions: function() {
             this.imgWidth = null;
             this.imgHeight = null;
@@ -128,7 +142,10 @@ export default {
             }
         },
         change: function(e) {
-            this.editedVals[e.key] = e.value;
+            this.vals[e.key] = e.value;
+        },
+        setReplaceFile: function() {
+            this.vals.replace_file = this.$refs.replaceFileInput.files[0] || null;
         },
         close: function() {
             this.$emit('close');
@@ -137,13 +154,13 @@ export default {
             this.$emit('deleteItem');
         },
         saveUpdates: function() {
-            if (this.edited) {
-                this.$lcfStore.updateMediaItem(this.item.id, this.displayVals, () => {
-                    this.editedVals.title = false;
-                    this.editedVals.alt = false;
-                    this.editedVals.folder_id = false;
-                }, (errorMsg) => {
-                    alert(errorMsg);
+            if (this.editable && this.edited) {
+                this.errors = {};
+                var data = new FormData(this.$refs.editForm);
+                this.$lcfStore.updateMediaItem(this.item.id, data, () => {
+                    window.setTimeout(() => this.resetForm(), 10);
+                }, (errors) => {
+                    this.errors = errors;
                 });
             }
         }
