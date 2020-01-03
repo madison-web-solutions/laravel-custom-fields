@@ -46,33 +46,6 @@ class Controller extends BaseController
         return MediaItemResource::collection($items);
     }
 
-    public function folders(Request $request)
-    {
-        $this->authorize('index', MediaItem::class);
-        $folder_data = [];
-        $recurse = function ($folder) use (&$folder_data, &$recurse) {
-            $path = [$folder->name];
-            $curr = $folder;
-            while ($curr = $curr->parent) {
-                $path[] = $curr->name;
-            }
-            $folder_data[] = [
-                'id' => $folder->id,
-                'name' => $folder->name,
-                'path' => array_reverse($path),
-            ];
-            foreach ($folder->children as $child) {
-                $recurse($child);
-            }
-        };
-        foreach (MediaFolder::tree() as $folder) {
-            $recurse($folder);
-        }
-        return [
-            'folders' => $folder_data,
-        ];
-    }
-
     public function get(Request $request, $id)
     {
         $item = MediaItem::findOrFail($id);
@@ -125,10 +98,12 @@ class Controller extends BaseController
         $request->validate([
             'title' => 'required|string|max:128',
             'alt' => 'nullable|string|max:256',
+            'folder_id' => 'nullable|integer|exists:lcf_media_folders,id',
         ]);
 
         $item->title = $request->title;
         $item->alt = $request->alt ?? '';
+        $item->folder_id = $request->folder_id;
         $item->save();
         return [
             'ok' => true,
@@ -145,6 +120,148 @@ class Controller extends BaseController
         $item->delete();
         return [
             'ok' => true,
+        ];
+    }
+
+    protected function folderPath($node)
+    {
+        $path = [$node->name];
+        $curr = $node;
+        while ($curr = $curr->parent) {
+            $path[] = $curr->name;
+        }
+        return array_reverse($path);
+    }
+
+    protected function folderData($rebuild = false)
+    {
+        $folder_data = [];
+        $recurse = function ($nodes) use (&$folder_data, &$recurse) {
+            foreach ($nodes as $node) {
+                $folder_data[] = [
+                    'id' => $node->id,
+                    'name' => $node->name,
+                    'path' => $this->folderPath($node),
+                    'parent_id' => ($node->parent ? $node->parent->id : null),
+                ];
+                $recurse($node->children);
+            }
+        };
+        $recurse(MediaFolder::tree($rebuild));
+        return $folder_data;
+    }
+
+    protected function folderChoices(?MediaFolder $exclude = null)
+    {
+        $choices = [];
+        $recurse = function ($nodes) use ($exclude, &$choices, &$recurse) {
+            foreach ($nodes as $node) {
+                if ($exclude && $node->id == $exclude->id) {
+                    // Prevent circular references by skipping the specified folder (and all its children)
+                    continue;
+                }
+                $choices[$node->id] = implode('/', $this->folderPath($node));
+                $recurse($node->children);
+            }
+        };
+        $recurse(MediaFolder::tree());
+        return $choices;
+    }
+
+    public function folders(Request $request)
+    {
+        $this->authorize('index', MediaItem::class);
+        return [
+            'folders' => $this->folderData(),
+        ];
+    }
+
+    protected function editFolderFields(MediaFolder $folder)
+    {
+        return [
+            'name' => LCF::newTextField([
+                'label' => 'Folder Name',
+                'required' => true,
+                'max' => 64,
+            ]),
+            'description' => LCF::newTextAreaField([
+                'label' => 'Description',
+            ]),
+            'parent_id' => LCF::newChoiceField([
+                'label' => 'Parent Folder',
+                'choices' => $this->folderChoices($folder),
+                'default' => $folder->parent_id,
+                'placeholder' => 'None (top-level folder)',
+            ]),
+        ];
+    }
+
+    protected function deleteFolderFields(MediaFolder $folder)
+    {
+        return [
+            'reassign_id' => LCF::newChoiceField([
+                'label' => 'Reassign To',
+                'choices' => $this->folderChoices($folder),
+                'placeholder' => 'None (top-level folder)',
+                'help' => 'Where should the contents of this folder be moved to?',
+            ]),
+        ];
+    }
+
+    public function createFolder(Request $request)
+    {
+        $this->authorize('manageFolders', MediaItem::class);
+        $folder = new MediaFolder();
+        return $this->createOrAddFolder($request, $folder);
+    }
+
+    public function editFolder(Request $request, $id)
+    {
+        $this->authorize('manageFolders', MediaItem::class);
+        $folder = MediaFolder::findOrFail($id);
+        return $this->createOrAddFolder($request, $folder);
+    }
+
+    protected function createOrAddFolder(Request $request, MediaFolder $folder)
+    {
+        $edit_fields = $this->editFolderFields($folder);
+
+        if ($request->isMethod('post')) {
+            $request->lcfCoerce($edit_fields);
+            $request->lcfValidate($edit_fields, []);
+            $folder->fill($request->only(['name', 'description', 'parent_id']))->save();
+
+            // Return the updated list of folder data
+            return [
+                'folders' => $this->folderData(true),
+            ];
+        }
+
+        return [
+            'folder' => $folder,
+            'edit_fields' => $edit_fields,
+            'delete_fields' => ($folder ? $this->deleteFolderFields($folder) : null),
+        ];
+    }
+
+    public function deleteFolder(Request $request, $id)
+    {
+        $this->authorize('manageFolders', MediaItem::class);
+        $folder = MediaFolder::findOrFail($id);
+        $delete_fields = $this->deleteFolderFields($folder);
+        $request->lcfCoerce($delete_fields);
+        $request->lcfValidate($delete_fields, []);
+
+        // Reassign child folders and media items
+        MediaItem::where('folder_id', $id)->update(['folder_id' => $request->reassign_id]);
+        MediaFolder::where('parent_id', $id)->update(['parent_id' => $request->reassign_id]);
+
+        // Delete the folder
+        $folder->delete();
+
+        // Return the updated list of folder data
+        return [
+            'folders' => $this->folderData(true),
         ];
     }
 }

@@ -11,6 +11,9 @@
                     <input ref="searchInput" type="search" placeholder="search" @input="handleSearch" @keydown.enter.prevent="handleSearch" />
                 </lcf-input-wrapper>
                 <lcf-select-input :value="selectedFolderId" :choices="folderChoices" placeholder="All Folders" @change="selectFolder"></lcf-select-input>
+                <button class="lcf-btn" :disabled="! selectedFolderId" @click="selectFolder({value: parentFolderId})" title="To Parent Folder"><i class="fas fa-arrow-up"></i></button>
+                <button class="lcf-btn" :disabled="! selectedFolderId" @click="editFolder" title="Edit Folder"><i class="fas fa-edit"></i></button>
+                <button class="lcf-btn" @click="newFolder" title="New Folder"><i class="fas fa-folder-plus"></i></button>
             </div>
 
             <p v-if="! standalone" >Click to select:</p>
@@ -20,6 +23,14 @@
                         <p v-if="upload.status == 'new'">Queued</p>
                         <p v-if="upload.status == 'active'">{{ upload.progress }}%</p>
                         <p v-if="upload.status == 'error'">Error: {{ upload.error }}</p>
+                    </div>
+                </template>
+                <template v-for="subfolder in subfolders">
+                    <div class="lcf-ml-preview lcf-ml-subfolder" @click="selectFolder({value: subfolder.id})">
+                        <div class="lcf-ml-thumb">
+                            <i class="lcf-ml-preview-icon far fa-folder"></i>
+                        </div>
+                        <div class="lcf-ml-preview-title">{{ subfolder.name }}</div>
                     </div>
                 </template>
                 <lcf-media-preview v-for="item in items" :key="item.id" :item="item" @select="select" />
@@ -36,11 +47,17 @@
         <div class="lcf-panel" v-if="showInspect">
             <lcf-media-inspect :item="selectedItem" :selectable="! standalone" :editable="true" :deletable="true" @close="libraryMode" @deleteItem="deleteSelectedItem" />
         </div>
+        <div class="lcf-panel" v-if="mode == 'new-folder'">
+            <lcf-media-folder-edit :folderId="null" :suggestedParentId="selectedFolderId" @cancel="libraryMode" @updated="libraryMode" />
+        </div>
+        <div class="lcf-panel" v-if="mode == 'edit-folder'">
+            <lcf-media-folder-edit :folderId="selectedFolderId" @cancel="libraryMode" @updated="libraryMode" @deleted="folderDeleted" />
+        </div>
     </div>
 </template>
 
 <script>
-import { get, includes, debounce, forEach, filter, map } from 'lodash-es';
+import { get, includes, debounce, forEach, filter, find, map } from 'lodash-es';
 export default {
     props: {
         category: {
@@ -67,6 +84,7 @@ export default {
             searchId: null,
             libraryScrollPos: 0,
             selectedFolderId: null,
+            editFolderId: null,
         }
     },
     created: function() {
@@ -114,6 +132,21 @@ export default {
                     label: folder.path.join(' / ')
                 };
             });
+        },
+        selectedFolder: function() {
+            return find(this.folders, folder => folder.id == this.selectedFolderId);
+        },
+        subfolders: function() {
+            return filter(this.folders, folder => folder.parent_id == this.selectedFolderId);
+        },
+        parentFolder: function() {
+            if (! this.selectedFolder) {
+                return null;
+            }
+            return find(this.folders, folder => folder.id == this.selectedFolder.parent_id);
+        },
+        parentFolderId: function() {
+            return this.parentFolder ? this.parentFolder.id : null;
         }
     },
     methods: {
@@ -275,6 +308,19 @@ export default {
                     });
                 }
             }
+        },
+        editFolder: function() {
+            this.editFolderId = this.selectedFolderId;
+            this.mode = 'edit-folder';
+        },
+        newFolder: function() {
+            this.mode = 'new-folder'
+        },
+        folderDeleted: function(e) {
+            this.libraryMode();
+            window.setTimeout(() => {
+                this.selectFolder({value: e.reassign_id});
+            }, 10);
         },
         cancel: function() {
             this.$emit('close');

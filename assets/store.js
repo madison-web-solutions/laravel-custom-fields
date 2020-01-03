@@ -495,6 +495,10 @@ var getMediaLibraryFolders = function() {
     return store.mediaFolders;
 };
 
+var updateMediaLibraryFolders = function(folders) {
+    store.mediaFolders = folders;
+};
+
 var uploadToMediaLibrary = function(formData, progressFn, successFn, errorFn) {
     axios.post('/lcf/media-library', formData, {
         onUploadProgress: function(e) {
@@ -604,6 +608,7 @@ export default {
     getMediaItem: getMediaItem,
     searchMediaLibrary: searchMediaLibrary,
     getMediaLibraryFolders: getMediaLibraryFolders,
+    updateMediaLibraryFolders: updateMediaLibraryFolders,
     updateMediaItem: updateMediaItem,
     uploadToMediaLibrary: uploadToMediaLibrary,
     deleteMediaItem: deleteMediaItem,

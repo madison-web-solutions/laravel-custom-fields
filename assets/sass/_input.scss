@@ -3,6 +3,9 @@
     &:last-child {
         margin-bottom: 0;
     }
+    input[type=text], input[type=search], input[type=number], input[type=date], select {
+        display: block;
+    }
 }
 
 .lcf-input {
@@ -24,7 +27,7 @@
         }
     }
     input[type=text], input[type=search], input[type=number], input[type=date], select {
-        height: 1.6em;
+        height: ($lcf-font-size * 1.8);
     }
 }
 

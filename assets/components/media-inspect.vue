@@ -9,8 +9,9 @@
             <p v-if="! hasImage">Media Type: {{ category }}</p>
         </div>
         <div data-name="details">
-            <lcf-text-input key="title" label="Title" :value="displayVals.title" @input="change" />
-            <lcf-text-input key="alt" :label="isImage ? 'Alt' : 'Subtitle'" :value="displayVals.alt" @input="change" />
+            <lcf-text-input key="title" :disabled="! editable" label="Title" :value="displayVals.title" @input="change" />
+            <lcf-text-input key="alt" :disabled="! editable" :label="isImage ? 'Alt' : 'Subtitle'" :value="displayVals.alt" @input="change" />
+            <lcf-select-input key="folder_id" :disabled="! editable" label="Folder" :value="displayVals.folder_id" :choices="folderChoices" placeholder="None" @change="change"></lcf-select-input>
             <p class="lcf-ml-inspect-meta">ID: {{ item.id }}</p>
             <p class="lcf-ml-inspect-meta" v-if="imgWidth && imgHeight">Dimensions: {{ imgWidth }}px x {{ imgHeight }}px</p>
             <div class="lcf-btn-group-right">
@@ -28,7 +29,7 @@
 </template>
 
 <script>
-import { get } from 'lodash-es';
+import { get, map } from 'lodash-es';
 import Util from '../util.js';
 export default {
     props: {
@@ -47,8 +48,9 @@ export default {
     data: function() {
         return {
             editedVals: {
-                title: null,
-                alt: null
+                title: false,
+                alt: false,
+                folder_id: false,
             },
             imgWidth: null,
             imgHeight: null,
@@ -64,14 +66,18 @@ export default {
         alt: function() {
             return get(this.item, 'alt');
         },
+        folderId: function() {
+            return get(this.item, 'folder_id');
+        },
         displayVals: function() {
             return {
-                title: this.editedVals.title == null ? this.title : this.editedVals.title,
-                alt: this.editedVals.alt == null ? this.alt : this.editedVals.alt
+                title: this.editedVals.title === false ? this.title : this.editedVals.title,
+                alt: this.editedVals.alt === false ? this.alt : this.editedVals.alt,
+                folder_id: this.editedVals.folder_id === false ? this.folderId : this.editedVals.folder_id
             };
         },
         edited: function() {
-            return (this.displayVals.title != this.title) || (this.displayVals.alt != this.alt);
+            return (this.displayVals.title != this.title) || (this.displayVals.alt != this.alt) || (this.displayVals.folder_id != this.folderId);
         },
         category: function() {
             return get(this.item, 'category')
@@ -90,6 +96,17 @@ export default {
         },
         imageWithDimensionsUrl: function() {
             return (this.hasImage && this.extension != 'svg') ? this.item.url : null;
+        },
+        folders: function() {
+            return this.$lcfStore.getMediaLibraryFolders();
+        },
+        folderChoices: function() {
+            return map(this.folders, (folder) => {
+                return {
+                    value: folder.id,
+                    label: folder.path.join(' / ')
+                };
+            });
         }
     },
     watch: {
@@ -122,8 +139,9 @@ export default {
         saveUpdates: function() {
             if (this.edited) {
                 this.$lcfStore.updateMediaItem(this.item.id, this.displayVals, () => {
-                    this.editedVals.title = null;
-                    this.editedVals.alt = null;
+                    this.editedVals.title = false;
+                    this.editedVals.alt = false;
+                    this.editedVals.folder_id = false;
                 }, (errorMsg) => {
                     alert(errorMsg);
                 });

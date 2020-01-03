@@ -3,7 +3,11 @@
         display: flex;
         justify-content: space-between;
         > div {
-            flex-basis: calc(50% - 5px);
+            flex-basis: 50%;
+            margin-right: $lcf-spacer;
+        }
+        .lcf-btn {
+            height: ($lcf-font-size * 1.6);
         }
     }
     .lcf-ml-index {
@@ -86,6 +90,12 @@
     }
     .lcf-ml-preview-title {
         padding: ($lcf-spacer * 0.5);
+    }
+    &.lcf-ml-subfolder {
+        border: none;
+        .lcf-ml-thumb .lcf-ml-preview-icon {
+            font-size: 60px;
+        }
     }
 }
 

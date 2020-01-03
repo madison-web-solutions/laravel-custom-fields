@@ -30,6 +30,7 @@ class MediaItemResource extends Resource
             'extension' => $this->extension,
             'category' => ($type ? $type->category : null),
             'thumb' => ($this->isSizable() ? $this->urlOrCreate(self::thumbSize()) : null),
+            'folder_id' => $this->folder_id,
         ];
         return $out;
     }

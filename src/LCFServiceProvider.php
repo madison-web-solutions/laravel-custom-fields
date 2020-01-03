@@ -63,6 +63,11 @@ class LCFServiceProvider extends ServiceProvider
 
                     Route::get('media-library', 'Media\Controller@index');
                     Route::get('media-library/folders', 'Media\Controller@folders');
+                    Route::get('media-library/folders/new', 'Media\Controller@createFolder');
+                    Route::post('media-library/folders/new', 'Media\Controller@createFolder');
+                    Route::get('media-library/folders/{id}', 'Media\Controller@editFolder');
+                    Route::post('media-library/folders/{id}', 'Media\Controller@editFolder');
+                    Route::post('media-library/folders/{id}/delete', 'Media\Controller@deleteFolder');
                     Route::post('media-library', 'Media\Controller@upload');
                     Route::get('media-library/{id}', 'Media\Controller@get');
                     Route::post('media-library/{id}', 'Media\Controller@update');

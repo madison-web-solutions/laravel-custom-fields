@@ -18,6 +18,12 @@ class ExampleAuthPolicy
         return false;
     }
 
+    public function manageFolders($user)
+    {
+        \Log::warning("Access to LCF.Media.manageFolders denied by ExampleAuthPolicy - You probably need to define a Policy for LCF Media routes.");
+        return false;
+    }
+
     public function get($user, MediaItem $item)
     {
         \Log::warning("Access to LCF.Media.get denied by ExampleAuthPolicy - You probably need to define a Policy for LCF Media routes.");
