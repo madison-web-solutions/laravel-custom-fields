@@ -75,7 +75,7 @@ class TextField extends ScalarField
                 }
                 break;
             case 'email':
-                if (! $this->borrowLaravelValdator()->validateEmail('', $value)) {
+                if (! $this->borrowLaravelValdator()->validateEmail('', $value, [])) {
                     $messages[$path][] = $this->trans('invalid-email');
                 }
                 break;
