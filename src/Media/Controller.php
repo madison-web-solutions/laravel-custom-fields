@@ -161,6 +161,7 @@ class Controller extends BaseController
                     'name' => $node->name,
                     'path' => $this->folderPath($node),
                     'parent_id' => ($node->parent ? $node->parent->id : null),
+                    'description' => $node->description,
                 ];
                 $recurse($node->children);
             }

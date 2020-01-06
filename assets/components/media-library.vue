@@ -15,7 +15,8 @@
                 <button class="lcf-btn" :disabled="! selectedFolderId" @click="editFolder" title="Edit Folder"><i class="fas fa-edit"></i></button>
                 <button class="lcf-btn" @click="newFolder" title="New Folder"><i class="fas fa-folder-plus"></i></button>
             </div>
-
+            <p v-if="selectedFolder && selectedFolder.description">{{ selectedFolder.description }}</p>
+            <p v-if="! searchId && items.length == 0">No items found</p>
             <p v-if="! standalone" >Click to select:</p>
             <div class="lcf-ml-index" ref="libraryIndex" @scroll="handleScroll">
                 <template v-for="upload in uploads">

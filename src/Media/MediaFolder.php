@@ -24,7 +24,7 @@ class MediaFolder extends Model
             MediaFolder::$top = [];
 
             $rows = DB::table('lcf_media_folders')
-                ->select(['id', 'parent_id as parent', 'name'])
+                ->select(['id', 'parent_id as parent', 'name', 'description'])
                 ->orderBy('name', 'asc')
                 ->get();
 
