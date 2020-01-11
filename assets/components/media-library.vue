@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { get, includes, debounce, forEach, filter, find, map } from 'lodash-es';
+import { chain, get, includes, debounce, forEach, filter, find, map } from 'lodash-es';
 export default {
     props: {
         category: {
@@ -101,7 +101,15 @@ export default {
             }
         },
         items: function() {
-            return filter(map(this.itemIds, (itemId) => this.$lcfStore.getMediaItem(itemId)));
+            return chain(this.itemIds)
+                .map(itemId => this.$lcfStore.getMediaItem(itemId))
+                .filter(item => {
+                    // Check the item's folder here to prevent the following specific bug
+                    // select folder -> edit item -> change item's folder ->
+                    // go back to library -> item still listed in wrong folder
+                    return item && (this.selectedFolderId ? item.folder_id == this.selectedFolderId : true);
+                })
+                .value();
         },
         selectedItem: function() {
             return this.$lcfStore.getMediaItem(this.selectedItemId);

@@ -10,12 +10,12 @@
         </div>
         <div data-name="details">
             <form ref="editForm">
-                <lcf-text-input key="title" name="title" :disabled="! editable" label="Title" :value="vals.title" :errors="errors.title" @input="change" />
-                <lcf-text-input key="alt" name="alt" :disabled="! editable" :label="isImage ? 'Alt' : 'Subtitle'" :value="vals.alt" :errors="errors.alt" @input="change" />
-                <lcf-select-input key="folder_id" name="folder_id" :disabled="! editable" label="Folder" :value="vals.folder_id" :errors="errors.folder_id" :choices="folderChoices" placeholder="None" @change="change"></lcf-select-input>
+                <lcf-text-input key="title" name="title" :disabled="editFieldsDisabled" label="Title" :value="vals.title" :errors="errors.title" @input="change" />
+                <lcf-text-input key="alt" name="alt" :disabled="editFieldsDisabled" :label="isImage ? 'Alt' : 'Subtitle'" :value="vals.alt" :errors="errors.alt" @input="change" />
+                <lcf-select-input key="folder_id" name="folder_id" :disabled="editFieldsDisabled" label="Folder" :value="vals.folder_id" :errors="errors.folder_id" :choices="folderChoices" placeholder="None" @change="change"></lcf-select-input>
                 <div v-if="editable" class="lcf-input-wrapper lcf-input">
                     <label class="lcf-field-label">Replace File</label>
-                    <input type="file" name="replace_file" ref="replaceFileInput" @change="setReplaceFile" />
+                    <input type="file" name="replace_file" ref="replaceFileInput" :disabled="editFieldsDisabled" @change="setReplaceFile" />
                     <lcf-error-messages :errors="errors.replace_file" />
                 </div>
                 <lcf-error-messages :errors="errors.unknown" />
@@ -23,11 +23,12 @@
 
             <p class="lcf-ml-inspect-meta">ID: {{ item.id }}</p>
             <p class="lcf-ml-inspect-meta" v-if="imgWidth && imgHeight">Dimensions: {{ imgWidth }}px x {{ imgHeight }}px</p>
-            <div class="lcf-btn-group-right">
+            <div class="lcf-btn-group-right" v-if="! updating">
                 <button v-if="editable && edited" type="button" class="lcf-btn-primary" @click.stop="saveUpdates">Save Changes</button>
                 <button type="button" class="lcf-btn" @click.stop="close"><i class="fas fa-long-arrow-alt-left"></i> Back</button>
                 <button v-if="deletable" type="button" class="lcf-btn-danger" @click.stop="deleteItem">Delete</button>
             </div>
+            <lcf-loading v-if="updating" />
         </div>
         <div data-name="url">
             URL:
@@ -62,6 +63,7 @@ export default {
                 folder_id: null,
                 replace_file: null,
             },
+            updating: false,
             errors: {},
             imgWidth: null,
             imgHeight: null,
@@ -83,6 +85,9 @@ export default {
         },
         edited: function() {
             return (this.vals.title != this.title) || (this.vals.alt != this.alt) || (this.vals.folder_id != this.folderId) || (this.vals.replace_file != null);
+        },
+        editFieldsDisabled: function() {
+            return this.updating || ! this.editable;
         },
         category: function() {
             return get(this.item, 'category')
@@ -155,12 +160,15 @@ export default {
         },
         saveUpdates: function() {
             if (this.editable && this.edited) {
+                this.updating = true;
                 this.errors = {};
                 var data = new FormData(this.$refs.editForm);
                 this.$lcfStore.updateMediaItem(this.item.id, data, () => {
+                    this.updating = false;
                     window.setTimeout(() => this.resetForm(), 10);
                 }, (errors) => {
                     this.errors = errors;
+                    this.updating = false;
                 });
             }
         }
