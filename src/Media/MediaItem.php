@@ -9,7 +9,7 @@ class MediaItem extends Model
     // Define database table
     protected $table = 'lcf_media';
 
-    protected $fillable = ['title', 'extension', 'alt'];
+    protected $fillable = ['title', 'extension', 'alt', 'folder_id'];
 
     protected $storage_item;
 

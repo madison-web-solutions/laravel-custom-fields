@@ -275,6 +275,9 @@ export default {
             if (this.category) {
                 formData.append('category', this.category);
             }
+            if (this.selectedFolderId) {
+                formData.append('folder_id', this.selectedFolderId);
+            }
             this.$lcfStore.uploadToMediaLibrary(formData, (progress) => {
                 nextUpload.progress = progress;
             }, (itemId) => {

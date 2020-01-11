@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Validation\ValidationException;
+use MadisonSolutions\Coerce\Coerce;
 use MadisonSolutions\LCF\LCF;
 
 class Controller extends BaseController
@@ -76,12 +77,18 @@ class Controller extends BaseController
         if ($category && strtolower($mediaType->category) !== $category) {
             return ['ok' => false, 'error' => "Must upload a file of type: {$category}, received type {$mediaType->category}"];
         }
+        if (Coerce::toInt($request->input('folder_id', null), $folder_id)) {
+            $folder = MediaFolder::find($folder_id);
+        } else {
+            $folder = null;
+        }
         $suffixLen = strlen($extension) + 1;
         $basename = substr($file->getClientOriginalName(), 0, -$suffixLen);
         $item = new MediaItem([
             'title' => substr($basename, 0, 128),
             'extension' => $mediaType->extension,
             'alt' => '',
+            'folder_id' => ($folder ? $folder->id : null),
         ]);
         $item->setUniqueSlug($basename);
         $item->getStorageItem()->setFileFromUpload($file);
