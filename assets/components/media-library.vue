@@ -8,7 +8,7 @@
         <div v-if="showLibrary" class="lcf-panel">
             <div class="lcf-ml-search">
                 <lcf-input-wrapper class="lcf-input">
-                    <input ref="searchInput" type="search" placeholder="search" @input="handleSearch" @keydown.enter.prevent="handleSearch" />
+                    <input ref="searchInput" type="search" placeholder="search" @input="handleSearchInput" @keydown.enter.prevent="handleSearchInput" />
                 </lcf-input-wrapper>
                 <lcf-select-input :value="selectedFolderId" :choices="folderChoices" placeholder="All Folders" @change="selectFolder"></lcf-select-input>
                 <button class="lcf-btn" :disabled="! selectedFolderId" @click="selectFolder({value: parentFolderId})" title="To Parent Folder"><i class="fas fa-arrow-up"></i></button>
@@ -18,7 +18,8 @@
             <p v-if="selectedFolder && selectedFolder.description">{{ selectedFolder.description }}</p>
             <p v-if="! searchId && items.length == 0">No items found</p>
             <p v-if="! standalone" >Click to select:</p>
-            <div class="lcf-ml-index" ref="libraryIndex" @scroll="handleScroll">
+            <lcf-loading v-if="doingNewSearch" />
+            <div v-if="! doingNewSearch" class="lcf-ml-index" ref="libraryIndex" @scroll="handleScroll">
                 <template v-for="upload in uploads">
                     <div class="lcf-ml-preview" :class="'lcf-ml-'+upload.status" v-if="upload.status != 'done'">
                         <p v-if="upload.status == 'new'">Queued</p>
@@ -35,7 +36,7 @@
                     </div>
                 </template>
                 <lcf-media-preview v-for="item in items" :key="item.id" :item="item" @select="select" />
-                <p v-if="searchId">Loading more...</p>
+                <lcf-loading v-if="searchId" />
             </div>
         </div>
         <div class="lcf-panel" v-if="showUpload">
@@ -79,6 +80,7 @@ export default {
             uploading: false,
             searchString: null,
             page: 1,
+            doingNewSearch: false,
             hasMore: true,
             itemIds: [],
             selectedItemId: null,
@@ -89,18 +91,8 @@ export default {
         }
     },
     created: function() {
-        this.getDebounce = debounce((category, searchString, folder, page, callback) => {
-            this.searchId = this.$lcfStore.searchMediaLibrary(category, searchString, folder, page, callback);
-        }, 300);
-
-        this.searchId = this.$lcfStore.searchMediaLibrary(this.category, '', null, 1, (searchedId, itemIds, hasMore) => {
-            if (this.searchId != searchedId) {
-                return;
-            }
-            this.searchId = null;
-            this.hasMore = hasMore;
-            this.libraryAddMany(itemIds);
-        });
+        this.doNewSearchDebounced = debounce((searchString) => this.doNewSearch(searchString), 300);
+        this.doNewSearch('');
     },
     computed: {
         cssClass: function() {
@@ -182,11 +174,16 @@ export default {
         },
         selectFolder: function(e) {
             this.selectedFolderId = e.value;
-            this.handleSearch();
+            this.doNewSearch();
         },
-        handleSearch: function() {
+        handleSearchInput: function() {
             var searchString = this.$refs.searchInput.value;
-            this.getDebounce(this.category, searchString, this.selectedFolderId, 1, (searchedId, itemIds, hasMore) => {
+            this.doNewSearchDebounced(searchString);
+        },
+        doNewSearch: function(searchString) {
+            this.libraryClear();
+            this.doingNewSearch = true;
+            this.searchId = this.$lcfStore.searchMediaLibrary(this.category, searchString, this.selectedFolderId, 1, (searchedId, itemIds, hasMore) => {
                 if (this.searchId != searchedId) {
                     return;
                 }
@@ -194,8 +191,8 @@ export default {
                 this.searchString = searchString;
                 this.page = 1;
                 this.hasMore = hasMore;
-                this.libraryClear();
                 this.libraryAddMany(itemIds);
+                this.doingNewSearch = false;
             });
         },
         handleScroll: function() {
