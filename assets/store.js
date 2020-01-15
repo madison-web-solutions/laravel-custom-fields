@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { uniqueId, isArray, isObject, isString, isInteger, map, mapValues, includes, forEach, cloneDeep, some, every } from 'lodash-es';
+import { assign, uniqueId, isArray, isObject, isString, isInteger, map, mapValues, includes, forEach, cloneDeep, some, every } from 'lodash-es';
 import Vue from 'vue';
 
 var store = new Vue({
@@ -186,6 +186,25 @@ var getValueDeepAtId = function(nodeId) {
     }
 };
 
+var appendValuesToDataObj = function(data, path) {
+    walkTree(path, (subpath, node) => {
+        var name = [subpath[0]].concat(subpath.slice(1).map(part => '[' + part + ']')).join('');
+        var value = node.value;
+        if (name && value != null) {
+            data.append(name, value);
+        }
+    });
+    return data;
+};
+
+var getFormData = function(path) {
+    return appendValuesToDataObj(new FormData(), path);
+};
+
+var getURLSearchParams = function(path) {
+    return appendValuesToDataObj(new URLSearchParams(), path);
+};
+
 
 // Delete a node from the tree, and recursively delete all sub-nodes
 // Return the value tree from the deleted node
@@ -314,7 +333,9 @@ var setErrors = function(groupName, errors) {
     if (! isObject(errors)) {
         throw new Error("errors should be an object but got " + typeof(errors));
     }
-    var handledPaths = mapValues(errors, () => false);
+    // Make a copy of the errors object for keeping track of unhandled errors
+    var unhandledErrors = assign({}, errors);
+
     walkTree(groupName, (path, node) => {
         if (path.length == 0) {
             return;
@@ -323,20 +344,20 @@ var setErrors = function(groupName, errors) {
         //console.log('checking path '+pathStr+' for errors');
         if (errors.hasOwnProperty(pathStr)) {
             var nodeErrors = errors[pathStr];
-            handledPaths[pathStr] = true;
             if (! isArray(nodeErrors)) {
                 throw new Error("Entries in error objects should be arrays but got " + typeof(nodeErrors) + " at path " + pathStr);
             }
             // @todo also check array entries are strings?
             Vue.set(node, 'errors', nodeErrors);
+            delete unhandledErrors[pathStr];
         } else {
             Vue.set(node, 'errors', []);
         }
     });
     // Caller might want to see if there were any errors within the error object which were not picked up by this function
     // IE because the error key didn't match any of the paths in the group
-    // So return the handledPaths object - the caller can then see if there were any unhandled paths and show suitable messages etc
-    return handledPaths;
+    // So return the unhandledErrors object - the caller can then see if there were any unhandled errors and show suitable messages etc
+    return unhandledErrors;
 };
 
 var resolveRelativePath = function(pathStr, relativePathStr) {
@@ -582,6 +603,8 @@ export default {
     getChildKeys: getChildKeys,
     getChildValues: getChildValues,
     getChildErrors: getChildErrors,
+    getFormData: getFormData,
+    getURLSearchParams: getURLSearchParams,
     updateValue: updateValue,
     setInitialValue: setInitialValue,
     setValueDeep: setValueDeep,

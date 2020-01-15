@@ -3,7 +3,7 @@
     &:last-child {
         margin-bottom: 0;
     }
-    input[type=text], input[type=search], input[type=number], input[type=date], select {
+    input[type=text], input[type=search], input[type=number], input[type=date], input[type=password], select {
         display: block;
     }
 }
@@ -26,7 +26,7 @@
             background-color: $lcf-input-disabled-background-color;
         }
     }
-    input[type=text], input[type=search], input[type=number], input[type=date], select {
+    input[type=text], input[type=search], input[type=number], input[type=date], input[type=password], select {
         height: ($lcf-font-size * 1.8);
     }
 }

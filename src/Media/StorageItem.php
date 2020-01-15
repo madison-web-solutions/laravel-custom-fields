@@ -137,6 +137,9 @@ class StorageItem
     {
         $this->deleteFile();
         $fh = fopen($srcPath, 'rb');
+        if (! $fh) {
+            throw new \Exception("Failed to open file at path '{$srcPath}'");
+        }
         $this->disk()->put($this->location(), $fh);
         fclose($fh);
     }
