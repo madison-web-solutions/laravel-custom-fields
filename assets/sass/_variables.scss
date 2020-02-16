@@ -31,11 +31,14 @@ $lcf-required-asterisk-color: $lcf-red !default;
 $lcf-input-padding-y: 1px !default;
 $lcf-input-padding-x: 6px !default;
 $lcf-spacer: 8px !default;
+$lcf-grid-gap: $lcf-spacer !default;
 
 $lcf-font-size: 16px !default;
 $lcf-button-font-size: 14px !default;
 $lcf-small-font-size: ($lcf-font-size * 0.75) !default;
 
 $lcf-field-label-font-weight: 700 !default;
+
+$lcf-input-height: ($lcf-font-size * 1.8) !default;
 
 $lcf-button-radius: 4px !default;

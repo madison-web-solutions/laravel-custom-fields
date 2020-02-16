@@ -82,6 +82,6 @@ class LCF
         // Sometimes we need to search the database in a case-insensitive way
         // The Postgres LIKE operator is case-sensitive by default but they support a non-standard operator ILIKE instead
         // The MySQL LIKE operator is case-insensitive anyway by default
-        return (($connection instanceof Illuminate\Database\PostgresConnection) ? 'ILIKE' : 'LIKE');
+        return (($connection instanceof \Illuminate\Database\PostgresConnection) ? 'ILIKE' : 'LIKE');
     }
 }

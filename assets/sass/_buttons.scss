@@ -7,15 +7,15 @@
 }
 
 .lcf-btn-group-right {
-    @extend .lcf-btn-group;
     text-align: right;
     .lcf-btn, .lcf-btn-primary, .lcf-btn-danger {
-        margin-right: 0;
         margin-left: ($lcf-spacer * 0.5);
     }
+    align-self: end;
 }
 
 %lcf-btn-base {
+    display: inline-block;
     line-height: 1.1;
     padding: 0.2em 0.6em;
     font-size: $lcf-button-font-size;
@@ -24,6 +24,9 @@
     background-color: $lcf-button-background-color;
     &:hover {
         background-color: darken($lcf-button-background-color, 10%);
+    }
+    &, &:hover, &:focus {
+        color: inherit;
     }
 }
 

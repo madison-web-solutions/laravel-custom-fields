@@ -8,6 +8,9 @@ export default {
         inputName: function() {
             return [this.path[1]].concat(this.path.slice(2).map(part => '[' + part + ']')).join('');
         },
+        fieldName: function() {
+            return this.path[this.path.length - 1];
+        },
         nodeId: function() {
             return this.$lcfStore.getId(this.pathStr);
         },
@@ -39,7 +42,7 @@ export default {
             return get(this.field, 'settings.help');
         },
         inputSettings: function() {
-            return assign({name: this.inputName, key: this.path[this.path.length - 1]}, this.field.settings);
+            return assign({name: this.inputName, key: this.fieldName}, this.field.settings);
         },
         myCssClasses: function() {
             var fieldClasses = get(this.field, 'settings.cssClasses', []);
@@ -53,6 +56,14 @@ export default {
         },
         defaultValue: function() {
             return get(this.field, 'settings.default');
+        }
+    },
+    mounted: function() {
+        this.$lcfStore.updateShowing(this.pathStr, this.shouldShow);
+    },
+    watch: {
+        shouldShow: function(newValue) {
+            this.$lcfStore.updateShowing(this.pathStr, newValue);
         }
     }
 };

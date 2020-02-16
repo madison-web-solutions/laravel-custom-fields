@@ -63,6 +63,8 @@ abstract class Field implements JsonSerializable
                         $fail("Reserved word '{$key}' not allowed as key in {$attribute} - keys must be simple snake_case strings");
                     }
                 }
+            } else {
+                $fail("The {$attribute} must be an array");
             }
         };
     }

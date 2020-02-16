@@ -3,7 +3,7 @@
 return [
     'default' => [
         'required' => 'This field is required',
-        'null-required' => 'This field must by empty',
+        'null-required' => 'This field must be empty',
         'invalid' => 'Invalid value',
         'min' => 'The minimum value is :min',
         'max' => 'The maximum value is :max',

@@ -46,6 +46,28 @@ class MediaFolder extends Model
         return MediaFolder::$top;
     }
 
+    public static function findByPath(string $path)
+    {
+        $find_named = function ($rows, $name) {
+            if (empty($name) || empty($rows)) {
+                return null;
+            }
+            foreach ($rows as $row) {
+                if ($row->name == $name) {
+                    return $row;
+                }
+            }
+            return null;
+        };
+
+        $path = explode('/', $path);
+        $row = $find_named(self::tree(), array_shift($path));
+        while ($row && $path) {
+            $row = $find_named($row->children, array_shift($path));
+        }
+        return $row;
+    }
+
     public function items()
     {
         return $this->hasMany(MediaItem::class, 'folder_id');

@@ -117,7 +117,7 @@ var getChildErrors = function(path) {
 // Create a new node and return the id for the created node
 var addNode = function() {
     var id = uniqueId('v');
-    Vue.set(store.nodes, id, {value: null, children: null, errors: []});
+    Vue.set(store.nodes, id, {value: null, children: null, errors: [], showing: true});
     return id;
 };
 
@@ -188,6 +188,9 @@ var getValueDeepAtId = function(nodeId) {
 
 var appendValuesToDataObj = function(data, path) {
     walkTree(path, (subpath, node) => {
+        if (! node.showing) {
+            return false;
+        }
         var name = [subpath[0]].concat(subpath.slice(1).map(part => '[' + part + ']')).join('');
         var value = node.value;
         if (name && value != null) {
@@ -308,9 +311,17 @@ var updateValue = function(path, value) {
     Vue.set(node, 'value', value);
 };
 
+var updateShowing = function(path, showing) {
+    var node = getNode(path);
+    if (!node) {
+        throw new Error("Path " + path + " not found in store");
+    }
+    Vue.set(node, 'showing', !!showing);
+};
+
 var recurseTree = function(path, node, fn) {
-    fn(path, node);
-    if (node.children) {
+    var result = fn(path, node);
+    if (result !== false && node.children) {
         forEach(node.children, function (childId, childKey) {
             recurseTree(path.concat(childKey), store.nodes[childId], fn);
         });
@@ -606,6 +617,7 @@ export default {
     getFormData: getFormData,
     getURLSearchParams: getURLSearchParams,
     updateValue: updateValue,
+    updateShowing: updateShowing,
     setInitialValue: setInitialValue,
     setValueDeep: setValueDeep,
     setErrors: setErrors,

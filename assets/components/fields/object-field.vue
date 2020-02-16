@@ -1,5 +1,5 @@
 <template>
-    <div :class="myCssClasses" class="lcf-object-field" v-if="shouldShow">
+    <div :class="myCssClasses" class="lcf-object-field" :data-field-name="fieldName" v-if="shouldShow">
         <component :key="nodeId" :is="inputComponent" v-bind="inputSettings" :value="childValues" :errors="errors" :childErrors="childErrors" @change="updateMyValue" />
     </div>
 </template>

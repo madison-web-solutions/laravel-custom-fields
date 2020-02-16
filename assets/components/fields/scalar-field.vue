@@ -1,5 +1,5 @@
 <template>
-    <div :class="myCssClasses" class="lcf-scalar-field" v-if="shouldShow">
+    <div :class="myCssClasses" class="lcf-scalar-field" :data-field-name="fieldName" v-if="shouldShow">
         <component :key="nodeId" :is="inputComponent" v-bind="inputSettings" :value="value" :errors="errors" @change="updateMyValue" />
     </div>
 </template>

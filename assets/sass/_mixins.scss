@@ -7,5 +7,5 @@
 @mixin lcf-grid-container {
     display: grid;
     grid-template-columns: [start] repeat(12, 1fr) [end];
-    grid-gap: $lcf-spacer;
+    grid-gap: $lcf-grid-gap;
 }
