@@ -70,7 +70,7 @@ class StorageItem
 
     public function url($size = null)
     {
-        return $this->disk()->url($this->location($size)) . '?t=' . $this->lastModified();
+        return $this->disk()->url($this->location($size)) . '?t=' . ($this->fileExists() ? $this->lastModified() : '');
     }
 
     public function urlOrCreate($size = null)
