@@ -141,7 +141,7 @@ abstract class Field implements JsonSerializable
      */
     public function fieldTypeName() : string
     {
-        return kebab_case(preg_replace('/Field$/', '', class_basename($this)));
+        return Str::kebab(preg_replace('/Field$/', '', class_basename($this)));
     }
 
     /**
