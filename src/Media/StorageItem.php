@@ -159,6 +159,40 @@ class StorageItem
         $this->disk()->put($this->location(), $contents);
     }
 
+    public function getAllSizeLocations()
+    {
+        $locations = [];
+        $driver = $this->disk()->getDriver();
+        if ($driver instanceof \League\Flysystem\Filesystem) {
+            $adaptor = $driver->getAdapter();
+            if ($adaptor instanceof \League\Flysystem\Adapter\Local) {
+                // Files are on the local disk so we can use a regular PHP DirectoryIterator iterator to save memory
+                $dir_path = $adaptor->getPathPrefix() . $this->dir;
+                $iterator = new \DirectoryIterator($dir_path);
+                $base = "{$this->slug}.";
+                foreach ($iterator as $file) {
+                    if ($file->isFile()) {
+                        if (strpos($file->getBasename(), $base) === 0) {
+                            $locations[] = $this->dir . '/' . $file->getBasename();
+                        }
+                    }
+                }
+                return $locations;
+            }
+        }
+
+        // Otherwise files are on some other kind of filesystem and we'll have to use Laravel's files() method
+        // (and hope there aren't so many files that we run out of memory)
+        $base = $this->dir . '/' . $this->slug . '.';
+        foreach ($this->disk()->files($this->dir) as $file) {
+            if (strpos($file, $base) === 0) {
+                $locations[] = $file;
+            }
+        }
+
+        return $locations;
+    }
+
     public function deleteFile($size = null)
     {
         $size = (is_null($size) ? null : ImageSize::coerce($size));
@@ -169,13 +203,7 @@ class StorageItem
             $locations[] = $this->location($size);
         } else {
             // No size specified - assume we're deleting all
-            // Find all files with the right slug
-            $base = $this->dir . '/' . $this->slug . '.';
-            foreach ($this->disk()->files($this->dir) as $file) {
-                if (strpos($file, $base) === 0) {
-                    $locations[] = $file;
-                }
-            }
+            $locations = $this->getAllSizeLocations();
         }
         // Now we have a list of locations to delete, actually delete them on the disk
         foreach ($locations as $location) {
